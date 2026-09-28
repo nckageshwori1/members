@@ -94,8 +94,15 @@
     catch(e){msg.textContent=e.message;}
   }
   function renderProfile(m){
-    const keys=['NCID','सदस्यको नाम','बाबु / आमाको नाम','पेशा / व्यवसाय','लिङ्ग','उमेर','समावेशी समूह','कैफियत','प्रतिनिधि स्थिति','प्रतिनिधि वर्ग'];
-    const p=document.getElementById('profile');p.innerHTML='<h3>सदस्य प्रोफाइल</h3><dl>'+keys.map(k=>`<dt>${escapeHtml(k)}</dt><dd>${escapeHtml(m[k]||'—')}</dd>`).join('')+'</dl>';p.style.display='block';
+    // Google Sheet बाट आएको सदस्यको पूरा row dynamic रूपमा देखाउने ।
+    // भविष्यमा Members Sheet मा नयाँ column थपिए पनि profile मा स्वतः देखिन्छ ।
+    const fields=Object.entries(m||{});
+    const p=document.getElementById('profile');
+    p.innerHTML='<h3>सदस्य प्रोफाइल</h3><dl>'+fields.map(([key,value])=>{
+      const displayValue=(value===null||value===undefined||String(value).trim()==='')?'—':value;
+      return `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(displayValue)}</dd>`;
+    }).join('')+'</dl>';
+    p.style.display='block';
   }
 
   function openAdmin(){document.getElementById('adminModal').classList.add('on'); if(adminToken){openAdminPanel();}}
