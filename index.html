@@ -7,6 +7,8 @@
   <style>
     :root{--red:#e5232f;--red2:#b91c1c;--green:#079447;--navy:#0d315d;--blue:#1687f8;--ink:#11233d;--muted:#64748b;--bg:#f4f8fc;--line:#dce7f2;--white:#fff}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:"Noto Sans Devanagari","Mangal",system-ui,sans-serif;background:linear-gradient(180deg,#fff 0,#f4f8fc 240px);color:var(--ink)}button,input,select{font:inherit}button{cursor:pointer}
+    /* Main display typography: stylish, readable Nepali/Devanagari */
+    .brandtext h1,.official h2,.welcome h3,.panel h3,.stat span{font-family:"Noto Serif Devanagari","Kokila","Nirmala UI","Noto Sans Devanagari",serif;letter-spacing:.15px}.official h2{font-weight:900}.welcome h3,.panel h3{font-weight:800}.stat span{font-weight:900}
     .topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;box-shadow:0 3px 16px #16324f10}.topin{max-width:1280px;margin:auto;padding:10px 18px;display:flex;align-items:center;gap:14px}.brandmark{width:54px;height:54px;border-radius:14px;background:#fff;border:1px solid #edf2f7;display:grid;place-items:center;overflow:hidden}.brandmark img{width:48px;height:48px;object-fit:contain}.brandtext{min-width:0}.brandtext h1{font-size:20px;margin:0;color:var(--red2);line-height:1.2}.brandtext p{margin:3px 0 0;font-size:12px;color:var(--muted);font-weight:700}.topactions{margin-left:auto;display:flex;align-items:center;gap:9px}.topbtn{border:1px solid var(--line);background:#fff;color:var(--navy);padding:10px 13px;border-radius:11px;font-weight:800}.adminbtn{background:var(--green);border-color:var(--green);color:#fff}
     .official{background:#fff}.officialin{max-width:1280px;margin:auto;padding:13px 18px;display:grid;grid-template-columns:110px 1fr 110px;align-items:center;text-align:center}.logoBox{height:94px;display:grid;place-items:center}.logoBox img{max-width:100%;max-height:90px;object-fit:contain}.motto{display:flex;justify-content:space-between;color:var(--red);font-size:14px;font-weight:900;margin-bottom:3px}.official h2{margin:0;color:var(--red);font-size:31px;line-height:1.15}.official p{margin:3px 0;font-weight:800;color:#17406d;font-size:14px}.tricolor{height:7px;background:linear-gradient(to bottom,var(--red) 0 40%,#fff 40% 58%,var(--green) 58%)}
     .nav{background:linear-gradient(90deg,#102f55,#0c416d);color:#fff}.navin{max-width:1280px;margin:auto;display:flex;gap:5px;align-items:center;padding:8px 18px;overflow:auto}.nav button{border:0;background:transparent;color:#fff;padding:10px 13px;border-radius:10px;font-weight:800;white-space:nowrap}.nav button:hover{background:#ffffff18}.spacer{flex:1}
@@ -34,7 +36,7 @@
   <nav class="nav"><div class="navin"><button onclick="showHome()">⌂ गृहपृष्ठ</button><button onclick="focusSearch()">👥 क्रियाशील सदस्य</button><button onclick="loadDashboard()">▥ तथ्याङ्क / विश्लेषण</button><span class="spacer"></span><button onclick="openAdmin()">⚙ प्रशासन</button></div></nav>
 
   <main>
-    <section class="welcome"><div><h3>स्वागत छ !</h3><p>वडा नं. १ का क्रियाशील सदस्य, प्रतिनिधि तथा सदस्यता विवरण एउटै सुरक्षित प्रणालीमा।</p></div><div class="welcomeRight"><div class="quote">“संगठित अभिलेख • सहज सेवा • पारदर्शी व्यवस्थापन”</div><div class="datebox">📅 डिजिटल सदस्य प्रणाली</div></div></section>
+    <section class="welcome"><div><h3>स्वागत छ !</h3><p>वडा नं. १ का क्रियाशील सदस्य, प्रतिनिधि तथा सदस्यता विवरण एउटै सुरक्षित प्रणालीमा&#x20;।</p></div><div class="welcomeRight"><div class="quote">“संगठित अभिलेख • सहज सेवा • पारदर्शी व्यवस्थापन”</div><div class="datebox">📅 डिजिटल सदस्य प्रणाली</div></div></section>
     <section class="stats" id="stats"></section>
 
     <section class="contentgrid">
@@ -44,7 +46,7 @@
         <div id="verifyBox" class="member"><p><b id="foundName"></b><br><small id="masked"></small></p><div class="search"><input id="mobile" inputmode="tel" placeholder="दर्ता भएको मोबाइल नम्बर"><button class="primary" onclick="verifyMobile()">प्रमाणीकरण</button></div></div>
         <div id="profile" class="member"></div>
       </div>
-      <div class="card panel"><div class="paneltitle"><div class="ico">🛡️</div><h3>सिस्टम सम्बन्धी सूचना</h3></div><div class="notice">व्यक्तिगत सदस्य विवरण हेर्न NCID खोजीपछि दर्ता भएको मोबाइल नम्बरबाट प्रमाणीकरण अनिवार्य छ। मूल विवरण थप्ने वा सच्याउने अधिकार प्रशासनमा मात्र रहनेछ।</div><div class="quick"><div><b>NCID आधारित खोजी</b><small>छिटो र स्पष्ट सदस्य पहिचान</small></div><div><b>मोबाइल प्रमाणीकरण</b><small>व्यक्तिगत विवरणको सुरक्षा</small></div><div><b>Admin Data Edit</b><small>Google Sheet मा सुरक्षित अपडेट</small></div><div><b>Live Dashboard</b><small>Sheet अनुसार स्वतः तथ्याङ्क</small></div></div></div>
+      <div class="card panel"><div class="paneltitle"><div class="ico">🛡️</div><h3>सिस्टम सम्बन्धी सूचना</h3></div><div class="notice">व्यक्तिगत सदस्य विवरण हेर्न NCID खोजीपछि दर्ता भएको मोबाइल नम्बरबाट प्रमाणीकरण अनिवार्य छ&#x20;। मूल विवरण थप्ने वा सच्याउने अधिकार प्रशासनमा मात्र रहनेछ&#x20;।</div><div class="quick"><div><b>NCID आधारित खोजी</b><small>छिटो र स्पष्ट सदस्य पहिचान</small></div><div><b>मोबाइल प्रमाणीकरण</b><small>व्यक्तिगत विवरणको सुरक्षा</small></div><div><b>Admin Data Edit</b><small>Google Sheet मा सुरक्षित अपडेट</small></div><div><b>Live Dashboard</b><small>Sheet अनुसार स्वतः तथ्याङ्क</small></div></div></div>
     </section>
   </main>
   <div class="footer">नेपाली कांग्रेस • कागेश्वरी मनोहरा नगरपालिका वडा नं. १ • डिजिटल अभिलेख प्रणाली<span class="credit">Designed &amp; Developed by Nirajan Aryal (<a href="tel:9851113811" aria-label="Call Nirajan Aryal at 9851113811">9851113811</a>)</span></div>
@@ -54,7 +56,7 @@
     <div id="adminView" class="adminBox"><h3>सदस्य व्यवस्थापन</h3><p id="adminWelcome"></p><div class="search"><input id="adminNcid" placeholder="Edit गर्न NCID"><button class="primary" onclick="loadMemberForEdit()">खोज्नुहोस्</button></div><div id="editForm"></div><div class="actions"><button class="secondary" onclick="closeAdmin()">बन्द</button><button class="secondary" onclick="adminLogout()">Logout</button></div></div>
   </div>
 <script>
-  // Google Apps Script Web App deploy गरेपछि यहाँ URL राख्नुहोस्।
+  // Google Apps Script Web App deploy गरेपछि यहाँ URL राख्नुहोस्&#x20;।
   const API_URL = 'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
   let currentNCID = '';
   let adminToken = sessionStorage.getItem('nc_admin_token') || '';
@@ -66,7 +68,7 @@
   ];
 
   async function api(action, data={}){
-    if(API_URL.includes('PASTE_')) throw new Error('पहिला index.html मा Apps Script Web App URL राख्नुहोस्।');
+    if(API_URL.includes('PASTE_')) throw new Error('पहिला index.html मा Apps Script Web App URL राख्नुहोस्&#x20;।');
     const r = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data})});
     return r.json();
   }
@@ -83,7 +85,7 @@
   async function searchMember(){
     const ncid=document.getElementById('ncid').value.trim(); const msg=document.getElementById('searchMsg');
     document.getElementById('verifyBox').style.display='none';document.getElementById('profile').style.display='none';msg.style.display='block';msg.textContent='खोजिँदैछ...';
-    try{const r=await api('searchMember',{ncid}); if(!r.ok) throw new Error(r.message); currentNCID=r.member.ncid; document.getElementById('foundName').textContent=r.member.name; document.getElementById('masked').textContent=r.member.hasMobile?`दर्ता मोबाइल: ${r.member.mobileMasked}`:'मोबाइल नम्बर दर्ता गरिएको छैन।'; document.getElementById('verifyBox').style.display='block'; msg.textContent='सदस्य भेटियो। मोबाइल नम्बरबाट प्रमाणीकरण गर्नुहोस्।';}
+    try{const r=await api('searchMember',{ncid}); if(!r.ok) throw new Error(r.message); currentNCID=r.member.ncid; document.getElementById('foundName').textContent=r.member.name; document.getElementById('masked').textContent=r.member.hasMobile?`दर्ता मोबाइल: ${r.member.mobileMasked}`:'मोबाइल नम्बर दर्ता गरिएको छैन&#x20;।'; document.getElementById('verifyBox').style.display='block'; msg.textContent='सदस्य भेटियो&#x20;। मोबाइल नम्बरबाट प्रमाणीकरण गर्नुहोस्&#x20;।';}
     catch(e){msg.textContent=e.message;}
   }
   async function verifyMobile(){
@@ -109,7 +111,7 @@
   }
   function adminLogout(){adminToken='';adminMembers=[];sessionStorage.removeItem('nc_admin_token');document.getElementById('loginView').style.display='block';document.getElementById('adminView').style.display='none';}
   function loadMemberForEdit(){
-    const ncid=document.getElementById('adminNcid').value.trim();const m=adminMembers.find(x=>String(x.NCID).trim()===ncid);if(!m){alert('सदस्य भेटिएन।');return;}renderEditForm(m);
+    const ncid=document.getElementById('adminNcid').value.trim();const m=adminMembers.find(x=>String(x.NCID).trim()===ncid);if(!m){alert('सदस्य भेटिएन&#x20;।');return;}renderEditForm(m);
   }
   function renderEditForm(m){
     const fields=['NCID','सदस्यको नाम','बाबु / आमाको नाम','पेशा / व्यवसाय','लिङ्ग','उमेर','समावेशी समूह','कैफियत','मोबाइल नम्बर','प्रतिनिधि स्थिति','प्रतिनिधि वर्ग'];
