@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ne">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>नेपाली कांग्रेस — वडा नं. १ डिजिटल अभिलेख प्रणाली</title>
+  <style>
+    :root{--red:#b91c1c;--green:#166534;--ink:#172033;--muted:#64748b;--bg:#f6f8fb;--card:#fff;--line:#e5e7eb}
+    *{box-sizing:border-box}body{margin:0;font-family:"Noto Sans Devanagari","Mangal",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+    button,input,select{font:inherit}.top{background:#fff;border-bottom:4px solid var(--green);box-shadow:0 3px 18px #00000010}
+    .motto{display:flex;justify-content:space-between;max-width:1180px;margin:auto;padding:7px 18px;color:var(--red);font-weight:800;font-size:13px}
+    .head{max-width:1180px;margin:auto;padding:15px 18px;display:grid;grid-template-columns:90px 1fr 90px;align-items:center;text-align:center}
+    .flag,.tree{font-size:48px}.head h1{margin:0;color:var(--red);font-size:32px}.head p{margin:4px 0;font-weight:700}.redline{height:4px;background:var(--red)}
+    .nav{background:var(--green);color:#fff}.navin{max-width:1180px;margin:auto;display:flex;gap:8px;align-items:center;padding:9px 18px;overflow:auto}
+    .nav button{border:0;background:transparent;color:#fff;padding:9px 12px;border-radius:10px;white-space:nowrap;cursor:pointer}.nav button:hover{background:#ffffff1f}.spacer{flex:1}
+    main{max-width:1180px;margin:22px auto;padding:0 18px 40px}.hero{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:16px}.hero h2{margin:0 0 4px;font-size:25px}.hero p{margin:0;color:var(--muted)}
+    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 24px #0f172a0a}.stat{padding:17px;cursor:pointer;transition:.2s}.stat:hover{transform:translateY(-2px);box-shadow:0 12px 28px #0f172a12}.stat b{display:block;font-size:28px;color:var(--green)}.stat span{font-size:13px;color:var(--muted);font-weight:700}
+    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:16px}.panel{padding:20px}.panel h3{margin:0 0 14px}.search{display:flex;gap:8px}.search input{flex:1;border:1px solid #cbd5e1;border-radius:12px;padding:13px 14px;outline:none}.search input:focus{border-color:var(--green);box-shadow:0 0 0 3px #16653416}.primary{border:0;background:var(--green);color:#fff;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}.secondary{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 14px;cursor:pointer}.msg{margin-top:12px;padding:12px;border-radius:12px;background:#f8fafc;display:none}.member{display:none;margin-top:12px;border-top:1px solid var(--line);padding-top:14px}.member dl{display:grid;grid-template-columns:150px 1fr;gap:8px;margin:0}.member dt{color:var(--muted)}.member dd{margin:0;font-weight:700}
+    .notice{padding:16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;color:#9a3412}.adminBox{display:none}.login{display:grid;gap:9px}.login input{border:1px solid #cbd5e1;border-radius:11px;padding:11px}.footer{text-align:center;color:var(--muted);padding:22px;font-size:13px}
+    .modal{position:fixed;inset:0;background:#0f172a80;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal.on{display:flex}.dialog{background:#fff;border-radius:18px;padding:20px;width:min(460px,100%);max-height:90vh;overflow:auto}.dialog h3{margin-top:0}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:5px;margin-bottom:10px}.field label{font-size:12px;font-weight:800;color:var(--muted)}.field input,.field select{border:1px solid #cbd5e1;border-radius:10px;padding:10px}.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+    @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.head{grid-template-columns:58px 1fr 58px}.head h1{font-size:24px}.flag,.tree{font-size:34px}}
+    @media(max-width:560px){.motto{font-size:10px}.head{padding:12px 10px}.head h1{font-size:21px}.head p{font-size:12px}.stats{grid-template-columns:1fr 1fr;gap:9px}.stat{padding:14px}.stat b{font-size:24px}.hero{align-items:start}.search{flex-direction:column}.member dl{grid-template-columns:1fr}.row{grid-template-columns:1fr}.navin{padding-inline:10px}main{padding-inline:11px;margin-top:15px}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="motto"><span>राष्ट्रियता</span><span>लोकतन्त्र</span><span>समाजवाद</span></div>
+    <div class="head"><div class="flag">🚩</div><div><h1>नेपाली कांग्रेस</h1><p>बागमती प्रदेश, काठमाडौं क्षेत्र नं. ३, प्रदेश (ख)</p><p>कागेश्वरी मनोहरा नगरपालिका, वडा नं. १, वडा कार्यसमिति</p><p>गागलफेदी, काठमाडौं</p></div><div class="tree">🌳</div></div>
+    <div class="redline"></div>
+  </header>
+  <nav class="nav"><div class="navin"><button onclick="showHome()">गृहपृष्ठ</button><button onclick="focusSearch()">सदस्य खोजी</button><button onclick="loadDashboard()">तथ्याङ्क</button><span class="spacer"></span><button onclick="openAdmin()">प्रशासन</button></div></nav>
+
+  <main>
+    <section class="hero"><div><h2>क्रियाशील सदस्य डिजिटल अभिलेख</h2><p>वडा नं. १ को सदस्यता तथा प्रतिनिधि विवरण व्यवस्थापन प्रणाली</p></div></section>
+    <section class="stats" id="stats"></section>
+
+    <section class="grid">
+      <div class="card panel">
+        <h3>NCID बाट सदस्य खोज्नुहोस्</h3>
+        <div class="search"><input id="ncid" inputmode="numeric" placeholder="NCID लेख्नुहोस्"><button class="primary" onclick="searchMember()">खोज्नुहोस्</button></div>
+        <div id="searchMsg" class="msg"></div>
+        <div id="verifyBox" class="member">
+          <p><b id="foundName"></b><br><small id="masked"></small></p>
+          <div class="search"><input id="mobile" inputmode="tel" placeholder="दर्ता भएको मोबाइल नम्बर"><button class="primary" onclick="verifyMobile()">प्रमाणीकरण</button></div>
+        </div>
+        <div id="profile" class="member"></div>
+      </div>
+      <div class="card panel">
+        <h3>सिस्टम सम्बन्धी सूचना</h3>
+        <div class="notice">व्यक्तिगत सदस्य विवरण हेर्न NCID खोजीपछि दर्ता भएको मोबाइल नम्बरबाट प्रमाणीकरण अनिवार्य छ। मूल विवरण थप्ने वा सच्याउने अधिकार प्रशासनमा मात्र रहनेछ।</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">नेपाली कांग्रेस • कागेश्वरी मनोहरा नगरपालिका वडा नं. १</div>
+
+  <div class="modal" id="adminModal"><div class="dialog">
+    <div id="loginView"><h3>प्रशासन Login</h3><div class="login"><input id="adminUser" placeholder="Username"><input id="adminPass" type="password" placeholder="Password"><button class="primary" onclick="adminLogin()">Login</button><button class="secondary" onclick="closeAdmin()">बन्द गर्नुहोस्</button></div><div id="adminMsg" class="msg"></div></div>
+    <div id="adminView" class="adminBox"><h3>सदस्य व्यवस्थापन</h3><p id="adminWelcome"></p><div class="search"><input id="adminNcid" placeholder="Edit गर्न NCID"><button class="primary" onclick="loadMemberForEdit()">खोज्नुहोस्</button></div><div id="editForm"></div><div class="actions"><button class="secondary" onclick="closeAdmin()">बन्द</button><button class="secondary" onclick="adminLogout()">Logout</button></div></div>
+  </div>
+
+<script>
+  // Google Apps Script Web App deploy गरेपछि यहाँ URL राख्नुहोस्।
+  const API_URL = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+  let currentNCID = '';
+  let adminToken = sessionStorage.getItem('nc_admin_token') || '';
+  let adminMembers = [];
+
+  const labels = [
+    ['total','जम्मा क्रियाशील सदस्य'],['male','पुरुष'],['female','महिला'],['khasArya','खस–आर्य'],['janajati','आदिवासी जनजाति'],
+    ['dalit','दलित'],['newMember','नयाँ सदस्य'],['renewed','नवीकरण सदस्य'],['representatives','निर्वाचित प्रतिनिधि']
+  ];
+
+  async function api(action, data={}){
+    if(API_URL.includes('PASTE_')) throw new Error('पहिला index.html मा Apps Script Web App URL राख्नुहोस्।');
+    const r = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data})});
+    return r.json();
+  }
+
+  async function loadDashboard(){
+    const el=document.getElementById('stats'); el.innerHTML='<div class="card stat">लोड हुँदैछ...</div>';
+    try{const r=await api('dashboard'); if(!r.ok) throw new Error(r.message); el.innerHTML=labels.map(([k,l])=>`<div class="card stat"><b>${nepaliNum(r.stats[k]??0)}</b><span>${l}</span></div>`).join('');}
+    catch(e){el.innerHTML=`<div class="card stat"><span>${escapeHtml(e.message)}</span></div>`;}
+  }
+  function nepaliNum(v){return String(v).replace(/[0-9]/g,d=>'०१२३४५६७८९'[d]);}
+  function focusSearch(){document.getElementById('ncid').focus();}
+  function showHome(){window.scrollTo({top:0,behavior:'smooth'});}
+
+  async function searchMember(){
+    const ncid=document.getElementById('ncid').value.trim(); const msg=document.getElementById('searchMsg');
+    document.getElementById('verifyBox').style.display='none';document.getElementById('profile').style.display='none';msg.style.display='block';msg.textContent='खोजिँदैछ...';
+    try{const r=await api('searchMember',{ncid}); if(!r.ok) throw new Error(r.message); currentNCID=r.member.ncid; document.getElementById('foundName').textContent=r.member.name; document.getElementById('masked').textContent=r.member.hasMobile?`दर्ता मोबाइल: ${r.member.mobileMasked}`:'मोबाइल नम्बर दर्ता गरिएको छैन।'; document.getElementById('verifyBox').style.display='block'; msg.textContent='सदस्य भेटियो। मोबाइल नम्बरबाट प्रमाणीकरण गर्नुहोस्।';}
+    catch(e){msg.textContent=e.message;}
+  }
+  async function verifyMobile(){
+    const msg=document.getElementById('searchMsg'); msg.style.display='block';msg.textContent='प्रमाणीकरण हुँदैछ...';
+    try{const r=await api('verifyMobile',{ncid:currentNCID,mobile:document.getElementById('mobile').value}); if(!r.ok) throw new Error(r.message); renderProfile(r.member);msg.textContent=r.message;}
+    catch(e){msg.textContent=e.message;}
+  }
+  function renderProfile(m){
+    const keys=['NCID','सदस्यको नाम','बाबु / आमाको नाम','पेशा / व्यवसाय','लिङ्ग','उमेर','समावेशी समूह','कैफियत','प्रतिनिधि स्थिति','प्रतिनिधि वर्ग'];
+    const p=document.getElementById('profile');p.innerHTML='<h3>सदस्य प्रोफाइल</h3><dl>'+keys.map(k=>`<dt>${escapeHtml(k)}</dt><dd>${escapeHtml(m[k]||'—')}</dd>`).join('')+'</dl>';p.style.display='block';
+  }
+
+  function openAdmin(){document.getElementById('adminModal').classList.add('on'); if(adminToken){openAdminPanel();}}
+  function closeAdmin(){document.getElementById('adminModal').classList.remove('on');}
+  async function adminLogin(){
+    const msg=document.getElementById('adminMsg');msg.style.display='block';msg.textContent='Login हुँदैछ...';
+    try{const r=await api('adminLogin',{username:document.getElementById('adminUser').value,password:document.getElementById('adminPass').value});if(!r.ok)throw new Error(r.message);adminToken=r.token;sessionStorage.setItem('nc_admin_token',adminToken);document.getElementById('adminWelcome').textContent='स्वागत छ, '+r.name;await openAdminPanel();}
+    catch(e){msg.textContent=e.message;}
+  }
+  async function openAdminPanel(){
+    try{const r=await api('adminListMembers',{token:adminToken});if(!r.ok)throw new Error(r.message);adminMembers=r.members;document.getElementById('loginView').style.display='none';document.getElementById('adminView').style.display='block';}
+    catch(e){adminLogout();document.getElementById('adminMsg').style.display='block';document.getElementById('adminMsg').textContent=e.message;}
+  }
+  function adminLogout(){adminToken='';adminMembers=[];sessionStorage.removeItem('nc_admin_token');document.getElementById('loginView').style.display='block';document.getElementById('adminView').style.display='none';}
+  function loadMemberForEdit(){
+    const ncid=document.getElementById('adminNcid').value.trim();const m=adminMembers.find(x=>String(x.NCID).trim()===ncid);if(!m){alert('सदस्य भेटिएन।');return;}renderEditForm(m);
+  }
+  function renderEditForm(m){
+    const fields=['NCID','सदस्यको नाम','बाबु / आमाको नाम','पेशा / व्यवसाय','लिङ्ग','उमेर','समावेशी समूह','कैफियत','मोबाइल नम्बर','प्रतिनिधि स्थिति','प्रतिनिधि वर्ग'];
+    document.getElementById('editForm').innerHTML='<div class="row">'+fields.map(f=>`<div class="field"><label>${escapeHtml(f)}${f==='मोबाइल नम्बर'?' *':''}</label><input data-field="${escapeAttr(f)}" value="${escapeAttr(m[f]||'')}" ${f==='NCID'?'readonly':''}></div>`).join('')+'</div><div class="actions"><button class="primary" onclick="saveMember()">परिवर्तन सुरक्षित गर्नुहोस्</button></div>';
+  }
+  async function saveMember(){
+    const member={};document.querySelectorAll('#editForm [data-field]').forEach(i=>member[i.dataset.field]=i.value.trim());
+    try{const r=await api('adminSaveMember',{token:adminToken,member});if(!r.ok)throw new Error(r.message);alert(r.message);await openAdminPanel();}
+    catch(e){alert(e.message);}
+  }
+  function escapeHtml(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function escapeAttr(v){return escapeHtml(v);}
+  loadDashboard();
+</script>
+</body>
+</html>
