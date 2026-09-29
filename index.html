@@ -843,6 +843,32 @@ main {
       .memberListRow .meta { font-size: 12px; }
     }
 
+
+/* ============================================================
+   v2.4 MOBILE UNIVERSAL + DASHBOARD POPUP FIX
+   ============================================================ */
+@media (max-width: 650px) {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { width: 100%; max-width: 100%; overflow-x: hidden !important; }
+  main, .wrap, .panel, .card, .contactstrip, .contactitem { min-width: 0 !important; max-width: 100% !important; }
+  .contactstrip { grid-template-columns: 1fr !important; gap: 10px !important; }
+  .contactitem { width: 100% !important; overflow: hidden; }
+  .contactitem, .contactitem * { overflow-wrap: anywhere; word-break: break-word; }
+  .albums { grid-template-columns: 1fr !important; }
+  .galleryPanel { padding: 14px !important; }
+  .listModal { padding: 0 !important; align-items: flex-end !important; }
+  .listModalBox { width: 100% !important; max-width: 100% !important; max-height: 94dvh !important; border-radius: 20px 20px 0 0 !important; }
+  .listModalBody { overflow-y: auto !important; overflow-x: hidden !important; padding: 10px !important; }
+  .memberList { width: 100%; min-width: 0; }
+  .memberListRow, .memberListRow.header {
+    width: 100%; min-width: 0;
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+  }
+  .memberListRow.header { display: none !important; }
+  .memberListRow > div { min-width: 0; overflow-wrap: anywhere; }
+  .memberListRow > div:nth-child(3), .memberListRow > div:nth-child(4) { grid-column: 2 !important; }
+}
+
 </style>
   </head>
   <body>
@@ -1057,7 +1083,12 @@ async function openStatList(category) {
   const modal = document.getElementById('statListModal');
   const title = document.getElementById('statListTitle');
   const body = document.getElementById('statListBody');
-  const label = labels.find(x => x[0] === category);
+  const label = labels.find(item => item[0] === category);
+
+  if (!modal || !title || !body) {
+    alert('विवरण Popup तयार हुन सकेन ।');
+    return;
+  }
 
   title.textContent = label ? label[1] : 'विवरण';
   body.innerHTML = '<div class="msg" style="display:block">विवरण लोड हुँदैछ...</div>';
@@ -1065,14 +1096,32 @@ async function openStatList(category) {
   document.body.style.overflow = 'hidden';
 
   try {
-    const r = await api('publicStatList', { category });
-    if (!r.ok) throw new Error(r.message);
+    const result = await api('publicStatList', { category: category });
 
-    title.textContent = `${nepaliNum((r.rows || []).length)} ${r.title || (label ? label[1] : 'विवरण')}`;
-    renderStatRows(r.rows || [], category);
-  } catch (e) {
-    body.innerHTML = `<div class="msg" style="display:block">${escapeHtml(e.message)}</div>`;
+    if (!result || result.ok !== true) {
+      throw new Error((result && result.message) || 'विवरण लोड हुन सकेन ।');
+    }
+
+    const rows = Array.isArray(result.rows) ? result.rows : [];
+    title.textContent = `${nepaliNum(rows.length)} ${result.title || (label ? label[1] : 'विवरण')}`;
+    renderStatRows(rows, category);
+  } catch (error) {
+    body.innerHTML = `
+      <div class="msg" style="display:block">
+        ${escapeHtml(error.message || 'विवरण लोड हुन सकेन ।')}
+        <br><br>
+        <button class="primary" type="button" onclick="openStatList('${category}')">पुनः प्रयास गर्नुहोस्</button>
+      </div>`;
   }
+}
+
+function firstValue(record, keys) {
+  for (const key of keys) {
+    if (record && String(record[key] ?? '').trim() !== '') {
+      return String(record[key]).trim();
+    }
+  }
+  return '';
 }
 
 function renderStatRows(rows, category) {
@@ -1083,21 +1132,22 @@ function renderStatRows(rows, category) {
     return;
   }
 
-  const isRep = category === 'representatives';
-  const html = rows.map((r, i) => {
-    const name = r['सदस्यको नाम'] || r['नाम'] || r['Name'] || '';
-    const ncid = r.NCID || r['क्रियाशील नं.'] || r['Membership Number'] || '';
-    const mobile = r['मोबाइल नम्बर'] || r['Mobile Number'] || r['मोबाइल'] || '';
-    const detail = isRep
-      ? (r['प्रतिनिधि वर्ग'] || r['वर्ग'] || r['पद'] || r['समूह'] || '')
-      : (r['समावेशी समूह'] || r['कैफियत'] || '');
+  const isRepresentative = category === 'representatives';
+
+  const items = rows.map((record, index) => {
+    const name = firstValue(record, ['सदस्यको नाम', 'नाम', 'Name', 'प्रतिनिधिको नाम']);
+    const ncid = firstValue(record, ['NCID', 'क्रियाशील नं.', 'Membership Number', 'Membership No']);
+    const mobile = firstValue(record, ['मोबाइल नम्बर', 'Mobile Number', 'मोबाइल', 'Mobile']);
+    const group = isRepresentative
+      ? firstValue(record, ['प्रतिनिधि वर्ग', 'वर्ग', 'पद', 'समूह', 'Category'])
+      : firstValue(record, ['समावेशी समूह', 'कैफियत']);
 
     return `
       <div class="memberListRow">
-        <div>${nepaliNum(i + 1)}</div>
+        <div>${nepaliNum(index + 1)}</div>
         <div class="name">${escapeHtml(name || '—')}</div>
-        <div class="meta">${escapeHtml(ncid || detail || '—')}</div>
-        <div class="meta">${escapeHtml(mobile || detail || '—')}</div>
+        <div class="meta">${escapeHtml(ncid ? `NCID / क्रियाशील नं.: ${ncid}` : (group || '—'))}</div>
+        <div class="meta">${escapeHtml(mobile ? `मोबाइल: ${mobile}` : (group || '—'))}</div>
       </div>`;
   }).join('');
 
@@ -1109,7 +1159,7 @@ function renderStatRows(rows, category) {
         <div>NCID / विवरण</div>
         <div>मोबाइल / वर्ग</div>
       </div>
-      ${html}
+      ${items}
     </div>`;
 }
 
