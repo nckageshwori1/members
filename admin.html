@@ -1,35 +1,674 @@
 <!doctype html>
 <html lang="ne">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>प्रशासन | नेपाली कांग्रेस वडा नं. १</title>
-<style>
-:root{--red:#e51d2a;--green:#009846;--navy:#123f70;--bg:#f4f8fc;--line:#dce7f1;--muted:#66758a}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#17324d;font-family:"Noto Sans Devanagari","Nirmala UI","Mangal",sans-serif}.top{background:#fff;border-bottom:1px solid var(--line);padding:14px 18px}.topin{max-width:1180px;margin:auto;display:flex;align-items:center;gap:12px}.top img{width:52px;height:52px;object-fit:contain}.top h1{font-size:20px;color:var(--red);margin:0}.top p{font-size:12px;color:var(--muted);margin:3px 0 0}.back{margin-left:auto;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:10px 13px;color:var(--navy);font-weight:800;background:#fff}main{max-width:1180px;margin:28px auto;padding:0 16px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 28px #17324d12;padding:22px}.login{max-width:440px;margin:55px auto}.login h2,.panel h2{margin:0 0 6px;color:var(--navy)}.sub{color:var(--muted);font-size:13px;margin-bottom:20px}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:13px;font-weight:800}.field input{width:100%;padding:12px;border:1px solid #cbd8e5;border-radius:10px;font:inherit}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:900;cursor:pointer}.primary{background:var(--green);color:#fff}.secondary{background:#edf3f8;color:var(--navy)}.danger{background:#fff1f2;color:#b4232e}.login .btn{width:100%;margin-top:8px}.msg{display:none;margin-top:12px;padding:11px;border-radius:10px;background:#f1f6fb;font-size:13px}.panel{display:none}.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}.bar .spacer{flex:1}.search{display:flex;gap:8px;margin:18px 0}.search input{flex:1;padding:11px;border:1px solid #cbd8e5;border-radius:10px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.status{padding:10px 12px;background:#eef9f3;border:1px solid #cdebd9;border-radius:10px;color:#17643b;font-size:13px}.footer{text-align:center;color:var(--muted);padding:24px;font-size:13px}.footer a{color:var(--green);font-weight:900;text-decoration:none}@media(max-width:650px){.top h1{font-size:16px}.top p{display:none}.top img{width:42px;height:42px}.back{padding:8px 10px;font-size:12px}main{margin-top:15px}.login{margin:20px auto}.grid{grid-template-columns:1fr}.search{flex-direction:column}.bar{align-items:flex-start}}
-</style>
-</head>
-<body>
-<header class="top"><div class="topin"><img src="tree-logo.png" alt="नेपाली कांग्रेस"><div><h1>नेपाली कांग्रेस — वडा नं. १</h1><p>प्रशासन तथा सदस्य व्यवस्थापन प्रणाली</p></div><a class="back" href="index.html">← गृहपृष्ठ</a></div></header>
-<main>
-<section id="loginView" class="card login"><h2>प्रशासन Login</h2><div class="sub">अधिकृत Admin ले मात्र प्रवेश गर्नुहोस् ।</div><div class="field"><label>Username</label><input id="adminUser" autocomplete="username" placeholder="Username"></div><div class="field"><label>Password</label><input id="adminPass" type="password" autocomplete="current-password" placeholder="Password"></div><button id="loginBtn" class="btn primary" onclick="adminLogin()">Login</button><div id="adminMsg" class="msg"></div></section>
-<section id="adminView" class="card panel"><div class="bar"><div><h2>सदस्य व्यवस्थापन</h2><div id="adminWelcome" class="sub" style="margin:0"></div></div><span class="spacer"></span><button class="btn secondary" onclick="reloadMembers()">↻ Refresh</button><button class="btn danger" onclick="adminLogout()">Logout</button></div><div class="status">NCID खोजेर सदस्यको विवरण सम्पादन गर्न सकिन्छ । मोबाइल नम्बर सदस्य प्रमाणीकरणका लागि प्रयोग हुन्छ ।</div><div class="search"><input id="adminNcid" placeholder="NCID लेख्नुहोस्"><button class="btn primary" onclick="loadMemberForEdit()">खोज्नुहोस्</button></div><div id="editForm"></div></section>
-</main>
-<footer class="footer">Designed &amp; Developed by Nirajan Aryal (<a href="tel:9851113811">9851113811</a>)</footer>
-<script>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>सदस्य व्यवस्थापन केन्द्र | नेपाली कांग्रेस वडा नं. १</title>
+    <style>
+:root {
+  --red:#d91f2b;
+  --green:#078f49;
+  --navy:#103c68;
+  --bg:#f3f7fb;
+  --line:#dce6f0;
+  --muted:#66758a
+}
+* {
+  box-sizing:border-box
+}
+body {
+  margin:0;
+  background:var(--bg);
+  color:#17324d;
+  font-family:"Noto Sans Devanagari","Nirmala UI","Mangal",sans-serif
+}
+.top {
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:5
+}
+.topin {
+  max-width:1280px;
+  margin:auto;
+  padding:11px 18px;
+  display:flex;
+  align-items:center;
+  gap:12px
+}
+.top img {
+  width:54px;
+  height:54px;
+  object-fit:contain
+}
+.top h1 {
+  font-size:20px;
+  color:var(--red);
+  margin:0
+}
+.top p {
+  font-size:12px;
+  color:var(--muted);
+  margin:2px 0
+}
+.back {
+  margin-left:auto;
+  text-decoration:none;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:9px 12px;
+  color:var(--navy);
+  font-weight:800;
+  background:#fff
+}
+main {
+  max-width:1280px;
+  margin:22px auto;
+  padding:0 16px
+}
+.card {
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 8px 28px #17324d10
+}
+.login {
+  max-width:440px;
+  margin:55px auto;
+  padding:24px
+}
+.field {
+  display:grid;
+  gap:6px;
+  margin:11px 0
+}
+.field label {
+  font-size:12px;
+  font-weight:900;
+  color:#526579
+}
+.field input,.field select,.field textarea {
+  width:100%;
+  padding:11px;
+  border:1px solid #cbd8e5;
+  border-radius:10px;
+  font:inherit;
+  background:#fff
+}
+.field textarea {
+  min-height:90px;
+  resize:vertical
+}
+.btn {
+  border:0;
+  border-radius:10px;
+  padding:10px 14px;
+  font-weight:900;
+  cursor:pointer
+}
+.primary {
+  background:var(--green);
+  color:#fff
+}
+.secondary {
+  background:#edf3f8;
+  color:var(--navy)
+}
+.danger {
+  background:#fff0f1;
+  color:#b4232e
+}
+.msg {
+  display:none;
+  margin-top:12px;
+  padding:11px;
+  border-radius:10px;
+  background:#f1f6fb;
+  font-size:13px
+}
+.app {
+  display:none
+}
+.hero {
+  padding:18px 20px;
+  display:flex;
+  align-items:center;
+  gap:12px
+}
+.hero h2 {
+  margin:0;
+  color:var(--navy)
+}
+.hero p {
+  margin:3px 0 0;
+  color:var(--muted);
+  font-size:13px
+}
+.hero .right {
+  margin-left:auto;
+  display:flex;
+  gap:8px
+}
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin:12px 0
+}
+.stat {
+  padding:15px;
+  border-radius:15px;
+  background:#fff;
+  border:1px solid var(--line)
+}
+.stat b {
+  font-size:24px;
+  color:var(--navy);
+  display:block
+}
+.stat span {
+  font-size:12px;
+  color:var(--muted)
+}
+.tabs {
+  display:flex;
+  gap:7px;
+  overflow:auto;
+  padding:9px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  margin-bottom:12px
+}
+.tab {
+  white-space:nowrap;
+  background:#f3f7fb;
+  color:var(--navy)
+}
+.tab.on {
+  background:var(--navy);
+  color:#fff
+}
+.pane {
+  display:none;
+  padding:18px
+}
+.pane.on {
+  display:block
+}
+.search {
+  display:flex;
+  gap:8px;
+  margin-bottom:15px
+}
+.search input {
+  flex:1;
+  padding:11px;
+  border:1px solid #cbd8e5;
+  border-radius:10px
+}
+.profilehead {
+  display:grid;
+  grid-template-columns:150px 1fr;
+  gap:18px;
+  padding:15px;
+  background:#f8fbfe;
+  border:1px solid var(--line);
+  border-radius:15px;
+  margin-bottom:15px
+}
+.photo {
+  width:150px;
+  height:170px;
+  border-radius:14px;
+  object-fit:cover;
+  background:#e8eef5;
+  border:1px solid var(--line)
+}
+.photoactions {
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:7px
+}
+.photoactions .btn {
+  font-size:11px;
+  padding:7px 9px
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px
+}
+.wide {
+  grid-column:1/-1
+}
+.actions {
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:16px
+}
+.history {
+  margin-top:18px;
+  border-top:1px solid var(--line);
+  padding-top:16px
+}
+.history h3,.pane h3 {
+  color:var(--navy);
+  margin:0 0 12px
+}
+.tablewrap {
+  overflow:auto
+}
+.table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px
+}
+.table th,.table td {
+  border-bottom:1px solid var(--line);
+  padding:9px;
+  text-align:left;
+  white-space:nowrap
+}
+.table th {
+  background:#f6f9fc
+}
+.empty {
+  padding:20px;
+  text-align:center;
+  color:var(--muted)
+}
+.hint {
+  background:#eef8f3;
+  border:1px solid #cfe9dc;
+  padding:11px;
+  border-radius:10px;
+  font-size:13px;
+  margin-bottom:13px
+}
+.footer {
+  text-align:center;
+  color:var(--muted);
+  padding:24px;
+  font-size:13px
+}
+.footer a {
+  color:var(--green);
+  font-weight:900;
+  text-decoration:none
+}
+@media(max-width:760px) {
+  .stats {
+    grid-template-columns:repeat(2,1fr)
+  }
+  .grid {
+    grid-template-columns:1fr
+  }
+  .profilehead {
+    grid-template-columns:1fr
+  }
+  .photo {
+    width:130px;
+    height:150px
+  }
+  .hero {
+    align-items:flex-start
+  }
+  .hero .right {
+    flex-direction:column
+  }
+  .top p {
+    display:none
+  }
+  .top h1 {
+    font-size:16px
+  }
+  .top img {
+    width:44px;
+    height:44px
+  }
+  .back {
+    font-size:11px;
+    padding:7px 9px
+  }
+  .search {
+    flex-direction:column
+  }
+}
+</style></head>
+    <body>
+      <header class="top">
+        <div class="topin">
+          <img src="tree-logo.png" alt="नेपाली कांग्रेस">
+          <div>
+            <h1>सदस्य व्यवस्थापन केन्द्र</h1>
+            <p>नेपाली कांग्रेस • कागेश्वरी मनोहरा नगरपालिका वडा नं. १</p>
+          </div>
+          <a class="back" href="index.html">← गृहपृष्ठ</a>
+        </div>
+      </header>
+      <main>
+        <section id="loginView" class="card login">
+          <h2>प्रशासन Login</h2>
+          <p style="color:var(--muted);font-size:13px">अधिकृत Admin ले मात्र प्रवेश गर्नुहोस् ।</p>
+          <div class="field">
+            <label>Username</label>
+            <input id="adminUser" autocomplete="username">
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input id="adminPass" type="password" autocomplete="current-password">
+          </div>
+          <button id="loginBtn" class="btn primary" style="width:100%" onclick="adminLogin()">Login</button>
+          <div id="adminMsg" class="msg">
+          </div>
+        </section>
+        <section id="adminApp" class="app">
+          <div class="card hero">
+            <div>
+              <h2>सदस्य व्यवस्थापन केन्द्र</h2>
+              <p id="welcome">
+              </p>
+            </div>
+            <div class="right">
+              <button class="btn secondary" onclick="reloadMembers()">↻ Refresh</button>
+              <button class="btn danger" onclick="logout()">Logout</button>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <b id="stTotal">0</b>
+              <span>कुल सदस्य</span>
+            </div>
+            <div class="stat">
+              <b id="stPhoto">0</b>
+              <span>फोटो भएका सदस्य</span>
+            </div>
+            <div class="stat">
+              <b id="stMobile">0</b>
+              <span>मोबाइल दर्ता</span>
+            </div>
+            <div class="stat">
+              <b id="stRep">0</b>
+              <span>प्रतिनिधि</span>
+            </div>
+          </div>
+          <div class="tabs">
+            <button class="btn tab on" data-tab="member" onclick="showTab('member',this)">👤 सदस्य Profile</button>
+            <button class="btn tab" data-tab="notice" onclick="showTab('notice',this)">📢 सूचना</button>
+            <button class="btn tab" data-tab="contact" onclick="showTab('contact',this)">☎ सम्पर्क / Social</button>
+            <button class="btn tab" data-tab="gallery" onclick="showTab('gallery',this)">🖼️ Photo Gallery</button>
+          </div>
+          <section id="pane-member" class="card pane on">
+            <div class="hint">NCID बाट सदस्य खोजेर पूरा Sheet data, फोटो, हालको पद र विगतको पद / जिम्मेवारी व्यवस्थापन गर्न सकिन्छ ।</div>
+            <div class="search">
+              <input id="memberSearch" placeholder="NCID लेख्नुहोस्">
+              <button class="btn primary" onclick="findMember()">खोज्नुहोस्</button>
+            </div>
+            <div id="memberEditor" class="empty">सम्पादन गर्न सदस्य खोज्नुहोस् ।</div>
+          </section>
+          <section id="pane-notice" class="card pane">
+            <h3>सूचना व्यवस्थापन</h3>
+            <div class="grid">
+              <div class="field">
+                <label>शीर्षक</label>
+                <input id="noticeTitle">
+              </div>
+              <div class="field">
+                <label>मिति</label>
+                <input id="noticeDate" type="date">
+              </div>
+              <div class="field wide">
+                <label>विवरण</label>
+                <textarea id="noticeBody">
+                </textarea>
+              </div>
+            </div>
+            <button class="btn primary" onclick="saveNotice()">सूचना प्रकाशित गर्नुहोस्</button>
+            <div id="noticeList" style="margin-top:18px">
+            </div>
+          </section>
+          <section id="pane-contact" class="card pane">
+            <h3>मुख्य Display सम्पर्क विवरण</h3>
+            <div class="grid">
+              <div class="field">
+                <label>Gmail / Email</label>
+                <input id="setEmail">
+              </div>
+              <div class="field">
+                <label>Contact Number</label>
+                <input id="setPhone">
+              </div>
+              <div class="field">
+                <label>Location Text</label>
+                <input id="setLocation">
+              </div>
+              <div class="field">
+                <label>Google Map URL</label>
+                <input id="setMapURL">
+              </div>
+              <div class="field wide">
+                <label>Facebook URL</label>
+                <input id="setFacebookURL">
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn primary" onclick="saveSettings()">सम्पर्क विवरण सुरक्षित गर्नुहोस्</button>
+            </div>
+          </section>
+          <section id="pane-gallery" class="card pane">
+            <h3>Google Drive Photo Gallery</h3>
+            <div class="hint">Drive को <b>Photo Gallery</b> मुख्य folder भित्र जति sub-folder बनाइन्छ, Public Gallery मा त्यही folder name अनुसार Album देखिन्छ । फोटोहरू सम्बन्धित sub-folder भित्र Upload गर्नुहोस् ।</div>
+            <div id="galleryInfo">
+            </div>
+          </section>
+        </section>
+      </main>
+      <footer class="footer">Designed &amp; Developed by Nirajan Aryal (<a href="tel:9851113811">9851113811</a>)</footer>
+      <script>
 const API_URL='https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
-let adminToken=sessionStorage.getItem('nc_admin_token')||'';let adminMembers=[];
-async function api(action,data={}){const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data})});if(!r.ok)throw new Error('सर्भरसँग सम्पर्क हुन सकेन ।');return r.json()}
-function showMsg(t){const m=document.getElementById('adminMsg');m.style.display='block';m.textContent=t}
-async function adminLogin(){const u=document.getElementById('adminUser').value.trim(),p=document.getElementById('adminPass').value;const b=document.getElementById('loginBtn');if(!u||!p){showMsg('Username र Password दुवै अनिवार्य छन् ।');return}b.disabled=true;b.textContent='Login हुँदैछ...';showMsg('Admin विवरण जाँच हुँदैछ...');try{const r=await api('adminLogin',{username:u,password:p});if(!r.ok)throw new Error(r.message||'Login असफल भयो ।');adminToken=r.token;sessionStorage.setItem('nc_admin_token',adminToken);sessionStorage.setItem('nc_admin_name',r.name||u);await openAdminPanel()}catch(e){showMsg(e.message)}finally{b.disabled=false;b.textContent='Login'}}
-async function openAdminPanel(){try{const r=await api('adminListMembers',{token:adminToken});if(!r.ok)throw new Error(r.message);adminMembers=r.members||[];document.getElementById('loginView').style.display='none';document.getElementById('adminView').style.display='block';document.getElementById('adminWelcome').textContent='स्वागत छ, '+(sessionStorage.getItem('nc_admin_name')||'Admin')+' ।'}catch(e){adminLogout(false);showMsg(e.message)}}
-async function reloadMembers(){try{const r=await api('adminListMembers',{token:adminToken});if(!r.ok)throw new Error(r.message);adminMembers=r.members||[];alert('सदस्य data Refresh भयो ।')}catch(e){alert(e.message)}}
-function adminLogout(go=true){adminToken='';adminMembers=[];sessionStorage.removeItem('nc_admin_token');sessionStorage.removeItem('nc_admin_name');document.getElementById('adminView').style.display='none';document.getElementById('loginView').style.display='block';document.getElementById('editForm').innerHTML='';if(go)showMsg('Logout सफल भयो ।')}
-function loadMemberForEdit(){const n=document.getElementById('adminNcid').value.trim();const m=adminMembers.find(x=>String(x.NCID||'').trim()===n);if(!m){alert('सदस्य भेटिएन ।');return}renderEditForm(m)}
-function renderEditForm(m){const fields=Object.keys(m);document.getElementById('editForm').innerHTML='<div class="grid">'+fields.map(f=>`<div class="field"><label>${esc(f)}${f==='मोबाइल नम्बर'?' *':''}</label><input data-field="${attr(f)}" value="${attr(m[f]||'')}" ${f==='NCID'?'readonly':''}></div>`).join('')+'</div><div class="actions"><button class="btn primary" onclick="saveMember()">परिवर्तन सुरक्षित गर्नुहोस्</button></div>'}
-async function saveMember(){const member={};document.querySelectorAll('#editForm [data-field]').forEach(i=>member[i.dataset.field]=i.value.trim());try{const r=await api('adminSaveMember',{token:adminToken,member});if(!r.ok)throw new Error(r.message);alert(r.message);await reloadMembers()}catch(e){alert(e.message)}}
-function esc(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}function attr(v){return esc(v)}
-if(adminToken)openAdminPanel();document.getElementById('adminPass').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin()});
-</script>
-</body>
-</html>
+let token=sessionStorage.getItem('nc_admin_token')||'',members=[],current=null,designations=[];
+async function api(action,data={}) {
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data})});
+  if(!r.ok)throw new Error('सर्भरसँग सम्पर्क हुन सकेन ।');
+  return r.json()
+}
+function msg(t) {
+  const m=document.getElementById('adminMsg');
+  m.style.display='block';
+  m.textContent=t
+}
+async function adminLogin() {
+  const u=adminUser.value.trim(),p=adminPass.value,b=loginBtn;
+  if(!u||!p) {
+    msg('Username र Password दुवै अनिवार्य छन् ।');
+    return
+  }
+  b.disabled=true;
+  b.textContent='Login हुँदैछ...';
+  try {
+    const r=await api('adminLogin',{username:u,password:p});
+    if(!r.ok)throw new Error(r.message);
+    token=r.token;
+    sessionStorage.setItem('nc_admin_token',token);
+    sessionStorage.setItem('nc_admin_name',r.name||u);
+    await openApp()
+  } catch(e) {
+    msg(e.message)
+  } finally {
+    b.disabled=false;
+    b.textContent='Login'
+  }
+}
+async function openApp() {
+  const r=await api('adminListMembers',{token});
+  if(!r.ok) {
+    logout(false);
+    throw new Error(r.message)
+  }
+  members=r.members||[];
+  loginView.style.display='none';
+  adminApp.style.display='block';
+  welcome.textContent='स्वागत छ, '+(sessionStorage.getItem('nc_admin_name')||'Admin')+' ।';
+  stats();
+  loadSettings();
+  loadNotices()
+}
+function stats() {
+  stTotal.textContent=members.length;
+  stPhoto.textContent=members.filter(x=>x.PhotoURL).length;
+  stMobile.textContent=members.filter(x=>x['मोबाइल नम्बर']).length;
+  stRep.textContent=members.filter(x=>x['प्रतिनिधि स्थिति']).length
+}
+async function reloadMembers() {
+  const r=await api('adminListMembers',{token});
+  if(!r.ok)throw new Error(r.message);
+  members=r.members||[];
+  stats();
+  alert('सदस्य data Refresh भयो ।')
+}
+function logout(show=true) {
+  token='';
+  members=[];
+  sessionStorage.removeItem('nc_admin_token');
+  sessionStorage.removeItem('nc_admin_name');
+  adminApp.style.display='none';
+  loginView.style.display='block';
+  if(show)msg('Logout सफल भयो ।')
+}
+function showTab(n,b) {
+  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.getElementById('pane-'+n).classList.add('on');
+  b.classList.add('on');
+  if(n==='gallery')loadGalleryInfo()
+}
+async function findMember() {
+  const n=memberSearch.value.trim();
+  if(!n)return alert('NCID लेख्नुहोस् ।');
+  memberEditor.innerHTML='लोड हुँदैछ...';
+  try {
+    const r=await api('adminGetMember',{token,ncid:n});
+    if(!r.ok)throw new Error(r.message);
+    current=r.member;
+    designations=r.designations||[];
+    renderMember()
+  } catch(e) {
+    memberEditor.innerHTML='<div class="empty">'+esc(e.message)+'</div>'
+  }
+}
+function renderMember() {
+  const m=current,fields=Object.keys(m).filter(k=>!['PhotoFileID'].includes(k));
+  const photo=m.PhotoURL||'';
+  memberEditor.innerHTML=`<div class="profilehead"><div><img class="photo" src="${photo?attr(photo):''}" onerror="this.removeAttribute('src')"><div class="photoactions"><label class="btn primary">फोटो Upload<input id="photoInput" type="file" accept="image/*" hidden onchange="uploadPhoto(this)"></label>${photo?'<button class="btn danger" onclick="removePhoto()">Remove</button>':''}</div></div><div><h2 style="margin:5px 0;color:var(--navy)">${esc(m['सदस्यको नाम']||'सदस्य')}</h2><div>NCID: <b>${esc(m.NCID||'')}</b></div><div style="margin-top:6px;color:var(--muted)">${esc(m['हालको पद / जिम्मेवारी']||'हालको पद / जिम्मेवारी उल्लेख छैन')}</div></div></div><div class="grid">${fields.map(f=>`<div class="field ${f==='PhotoURL'?'wide':''}"><label>${esc(f)}</label><input data-field="${attr(f)}" value="${attr(m[f]||'')}" ${['NCID','PhotoURL'].includes(f)?'readonly':''}></div>`).join('')}</div><div class="actions"><button class="btn primary" onclick="saveMember()">परिवर्तन सुरक्षित गर्नुहोस्</button></div><div class="history"><h3>विगतको पद / जिम्मेवारी</h3><div class="grid"><div class="field"><label>पद / जिम्मेवारी</label><input id="dPost"></div><div class="field"><label>निकाय / तह</label><input id="dLevel"></div><div class="field"><label>सुरु वर्ष</label><input id="dStart"></div><div class="field"><label>अन्त्य वर्ष</label><input id="dEnd"></div><div class="field wide"><label>कैफियत</label><input id="dNote"></div></div><button class="btn secondary" onclick="addDesignation()">+ विगतको पद थप्नुहोस्</button>${designationTable()}</div>`
+}
+function designationTable() {
+  if(!designations.length)return'<div class="empty">विगतको पद / जिम्मेवारी record छैन ।</div>';
+  return'<div class="tablewrap"><table class="table"><tr><th>पद / जिम्मेवारी</th><th>निकाय / तह</th><th>सुरु</th><th>अन्त्य</th><th>कैफियत</th><th></th></tr>'+designations.map(d=>`<tr><td>${esc(d['पद / जिम्मेवारी'])}</td><td>${esc(d['निकाय / तह'])}</td><td>${esc(d['सुरु वर्ष'])}</td><td>${esc(d['अन्त्य वर्ष'])}</td><td>${esc(d['कैफियत'])}</td><td><button class="btn danger" onclick="deleteDesignation('${attr(d.ID)}')">हटाउनुहोस्</button></td></tr>`).join('')+'</table></div>'
+}
+async function saveMember() {
+  const m= {
+  }
+  ;
+  document.querySelectorAll('#memberEditor [data-field]').forEach(i=>m[i.dataset.field]=i.value.trim());
+  const r=await api('adminSaveMember',{token,member:m});
+  if(!r.ok)return alert(r.message);
+  alert(r.message);
+  await findMember();
+  await reloadMembers()
+}
+async function uploadPhoto(input) {
+  const f=input.files[0];
+  if(!f)return;
+  if(!f.type.startsWith('image/'))return alert('Image file मात्र Upload गर्नुहोस् ।');
+  const data=await resizeImage(f);
+  const r=await api('adminUploadMemberPhoto',{token,ncid:current.NCID,dataUrl:data,fileName:f.name});
+  if(!r.ok)return alert(r.message);
+  alert(r.message);
+  await findMember();
+  await reloadMembers()
+}
+function resizeImage(file) {
+  return new Promise((resolve,reject)=>{const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const max=900,s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.82))};im.onerror=reject;im.src=rd.result};rd.onerror=reject;rd.readAsDataURL(file)})
+}
+async function removePhoto() {
+  if(!confirm('सदस्यको फोटो हटाउने हो ?'))return;
+  const r=await api('adminRemoveMemberPhoto',{token,ncid:current.NCID});
+  alert(r.message);
+  if(r.ok) {
+    await findMember();
+    await reloadMembers()
+  }
+}
+async function addDesignation() {
+  const record= {
+    NCID:current.NCID,'पद / जिम्मेवारी':dPost.value.trim(),'निकाय / तह':dLevel.value.trim(),'सुरु वर्ष':dStart.value.trim(),'अन्त्य वर्ष':dEnd.value.trim(),'कैफियत':dNote.value.trim()
+  }
+  ;
+  const r=await api('adminAddDesignation',{token,record});
+  alert(r.message);
+  if(r.ok)await findMember()
+}
+async function deleteDesignation(id) {
+  if(!confirm('यो पद इतिहास हटाउने हो ?'))return;
+  const r=await api('adminDeleteDesignation',{token,id});
+  alert(r.message);
+  if(r.ok)await findMember()
+}
+async function loadNotices() {
+  try {
+    const r=await api('adminListNotices',{token});
+    if(!r.ok)return;
+    noticeList.innerHTML=(r.notices||[]).slice().reverse().map(n=>`<div style="padding:11px;border-bottom:1px solid var(--line)"><b>${esc(n['शीर्षक'])}</b> <small>${esc(n['मिति'])}</small><div>${esc(n['विवरण'])}</div><button class="btn danger" style="margin-top:6px" onclick="deleteNotice('${attr(n.ID)}')">हटाउनुहोस्</button></div>`).join('')||'<div class="empty">सूचना छैन ।</div>'
+  } catch(e) {
+  }
+}
+async function saveNotice() {
+  const r=await api('adminSaveNotice',{token,notice:{title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value,active:true}});
+  alert(r.message);
+  if(r.ok) {
+    noticeTitle.value=noticeBody.value=noticeDate.value='';
+    loadNotices()
+  }
+}
+async function deleteNotice(id) {
+  if(!confirm('सूचना हटाउने हो ?'))return;
+  const r=await api('adminDeleteNotice',{token,id});
+  alert(r.message);
+  if(r.ok)loadNotices()
+}
+async function loadSettings() {
+  try {
+    const r=await api('adminGetSettings',{token});
+    if(!r.ok)return;
+    const s=r.settings|| {
+    }
+    ;
+    setEmail.value=s.Email||'';
+    setPhone.value=s.Phone||'';
+    setLocation.value=s.Location||'';
+    setMapURL.value=s.MapURL||'';
+    setFacebookURL.value=s.FacebookURL||'';
+    galleryInfo.innerHTML=`<b>Photo Gallery Folder ID:</b> ${esc(r.galleryFolderId||'setupSystem() चलाउनुहोस्')}<br><b>Member Photo Folder ID:</b> ${esc(r.memberPhotoFolderId||'setupSystem() चलाउनुहोस्')}`
+  } catch(e) {
+  }
+}
+async function saveSettings() {
+  const settings= {
+    Email:setEmail.value.trim(),Phone:setPhone.value.trim(),Location:setLocation.value.trim(),MapURL:setMapURL.value.trim(),FacebookURL:setFacebookURL.value.trim()
+  }
+  ;
+  const r=await api('adminSaveSettings',{token,settings});
+  alert(r.message)
+}
+function loadGalleryInfo() {
+  loadSettings()
+}
+function esc(v) {
+  return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}function attr(v){return esc(v)}
+if(token)openApp().catch(e=>msg(e.message));adminPass.addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin()});
+</script></body>
+    </html>
