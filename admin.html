@@ -300,8 +300,76 @@ main {
   font-weight:900;
   text-decoration:none
 }
+
+.data-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 14px 0;
+}
+.data-toolbar input,
+.data-toolbar select {
+  min-width: 190px;
+  flex: 1;
+}
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+.summary-card {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 14px;
+  padding: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: .18s ease;
+}
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+}
+.summary-card b {
+  display: block;
+  font-size: 24px;
+  color: var(--navy);
+}
+.summary-card span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.sync-box {
+  border: 1px dashed #9ab6a1;
+  background: #f6fbf7;
+  border-radius: 14px;
+  padding: 14px;
+  margin: 14px 0;
+}
+.sync-result {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.click-row {
+  cursor: pointer;
+}
+.click-row:hover {
+  background: #f7faf8;
+}
+@media(max-width:1000px) {
+  .summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media(max-width:760px) {
   .stats {
+    grid-template-columns:repeat(2,1fr)
+  }
+  .summary-grid {
     grid-template-columns:repeat(2,1fr)
   }
   .grid {
@@ -397,12 +465,49 @@ main {
             </div>
           </div>
           <div class="tabs">
-            <button class="btn tab on" data-tab="member" onclick="showTab('member',this)">👤 सदस्य Profile</button>
+            <button class="btn tab on" data-tab="data" onclick="showTab('data',this)">📊 सबै सदस्य Data</button>
+            <button class="btn tab" data-tab="member" onclick="showTab('member',this)">👤 सदस्य Profile</button>
             <button class="btn tab" data-tab="notice" onclick="showTab('notice',this)">📢 सूचना</button>
             <button class="btn tab" data-tab="contact" onclick="showTab('contact',this)">☎ सम्पर्क / Social</button>
             <button class="btn tab" data-tab="gallery" onclick="showTab('gallery',this)">🖼️ Photo Gallery</button>
           </div>
-          <section id="pane-member" class="card pane on">
+          <section id="pane-data" class="card pane on">
+            <h3>सदस्य Data तथा Summary</h3>
+            <div class="hint">Dashboard को कुनै संख्या क्लिक गर्दा सम्बन्धित सदस्यहरूको सूची देखिन्छ । सदस्यको row क्लिक गर्दा Edit Profile खुल्छ ।</div>
+            <div id="summaryCards" class="summary-grid"></div>
+
+            <div class="sync-box">
+              <b>Mobile Number + Membership Number Auto Sync</b>
+              <div class="hint" style="margin-top:6px">
+                Excel का <b>Renew Old &amp; New</b> र <b>Renew List</b> sheet यही Google Sheet मा Import गरेपछि Sync चलाउनुहोस् । खाली Mobile/Membership field मात्र स्वतः भरिन्छ । फरक पुरानो value भेटिएमा Review मा राखिन्छ ।
+              </div>
+              <button id="syncBtn" class="btn primary" onclick="syncMobileMembership()">↻ Mobile / Membership Sync</button>
+              <div id="syncResult" class="sync-result"></div>
+            </div>
+
+            <div class="data-toolbar">
+              <input id="allDataSearch" placeholder="नाम, NCID, मोबाइल वा अन्य विवरण खोज्नुहोस्" oninput="renderAllData()">
+              <select id="dataMode" onchange="renderAllData()">
+                <option value="members">क्रियाशील सदस्य</option>
+                <option value="representatives">निर्वाचित प्रतिनिधि</option>
+              </select>
+              <select id="dataCategory" onchange="renderAllData()">
+                <option value="all">सबै</option>
+                <option value="male">पुरुष</option>
+                <option value="female">महिला</option>
+                <option value="khasArya">खस–आर्य</option>
+                <option value="janajati">आदिवासी जनजाति</option>
+                <option value="dalit">दलित</option>
+                <option value="newMember">नयाँ सदस्य</option>
+                <option value="renewed">नवीकरण सदस्य</option>
+                <option value="mobileMissing">मोबाइल नभएका</option>
+                <option value="photoMissing">फोटो नभएका</option>
+              </select>
+            </div>
+            <div id="allDataInfo" class="hint"></div>
+            <div id="allDataTable" class="tablewrap"></div>
+          </section>
+          <section id="pane-member" class="card pane">
             <div class="hint">NCID बाट सदस्य खोजेर पूरा Sheet data, फोटो, हालको पद र विगतको पद / जिम्मेवारी व्यवस्थापन गर्न सकिन्छ ।</div>
             <div class="search">
               <input id="memberSearch" placeholder="NCID लेख्नुहोस्">
@@ -470,7 +575,11 @@ main {
       <footer class="footer">Designed &amp; Developed by Nirajan Aryal (<a href="tel:9851113811">9851113811</a>)</footer>
       <script>
 const API_URL='https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
-let token=sessionStorage.getItem('nc_admin_token')||'',members=[],current=null,designations=[];
+let token=sessionStorage.getItem('nc_admin_token')||'';
+let members=[];
+let representatives=[];
+let current=null;
+let designations=[];
 async function api(action,data={}) {
   const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data})});
   if(!r.ok)throw new Error('सर्भरसँग सम्पर्क हुन सकेन ।');
@@ -504,16 +613,19 @@ async function adminLogin() {
   }
 }
 async function openApp() {
-  const r=await api('adminListMembers',{token});
+  const r=await api('adminOverview',{token});
   if(!r.ok) {
     logout(false);
     throw new Error(r.message)
   }
   members=r.members||[];
+  representatives=r.representatives||[];
   loginView.style.display='none';
   adminApp.style.display='block';
   welcome.textContent='स्वागत छ, '+(sessionStorage.getItem('nc_admin_name')||'Admin')+' ।';
   stats();
+  renderSummaryCards();
+  renderAllData();
   loadSettings();
   loadNotices()
 }
@@ -524,15 +636,19 @@ function stats() {
   stRep.textContent=members.filter(x=>x['प्रतिनिधि स्थिति']).length
 }
 async function reloadMembers() {
-  const r=await api('adminListMembers',{token});
+  const r=await api('adminOverview',{token});
   if(!r.ok)throw new Error(r.message);
   members=r.members||[];
+  representatives=r.representatives||[];
   stats();
+  renderSummaryCards();
+  renderAllData();
   alert('सदस्य data Refresh भयो ।')
 }
 function logout(show=true) {
   token='';
   members=[];
+  representatives=[];
   sessionStorage.removeItem('nc_admin_token');
   sessionStorage.removeItem('nc_admin_name');
   adminApp.style.display='none';
@@ -544,8 +660,187 @@ function showTab(n,b) {
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
   document.getElementById('pane-'+n).classList.add('on');
   b.classList.add('on');
-  if(n==='gallery')loadGalleryInfo()
+  if(n==='gallery') loadGalleryInfo();
+  if(n==='data') renderAllData()
 }
+
+function normalizeText(v) {
+  return String(v ?? '').trim().toLowerCase();
+}
+
+function memberMatchesCategory(m, category) {
+  const gender = normalizeText(m['लिङ्ग']);
+  const group = normalizeText(m['समावेशी समूह']);
+  const note = normalizeText(m['कैफियत']);
+
+  if (category === 'male') return gender === 'पुरुष';
+  if (category === 'female') return gender === 'महिला';
+  if (category === 'khasArya') return group === 'खस-आर्य' || group === 'खस–आर्य';
+  if (category === 'janajati') return ['आ.ज.','आ ज','आदिवासी जनजाति','जनजाति'].includes(group);
+  if (category === 'dalit') return group === 'दलित';
+  if (category === 'newMember') return note === 'नयाँ';
+  if (category === 'renewed') return note === 'नवीकरण';
+  if (category === 'mobileMissing') return !String(m['मोबाइल नम्बर'] || '').trim();
+  if (category === 'photoMissing') return !String(m.PhotoURL || '').trim();
+  return true;
+}
+
+function renderSummaryCards() {
+  const count = category => members.filter(m => memberMatchesCategory(m, category)).length;
+  const cards = [
+    ['all', members.length, 'जम्मा क्रियाशील सदस्य'],
+    ['male', count('male'), 'पुरुष'],
+    ['female', count('female'), 'महिला'],
+    ['khasArya', count('khasArya'), 'खस–आर्य'],
+    ['janajati', count('janajati'), 'आदिवासी जनजाति'],
+    ['dalit', count('dalit'), 'दलित'],
+    ['newMember', count('newMember'), 'नयाँ सदस्य'],
+    ['renewed', count('renewed'), 'नवीकरण सदस्य'],
+    ['representatives', representatives.length, 'निर्वाचित प्रतिनिधि'],
+    ['mobileMissing', count('mobileMissing'), 'मोबाइल नभएका']
+  ];
+
+  summaryCards.innerHTML = cards.map(c => `
+    <button class="summary-card" onclick="selectDataCard('${c[0]}')">
+      <b>${c[1]}</b>
+      <span>${esc(c[2])}</span>
+    </button>
+  `).join('');
+}
+
+function selectDataCard(category) {
+  if (category === 'representatives') {
+    dataMode.value = 'representatives';
+    dataCategory.value = 'all';
+  } else {
+    dataMode.value = 'members';
+    dataCategory.value = category;
+  }
+  renderAllData();
+  document.getElementById('allDataTable').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderAllData() {
+  if (!document.getElementById('allDataTable')) return;
+
+  const mode = dataMode.value;
+  const search = normalizeText(allDataSearch.value);
+  const category = dataCategory.value;
+  let rows = mode === 'representatives' ? representatives.slice() : members.slice();
+
+  if (mode === 'members') {
+    rows = rows.filter(m => memberMatchesCategory(m, category));
+  }
+
+  if (search) {
+    rows = rows.filter(row => Object.values(row).some(v => normalizeText(v).includes(search)));
+  }
+
+  allDataInfo.textContent = `देखाइएको Data: ${rows.length} ।`;
+
+  if (!rows.length) {
+    allDataTable.innerHTML = '<div class="empty">Data भेटिएन ।</div>';
+    return;
+  }
+
+  const preferred = mode === 'members'
+    ? ['NCID','क्रियाशील नं.','सदस्यको नाम','मोबाइल नम्बर','लिङ्ग','उमेर','समावेशी समूह','कैफियत','हालको पद / जिम्मेवारी']
+    : [];
+
+  const keys = Object.keys(rows[0]).filter(k => k !== '_rowNumber' && k !== 'PhotoFileID');
+  const columns = preferred.filter(k => keys.includes(k)).concat(keys.filter(k => !preferred.includes(k)));
+
+  allDataTable.innerHTML = `
+    <table class="table">
+      <thead>
+        <tr>${columns.map(k => `<th>${esc(k)}</th>`).join('')}<th>कार्य</th></tr>
+      </thead>
+      <tbody>
+        ${rows.map((row, index) => `
+          <tr class="click-row">
+            ${columns.map(k => `<td>${esc(row[k] || '')}</td>`).join('')}
+            <td>
+              ${mode === 'members'
+                ? `<button class="btn secondary" onclick="openMemberFromList('${attr(row.NCID || '')}')">Edit</button>`
+                : `<button class="btn secondary" onclick="editRepresentative(${Number(row._rowNumber)})">Edit</button>`}
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function openMemberFromList(ncid) {
+  if (!ncid) {
+    alert('यो सदस्यको NCID खाली छ ।');
+    return;
+  }
+  const btn = document.querySelector('[data-tab="member"]');
+  showTab('member', btn);
+  memberSearch.value = ncid;
+  findMember();
+}
+
+function editRepresentative(rowNumber) {
+  const rep = representatives.find(r => Number(r._rowNumber) === Number(rowNumber));
+  if (!rep) return;
+
+  const fields = Object.keys(rep).filter(k => k !== '_rowNumber');
+  const html = fields.map(f => {
+    const value = prompt(`${f}:`, rep[f] || '');
+    if (value === null) return null;
+    return [f, value.trim()];
+  });
+
+  if (html.some(x => x === null)) return;
+  const record = { _rowNumber: rowNumber };
+  html.forEach(([k, v]) => record[k] = v);
+  saveRepresentative(record);
+}
+
+async function saveRepresentative(record) {
+  const r = await api('adminSaveRepresentative', { token, record });
+  alert(r.message);
+  if (r.ok) await reloadMembers();
+}
+
+async function syncMobileMembership() {
+  const b = syncBtn;
+  b.disabled = true;
+  b.textContent = 'Sync हुँदैछ...';
+  syncResult.textContent = 'Excel data र सदस्य data मिलाइँदैछ...';
+
+  try {
+    const r = await api('adminSyncMobileMembership', { token });
+    if (!r.ok) throw new Error(r.message);
+
+    const s = r.summary || {};
+    syncResult.innerHTML = `
+      <b>${esc(r.message)}</b><br>
+      नाम Match: ${s.matched || 0} &nbsp; | &nbsp;
+      Mobile Updated: ${s.updatedMobile || 0} &nbsp; | &nbsp;
+      Membership Updated: ${s.updatedMembership || 0}<br>
+      Already Same: ${s.alreadySame || 0} &nbsp; | &nbsp;
+      Review Required: ${s.reviewRequired || 0} &nbsp; | &nbsp;
+      Not Found: ${s.notFound || 0}
+    `;
+
+    if ((r.review || []).length) {
+      syncResult.innerHTML += '<br><b>Review:</b><br>' + (r.review || []).map(x =>
+        `${esc(x.name || '')} — ${esc(x.field || x.reason || '')} ${x.oldValue !== undefined ? `(${esc(x.oldValue)} → ${esc(x.newValue)})` : ''}`
+      ).join('<br>');
+    }
+
+    await reloadMembers();
+  } catch (e) {
+    syncResult.textContent = e.message;
+  } finally {
+    b.disabled = false;
+    b.textContent = '↻ Mobile / Membership Sync';
+  }
+}
+
 async function findMember() {
   const n=memberSearch.value.trim();
   if(!n)return alert('NCID लेख्नुहोस् ।');
