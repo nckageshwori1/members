@@ -869,6 +869,95 @@ main {
   .memberListRow > div:nth-child(3), .memberListRow > div:nth-child(4) { grid-column: 2 !important; }
 }
 
+
+
+/* ==========================================================
+   UNIVERSAL DYNAMIC POPUP DATA
+   Sheet header अनुसार data देखाउने responsive card layout
+   ========================================================== */
+.dynamicDataList {
+  display: grid;
+  gap: 12px;
+}
+
+.dynamicDataCard {
+  position: relative;
+  border: 1px solid #dbe5f0;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 16px 16px 16px 54px;
+  box-shadow: 0 6px 18px rgba(15, 45, 75, 0.06);
+}
+
+.dynamicCardNumber {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #eef5ff;
+  color: #123d6a;
+  font-weight: 800;
+}
+
+.dynamicFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+}
+
+.dynamicField {
+  min-width: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #e4ebf3;
+}
+
+.dynamicFieldLabel {
+  font-size: 12px;
+  color: #6c7b8d;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.dynamicFieldValue {
+  color: #173653;
+  font-size: 15px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+@media (max-width: 640px) {
+  .dynamicDataCard {
+    padding: 14px 12px 14px 48px;
+    border-radius: 14px;
+  }
+
+  .dynamicCardNumber {
+    left: 10px;
+    top: 12px;
+  }
+
+  .dynamicFields {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .dynamicField {
+    display: grid;
+    grid-template-columns: minmax(100px, 42%) minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+  }
+
+  .dynamicFieldLabel,
+  .dynamicFieldValue {
+    font-size: 13px;
+  }
+}
 </style>
   </head>
   <body>
@@ -1125,6 +1214,35 @@ function firstValue(record, keys) {
   return '';
 }
 
+function getVisibleFields(record, category) {
+  const hiddenFields = new Set(['_rowNumber', 'PhotoFileID', 'Token', 'TokenExpiry']);
+
+  // निर्वाचित प्रतिनिधि Sheet का सबै वास्तविक columns देखाउने ।
+  if (category === 'representatives') {
+    return Object.keys(record || {}).filter(key => {
+      return key && !hiddenFields.has(key);
+    });
+  }
+
+  // Public member-list popup मा आवश्यक member fields मात्र देखाउने ।
+  // पूर्ण member profile मोबाइल verification पछि मात्र देखिन्छ ।
+  const preferred = [
+    'क्र.सं.',
+    'NCID',
+    'सदस्यको नाम',
+    'लिङ्ग',
+    'उमेर',
+    'समावेशी समूह',
+    'कैफियत',
+    'प्रतिनिधि स्थिति',
+    'प्रतिनिधि वर्ग'
+  ];
+
+  return preferred.filter(key => {
+    return record && Object.prototype.hasOwnProperty.call(record, key);
+  });
+}
+
 function renderStatRows(rows, category) {
   const body = document.getElementById('statListBody');
 
@@ -1133,35 +1251,27 @@ function renderStatRows(rows, category) {
     return;
   }
 
-  const isRepresentative = category === 'representatives';
+  const cards = rows.map((record, index) => {
+    const fields = getVisibleFields(record, category);
+    const fieldHtml = fields.map(key => {
+      const rawValue = record[key];
+      const value = String(rawValue ?? '').trim() || '—';
 
-  const items = rows.map((record, index) => {
-    const name = firstValue(record, ['सदस्यको नाम', 'नाम', 'Name', 'प्रतिनिधिको नाम']);
-    const ncid = firstValue(record, ['NCID', 'क्रियाशील नं.', 'Membership Number', 'Membership No']);
-    const mobile = firstValue(record, ['मोबाइल नम्बर', 'Mobile Number', 'मोबाइल', 'Mobile']);
-    const group = isRepresentative
-      ? firstValue(record, ['प्रतिनिधि वर्ग', 'वर्ग', 'पद', 'समूह', 'Category'])
-      : firstValue(record, ['समावेशी समूह', 'कैफियत']);
+      return `
+        <div class="dynamicField">
+          <div class="dynamicFieldLabel">${escapeHtml(key)}</div>
+          <div class="dynamicFieldValue">${escapeHtml(value)}</div>
+        </div>`;
+    }).join('');
 
     return `
-      <div class="memberListRow">
-        <div>${nepaliNum(index + 1)}</div>
-        <div class="name">${escapeHtml(name || '—')}</div>
-        <div class="meta">${escapeHtml(ncid ? `NCID / क्रियाशील नं.: ${ncid}` : (group || '—'))}</div>
-        <div class="meta">${escapeHtml(mobile ? `मोबाइल: ${mobile}` : (group || '—'))}</div>
-      </div>`;
+      <article class="dynamicDataCard">
+        <div class="dynamicCardNumber">${nepaliNum(index + 1)}</div>
+        <div class="dynamicFields">${fieldHtml}</div>
+      </article>`;
   }).join('');
 
-  body.innerHTML = `
-    <div class="memberList">
-      <div class="memberListRow header">
-        <div>क्र.सं.</div>
-        <div>नाम</div>
-        <div>NCID / विवरण</div>
-        <div>मोबाइल / वर्ग</div>
-      </div>
-      ${items}
-    </div>`;
+  body.innerHTML = `<div class="dynamicDataList">${cards}</div>`;
 }
 
 function closeStatList(event) {
