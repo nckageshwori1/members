@@ -406,6 +406,10 @@ main {
     flex-direction:column
   }
 }
+
+/* Ward Committee / Protocol - additive */
+.protocol-layout{display:grid;grid-template-columns:minmax(300px,.8fr) minmax(0,1.2fr);gap:14px}.protocol-search-results{border:1px solid var(--line);border-radius:12px;max-height:240px;overflow:auto}.protocol-person{display:flex;gap:10px;align-items:center;padding:10px;border-bottom:1px solid var(--line);cursor:pointer}.protocol-person:hover{background:#f6faf8}.protocol-person img{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#e8eef5}.protocol-selected{padding:12px;border-radius:12px;background:#eef8f3;border:1px solid #cfe9dc;margin:10px 0}.protocol-selected b{color:var(--navy)}
+@media(max-width:800px){.protocol-layout{grid-template-columns:1fr}.protocol-table table,.protocol-table tbody,.protocol-table tr,.protocol-table td{display:block;width:100%}.protocol-table thead{display:none}.protocol-table tr{border:1px solid var(--line);border-radius:12px;margin:10px 0;padding:8px}.protocol-table td{border:0;padding:5px;white-space:normal}.protocol-table td:before{content:attr(data-label);font-weight:900;color:var(--muted);display:inline-block;min-width:105px}}
 </style></head>
     <body>
       <header class="top">
@@ -467,6 +471,7 @@ main {
           <div class="tabs">
             <button class="btn tab on" data-tab="data" onclick="showTab('data',this)">📊 सबै सदस्य Data</button>
             <button class="btn tab" data-tab="member" onclick="showTab('member',this)">👤 सदस्य Profile</button>
+            <button class="btn tab" data-tab="protocol" onclick="showTab('protocol',this)">🏛️ वडा कार्यसमिति / Protocol</button>
             <button class="btn tab" data-tab="notice" onclick="showTab('notice',this)">📢 सूचना</button>
             <button class="btn tab" data-tab="contact" onclick="showTab('contact',this)">☎ सम्पर्क / Social</button>
             <button class="btn tab" data-tab="gallery" onclick="showTab('gallery',this)">🖼️ Photo Gallery</button>
@@ -514,6 +519,29 @@ main {
               <button class="btn primary" onclick="findMember()">खोज्नुहोस्</button>
             </div>
             <div id="memberEditor" class="empty">सम्पादन गर्न सदस्य खोज्नुहोस् ।</div>
+          </section>
+
+          <section id="pane-protocol" class="card pane">
+            <h3>वर्तमान वडा कार्यसमिति / Protocol व्यवस्थापन</h3>
+            <div class="hint">नाम, NCID वा मोबाइलबाट क्रियाशील सदस्य खोजेर मात्र पद assign गर्नुहोस् । Protocol क्रम अनुसार Main Display मा स्वतः क्रमबद्ध हुन्छ । पूर्व सभापति पनि यही module बाट कार्यकालसहित राख्न सकिन्छ ।</div>
+            <div class="protocol-layout">
+              <div>
+                <div class="field"><label>सदस्य खोज्नुहोस्</label><div class="search"><input id="protocolSearch" placeholder="नाम, NCID वा मोबाइल नम्बर"><button class="btn primary" onclick="searchProtocolMembers()">खोज्नुहोस्</button></div></div>
+                <div id="protocolSearchResults" class="protocol-search-results"><div class="empty">सदस्य खोज्नुहोस् ।</div></div>
+                <div id="protocolSelected" class="protocol-selected" style="display:none"></div>
+                <div class="grid">
+                  <div class="field"><label>वर्ग</label><select id="protocolCategory"><option>वर्तमान वडा कार्यसमिति</option><option>पूर्व सभापति</option></select></div>
+                  <div class="field"><label>पद</label><input id="protocolDesignation" placeholder="सभापति / उपसभापति / सचिव / सहसचिव / सदस्य"></div>
+                  <div class="field"><label>Protocol क्रम</label><input id="protocolOrder" type="number" min="1" placeholder="1"></div>
+                  <div class="field"><label>कार्यकाल सुरु</label><input id="protocolFrom" placeholder="२०८१"></div>
+                  <div class="field"><label>कार्यकाल अन्त्य</label><input id="protocolTo" placeholder="हालसम्म / २०८३"></div>
+                  <div class="field"><label>स्थिति</label><select id="protocolActive"><option value="true">सक्रिय</option><option value="false">निष्क्रिय</option></select></div>
+                  <div class="field wide"><label>कैफियत</label><input id="protocolRemarks"></div>
+                </div>
+                <div class="actions"><button class="btn secondary" onclick="resetProtocolForm()">नयाँ</button><button class="btn primary" onclick="saveProtocol()">सुरक्षित गर्नुहोस्</button></div>
+              </div>
+              <div><h3>Protocol सूची</h3><div id="protocolList" class="protocol-table tablewrap"><div class="empty">लोड हुँदैछ...</div></div></div>
+            </div>
           </section>
           <section id="pane-notice" class="card pane">
             <h3>सूचना व्यवस्थापन</h3>
@@ -580,6 +608,9 @@ let members=[];
 let representatives=[];
 let current=null;
 let designations=[];
+let protocolRows=[];
+let protocolMember=null;
+let protocolEditId='';
 async function api(action,data={}) {
   const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data})});
   if(!r.ok)throw new Error('सर्भरसँग सम्पर्क हुन सकेन ।');
@@ -661,6 +692,7 @@ function showTab(n,b) {
   document.getElementById('pane-'+n).classList.add('on');
   b.classList.add('on');
   if(n==='gallery') loadGalleryInfo();
+  if(n==='protocol') loadProtocol();
   if(n==='data') renderAllData()
 }
 
@@ -962,6 +994,50 @@ async function saveSettings() {
 function loadGalleryInfo() {
   loadSettings()
 }
+
+
+async function loadProtocol(){
+  try{
+    const r=await api('adminListProtocol',{token});
+    if(!r.ok)throw new Error(r.message);
+    protocolRows=r.rows||[];
+    renderProtocolList();
+  }catch(e){protocolList.innerHTML='<div class="empty">'+esc(e.message)+'</div>'}
+}
+async function searchProtocolMembers(){
+  const q=protocolSearch.value.trim();
+  if(!q)return alert('नाम, NCID वा मोबाइल नम्बर लेख्नुहोस् ।');
+  protocolSearchResults.innerHTML='<div class="empty">खोजिँदैछ...</div>';
+  const r=await api('adminSearchProtocolMembers',{token,query:q});
+  if(!r.ok)return protocolSearchResults.innerHTML='<div class="empty">'+esc(r.message)+'</div>';
+  const rows=r.rows||[];
+  protocolSearchResults.innerHTML=rows.length?rows.map((m,i)=>`<div class="protocol-person" onclick="selectProtocolMember(${i})">${m.PhotoURL?`<img src="${attr(m.PhotoURL)}">`:'<div style="width:42px;height:42px;border-radius:50%;background:#e8eef5"></div>'}<div><b>${esc(m.Name)}</b><br><small>NCID: ${esc(m.NCID)} ${m.Mobile?' | '+esc(m.Mobile):''}</small></div></div>`).join(''):'<div class="empty">सदस्य भेटिएन ।</div>';
+  protocolSearchResults._rows=rows;
+}
+function selectProtocolMember(i){
+  const rows=protocolSearchResults._rows||[]; protocolMember=rows[i]||null; if(!protocolMember)return;
+  protocolSelected.style.display='block';
+  protocolSelected.innerHTML=`<b>${esc(protocolMember.Name)}</b><br>NCID: ${esc(protocolMember.NCID)}${protocolMember.Mobile?' | '+esc(protocolMember.Mobile):''}`;
+}
+function resetProtocolForm(){protocolEditId='';protocolMember=null;protocolSelected.style.display='none';protocolSelected.innerHTML='';protocolDesignation.value='';protocolOrder.value='';protocolFrom.value='';protocolTo.value='';protocolRemarks.value='';protocolActive.value='true';protocolCategory.value='वर्तमान वडा कार्यसमिति'}
+async function saveProtocol(){
+  if(!protocolMember)return alert('पहिले सदस्य खोजेर select गर्नुहोस् ।');
+  const record={ID:protocolEditId,Category:protocolCategory.value,'Protocol Order':protocolOrder.value,NCID:protocolMember.NCID,Name:protocolMember.Name,Designation:protocolDesignation.value.trim(),From:protocolFrom.value.trim(),To:protocolTo.value.trim(),Active:protocolActive.value==='true',Remarks:protocolRemarks.value.trim()};
+  const r=await api('adminSaveProtocol',{token,record}); alert(r.message); if(r.ok){resetProtocolForm();await loadProtocol()}
+}
+function renderProtocolList(){
+  const rows=protocolRows.slice().sort((a,b)=>Number(a['Protocol Order']||9999)-Number(b['Protocol Order']||9999));
+  if(!rows.length){protocolList.innerHTML='<div class="empty">Protocol record छैन ।</div>';return}
+  protocolList.innerHTML=`<table class="table"><thead><tr><th>क्रम</th><th>वर्ग</th><th>नाम</th><th>पद</th><th>कार्यकाल</th><th>स्थिति</th><th>कार्य</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td data-label="क्रम">${esc(r['Protocol Order'])}</td><td data-label="वर्ग">${esc(r.Category)}</td><td data-label="नाम">${esc(r.Name)}</td><td data-label="पद">${esc(r.Designation)}</td><td data-label="कार्यकाल">${esc(r.From)}${r.To?' - '+esc(r.To):''}</td><td data-label="स्थिति">${String(r.Active).toLowerCase()==='false'?'निष्क्रिय':'सक्रिय'}</td><td data-label="कार्य"><button class="btn secondary" onclick="editProtocol(${i})">Edit</button> <button class="btn danger" onclick="deleteProtocol('${attr(r.ID)}')">हटाउनुहोस्</button></td></tr>`).join('')}</tbody></table>`;
+}
+function editProtocol(i){
+  const rows=protocolRows.slice().sort((a,b)=>Number(a['Protocol Order']||9999)-Number(b['Protocol Order']||9999)); const r=rows[i]; if(!r)return;
+  protocolEditId=r.ID||''; protocolMember={NCID:r.NCID,Name:r.Name,Mobile:'',PhotoURL:''}; protocolSelected.style.display='block'; protocolSelected.innerHTML=`<b>${esc(r.Name)}</b><br>NCID: ${esc(r.NCID)}`;
+  protocolCategory.value=r.Category||'वर्तमान वडा कार्यसमिति'; protocolDesignation.value=r.Designation||''; protocolOrder.value=r['Protocol Order']||''; protocolFrom.value=r.From||''; protocolTo.value=r.To||''; protocolRemarks.value=r.Remarks||''; protocolActive.value=String(r.Active).toLowerCase()==='false'?'false':'true';
+  document.getElementById('pane-protocol').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function deleteProtocol(id){if(!confirm('यो Protocol record हटाउने हो ?'))return;const r=await api('adminDeleteProtocol',{token,id});alert(r.message);if(r.ok)loadProtocol()}
+
 function esc(v) {
   return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}function attr(v){return esc(v)}
 if(token)openApp().catch(e=>msg(e.message));adminPass.addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin()});
