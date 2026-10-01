@@ -958,6 +958,34 @@ main {
     font-size: 13px;
   }
 }
+
+
+/* ============================================================
+   v2.8 CURRENT COMMITTEE / FORMER CHAIRPERSON PROTOCOL
+   ============================================================ */
+.protocolSection { margin-top: 14px; }
+.protocolTabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.protocolTab { border:1px solid var(--line); background:#f6f9fc; color:var(--navy); padding:10px 14px; border-radius:11px; font-weight:900; }
+.protocolTab.on { background:var(--red); border-color:var(--red); color:#fff; }
+.protocolGrid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.protocolCard { position:relative; border:1px solid var(--line); border-radius:16px; padding:14px; background:#fff; text-align:center; box-shadow:0 7px 20px #16324f0d; min-width:0; }
+.protocolOrder { position:absolute; top:9px; left:9px; width:29px; height:29px; display:grid; place-items:center; border-radius:9px; background:var(--red); color:#fff; font-weight:900; }
+.protocolPhoto { width:92px; height:92px; border-radius:50%; object-fit:cover; background:#edf3f8; border:3px solid #fff; box-shadow:0 0 0 1px var(--line); }
+.protocolCard h4 { margin:10px 0 3px; color:var(--navy); font-size:16px; }
+.protocolDesignation { color:var(--red); font-weight:900; font-size:13px; }
+.protocolMeta { color:var(--muted); font-size:12px; margin-top:5px; overflow-wrap:anywhere; }
+.protocolEmpty { padding:22px; text-align:center; color:var(--muted); grid-column:1/-1; }
+@media(max-width:900px){ .protocolGrid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:650px){
+  .protocolTabs { display:grid; grid-template-columns:1fr 1fr; }
+  .protocolTab { padding:9px 8px; font-size:12px; }
+  .protocolGrid { grid-template-columns:1fr; }
+  .protocolCard { display:grid; grid-template-columns:64px 1fr; text-align:left; gap:3px 12px; padding:12px 12px 12px 48px; align-items:center; }
+  .protocolOrder { top:50%; transform:translateY(-50%); left:9px; }
+  .protocolPhoto { width:58px; height:58px; grid-row:1/5; }
+  .protocolCard h4 { margin:0; font-size:15px; }
+}
+
 </style>
   </head>
   <body>
@@ -1003,6 +1031,7 @@ main {
       <div class="navin">
         <button onclick="showHome()">⌂ गृहपृष्ठ</button>
         <button onclick="focusSearch()">👥 क्रियाशील सदस्य</button>
+        <button onclick="scrollToId('protocolSection')">🏛️ वडा कार्यसमिति</button>
         <button onclick="loadDashboard()">▥ तथ्याङ्क / विश्लेषण</button>
         <button onclick="scrollToId('noticeSection')">📢 सूचना</button>
         <button onclick="loadGallery()">🖼️ फोटो ग्यालरी</button>
@@ -1082,6 +1111,21 @@ main {
       </section>
     </main>
     <main style="margin-top:0">
+
+      <section id="protocolSection" class="card panel protocolSection">
+        <div class="paneltitle">
+          <div class="ico">🏛️</div>
+          <h3>वडा कार्यसमिति / Protocol</h3>
+        </div>
+        <div class="protocolTabs">
+          <button id="protocolCurrentBtn" class="protocolTab on" onclick="showProtocolGroup('current')">वर्तमान वडा कार्यसमिति</button>
+          <button id="protocolFormerBtn" class="protocolTab" onclick="showProtocolGroup('former')">पूर्व सभापतिहरू</button>
+        </div>
+        <div id="protocolContent" class="protocolGrid">
+          <div class="protocolEmpty">विवरण लोड हुँदैछ...</div>
+        </div>
+      </section>
+
       <section id="noticeSection" class="card panel" style="margin-top:14px">
         <div class="paneltitle">
           <div class="ico">📢</div>
@@ -1284,6 +1328,59 @@ document.addEventListener('keydown', function(event) {
   if (event.key === 'Escape') closeStatList();
 });
 
+
+
+let protocolData = { currentCommittee: [], formerChairpersons: [] };
+let protocolGroup = 'current';
+
+async function loadProtocol() {
+  const content = document.getElementById('protocolContent');
+  if (!content) return;
+  try {
+    const result = await api('publicProtocol');
+    if (!result.ok) throw new Error(result.message || 'Protocol विवरण लोड हुन सकेन ।');
+    protocolData = {
+      currentCommittee: result.currentCommittee || [],
+      formerChairpersons: result.formerChairpersons || []
+    };
+    renderProtocol();
+  } catch (error) {
+    content.innerHTML = `<div class="protocolEmpty">${escapeHtml(error.message)}</div>`;
+  }
+}
+
+function showProtocolGroup(group) {
+  protocolGroup = group === 'former' ? 'former' : 'current';
+  document.getElementById('protocolCurrentBtn')?.classList.toggle('on', protocolGroup === 'current');
+  document.getElementById('protocolFormerBtn')?.classList.toggle('on', protocolGroup === 'former');
+  renderProtocol();
+}
+
+function renderProtocol() {
+  const content = document.getElementById('protocolContent');
+  if (!content) return;
+  const rows = protocolGroup === 'former' ? protocolData.formerChairpersons : protocolData.currentCommittee;
+  if (!rows.length) {
+    content.innerHTML = '<div class="protocolEmpty">हाल विवरण राखिएको छैन ।</div>';
+    return;
+  }
+  content.innerHTML = rows.map((row, index) => {
+    const photo = row.PhotoURL
+      ? `<img class="protocolPhoto" src="${escapeAttr(row.PhotoURL)}" alt="${escapeAttr(row.Name || 'सदस्य')}">`
+      : `<div class="protocolPhoto" style="display:grid;place-items:center;font-size:25px">👤</div>`;
+    const tenure = [row.From, row.To].filter(Boolean).join(' – ');
+    const mobile = row.Mobile ? `☎ ${escapeHtml(row.Mobile)}` : '';
+    return `<article class="protocolCard">
+      <span class="protocolOrder">${nepaliNum(row.ProtocolOrder || index + 1)}</span>
+      ${photo}
+      <h4>${escapeHtml(row.Name || '—')}</h4>
+      <div class="protocolDesignation">${escapeHtml(row.Designation || '')}</div>
+      ${tenure ? `<div class="protocolMeta">${escapeHtml(tenure)}</div>` : ''}
+      ${mobile ? `<div class="protocolMeta">${mobile}</div>` : ''}
+    </article>`;
+  }).join('');
+}
+
 function nepaliNum(v) {
   return String(v).replace(/[0-9]/g,d=>'०१२३४५६७८९'[d]);
 }
@@ -1416,6 +1513,7 @@ function escapeHtml(v) {
   function openAlbum(i){const a=(window._albums||[])[i];if(!a)return;const c=document.getElementById('galleryContent');c.className='';c.innerHTML=`<button class="secondary" onclick="loadGallery()">← Album</button><h3>${escapeHtml(a.name)}</h3><div class="photos">${(a.photos||[]).map(p=>`<a href="${escapeAttr(p.url)}" target="_blank"><img src="${escapeAttr(p.url)}" alt="${escapeAttr(p.name)}"></a>`).join('')}</div>`;}
   loadPublicHome();
   loadDashboard();
+  loadProtocol();
 </script>
     </body>
   </html>
