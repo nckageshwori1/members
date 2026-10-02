@@ -559,8 +559,17 @@ main {
                 <textarea id="noticeBody">
                 </textarea>
               </div>
+              <div class="field wide">
+                <label>सूचना Image (वैकल्पिक)</label>
+                <input id="noticeImageInput" type="file" accept="image/*" onchange="previewNoticeImage(this)">
+                <div id="noticeImageBox" style="display:none;margin-top:10px">
+                  <img id="noticeImagePreview" alt="सूचना Image Preview" style="max-width:420px;width:100%;max-height:280px;object-fit:contain;border:1px solid var(--line);border-radius:12px;background:#f8fbfe">
+                  <div style="margin-top:7px"><button type="button" class="btn danger" onclick="removeNoticeImageSelection()">Image हटाउनुहोस्</button></div>
+                </div>
+              </div>
             </div>
-            <button class="btn primary" onclick="saveNotice()">सूचना प्रकाशित गर्नुहोस्</button>
+            <button id="noticeSaveBtn" class="btn primary" onclick="saveNotice()">सूचना प्रकाशित गर्नुहोस्</button>
+            <div id="noticeActionMsg" class="msg"></div>
             <div id="noticeList" style="margin-top:18px">
             </div>
           </section>
@@ -608,6 +617,8 @@ let members=[];
 let representatives=[];
 let current=null;
 let designations=[];
+let noticeImageData='';
+let noticeImageName='';
 let protocolRows=[];
 let protocolMember=null;
 let protocolEditId='';
@@ -949,17 +960,33 @@ async function loadNotices() {
   try {
     const r=await api('adminListNotices',{token});
     if(!r.ok)return;
-    noticeList.innerHTML=(r.notices||[]).slice().reverse().map(n=>`<div style="padding:11px;border-bottom:1px solid var(--line)"><b>${esc(n['शीर्षक'])}</b> <small>${esc(n['मिति'])}</small><div>${esc(n['विवरण'])}</div><button class="btn danger" style="margin-top:6px" onclick="deleteNotice('${attr(n.ID)}')">हटाउनुहोस्</button></div>`).join('')||'<div class="empty">सूचना छैन ।</div>'
-  } catch(e) {
-  }
+    noticeList.innerHTML=(r.notices||[]).slice().reverse().map(n=>`<div style="padding:11px;border-bottom:1px solid var(--line)">${n.ImageURL?`<img src="${attr(n.ImageURL)}" style="width:110px;max-height:80px;object-fit:cover;border-radius:9px;float:right;margin-left:10px">`:''}<b>${esc(n['शीर्षक'])}</b> <small>${esc(n['मिति'])}</small><div>${esc(n['विवरण'])}</div><div style="clear:both"></div><button class="btn danger" style="margin-top:6px" onclick="deleteNotice('${attr(n.ID)}')">हटाउनुहोस्</button></div>`).join('')||'<div class="empty">सूचना छैन ।</div>'
+  } catch(e) {}
 }
+function previewNoticeImage(input){
+  const f=input.files&&input.files[0]; if(!f)return;
+  if(!f.type.startsWith('image/')){alert('Image file मात्र छान्नुहोस् ।');input.value='';return;}
+  if(f.size>5*1024*1024){alert('Image 5 MB भन्दा सानो राख्नुहोस् ।');input.value='';return;}
+  const rd=new FileReader(); rd.onload=()=>{noticeImageData=rd.result;noticeImageName=f.name;noticeImagePreview.src=rd.result;noticeImageBox.style.display='block';}; rd.readAsDataURL(f);
+}
+function removeNoticeImageSelection(){noticeImageData='';noticeImageName='';noticeImageInput.value='';noticeImagePreview.removeAttribute('src');noticeImageBox.style.display='none';}
 async function saveNotice() {
-  const r=await api('adminSaveNotice',{token,notice:{title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value,active:true}});
-  alert(r.message);
-  if(r.ok) {
-    noticeTitle.value=noticeBody.value=noticeDate.value='';
-    loadNotices()
-  }
+  const b=noticeSaveBtn; b.disabled=true; b.textContent='सुरक्षित हुँदैछ...';
+  noticeActionMsg.style.display='block'; noticeActionMsg.textContent='सूचना सुरक्षित हुँदैछ...';
+  try{
+    let imageUrl='',imageFileId='';
+    if(noticeImageData){
+      noticeActionMsg.textContent='Image Upload हुँदैछ...';
+      const up=await api('adminUploadNoticeImage',{token,dataUrl:noticeImageData,fileName:noticeImageName});
+      if(!up.ok)throw new Error(up.message);
+      imageUrl=up.url||''; imageFileId=up.fileId||'';
+    }
+    const r=await api('adminSaveNotice',{token,notice:{title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value,active:true,imageUrl,imageFileId}});
+    if(!r.ok)throw new Error(r.message);
+    noticeActionMsg.textContent=r.message;
+    noticeTitle.value=noticeBody.value=noticeDate.value=''; removeNoticeImageSelection(); await loadNotices();
+  }catch(e){noticeActionMsg.textContent=e.message;}
+  finally{b.disabled=false;b.textContent='सूचना प्रकाशित गर्नुहोस्';}
 }
 async function deleteNotice(id) {
   if(!confirm('सूचना हटाउने हो ?'))return;
