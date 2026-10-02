@@ -1038,7 +1038,7 @@ main {
           <h3>फोटो ग्यालरी</h3>
         </div>
         <div id="galleryContent" class="albums">
-          <div class="albumname">Gallery हेर्न माथिको फोटो ग्यालरी button थिच्नुहोस् ।</div>
+          <div class="albumname">Gallery लोड हुँदैछ...</div>
         </div>
       </section>
       <div id="contactStrip" class="contactstrip">
@@ -1431,12 +1431,13 @@ function escapeHtml(v) {
     } catch (e) {}
   }
   function renderContacts(s){const items=[];if(s.Email)items.push(`<a class="contactitem" href="mailto:${escapeAttr(s.Email)}"><span class="ci">✉</span><span>${escapeHtml(s.Email)}</span></a>`);if(s.Phone)items.push(`<a class="contactitem" href="tel:${escapeAttr(s.Phone)}"><span class="ci">☎</span><span>${escapeHtml(s.Phone)}</span></a>`);if(s.Location)items.push(`<a class="contactitem" ${s.MapURL?'href="'+escapeAttr(s.MapURL)+'" target="_blank"':''}><span class="ci">📍</span><span>${escapeHtml(s.Location)}</span></a>`);if(s.FacebookURL)items.push(`<a class="contactitem" href="${escapeAttr(s.FacebookURL)}" target="_blank"><span class="ci" style="font-family:Arial;font-weight:900">f</span><span>Facebook</span></a>`);document.getElementById('contactStrip').innerHTML=items.join('');}
-  async function loadGallery(){scrollToId('gallerySection');const c=document.getElementById('galleryContent');c.innerHTML='<div class="albumname">Gallery लोड हुँदैछ...</div>';try{const r=await api('gallery');if(!r.ok)throw new Error(r.message);const a=r.albums||[];c.className='albums';c.innerHTML=a.length?a.map((x,i)=>`<div class="album" onclick="openAlbum(${i})"><div class="albumcover">${x.photos&&x.photos[0]?'<img src="'+escapeAttr(x.photos[0].url)+'">':'🖼️'}</div><div class="albumname">${escapeHtml(x.name)} <small>(${(x.photos||[]).length})</small></div></div>`).join(''):'<div class="albumname">Photo Gallery folder भित्र Album folder थपिएको छैन ।</div>';window._albums=a;}catch(e){c.innerHTML='<div class="albumname">'+escapeHtml(e.message)+'</div>'}}
+  async function loadGallery(shouldScroll=true){if(shouldScroll)scrollToId('gallerySection');const c=document.getElementById('galleryContent');c.innerHTML='<div class="albumname">Gallery लोड हुँदैछ...</div>';try{const r=await api('gallery');if(!r.ok)throw new Error(r.message);const a=r.albums||[];c.className='albums';c.innerHTML=a.length?a.map((x,i)=>`<div class="album" onclick="openAlbum(${i})"><div class="albumcover">${x.photos&&x.photos[0]?'<img src="'+escapeAttr(x.photos[0].url)+'">':'🖼️'}</div><div class="albumname">${escapeHtml(x.name)} <small>(${(x.photos||[]).length})</small></div></div>`).join(''):'<div class="albumname">Photo Gallery folder भित्र Album folder थपिएको छैन ।</div>';window._albums=a;}catch(e){c.innerHTML='<div class="albumname">'+escapeHtml(e.message)+'</div>'}}
   function openAlbum(i){const a=(window._albums||[])[i];if(!a)return;const c=document.getElementById('galleryContent');c.className='';c.innerHTML=`<button class="secondary" onclick="loadGallery()">← Album</button><h3>${escapeHtml(a.name)}</h3><div class="photos">${(a.photos||[]).map(p=>`<a href="${escapeAttr(p.url)}" target="_blank"><img src="${escapeAttr(p.url)}" alt="${escapeAttr(p.name)}"></a>`).join('')}</div>`;}
   loadPublicHome();
   loadPublicProtocol();
   loadPublicRepresentatives();
   loadDashboard();
+  loadGallery(false);
 </script>
     </body>
   </html>
