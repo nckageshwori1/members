@@ -487,6 +487,7 @@ main {
                 Excel का <b>Renew Old &amp; New</b> र <b>Renew List</b> sheet यही Google Sheet मा Import गरेपछि Sync चलाउनुहोस् । खाली Mobile/Membership field मात्र स्वतः भरिन्छ । फरक पुरानो value भेटिएमा Review मा राखिन्छ ।
               </div>
               <button id="syncBtn" class="btn primary" onclick="syncMobileMembership()">↻ Mobile / Membership Sync</button>
+              <button class="btn secondary" onclick="addRepresentative()">＋ निर्वाचित प्रतिनिधि थप्नुहोस्</button>
               <div id="syncResult" class="sync-result"></div>
             </div>
 
@@ -823,6 +824,22 @@ function openMemberFromList(ncid) {
   showTab('member', btn);
   memberSearch.value = ncid;
   findMember();
+}
+
+
+function addRepresentative() {
+  if (!representatives.length) {
+    alert('निर्वाचित प्रतिनिधि Sheet मा header तयार हुनुपर्छ ।');
+    return;
+  }
+  const fields = Object.keys(representatives[0]).filter(k => k !== '_rowNumber');
+  const record = {};
+  for (const f of fields) {
+    const value = prompt(`${f}:`, '');
+    if (value === null) return;
+    record[f] = value.trim();
+  }
+  saveRepresentative(record);
 }
 
 function editRepresentative(rowNumber) {
