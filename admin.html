@@ -410,6 +410,7 @@ main {
 /* Ward Committee / Protocol - additive */
 .protocol-layout{display:grid;grid-template-columns:minmax(300px,.8fr) minmax(0,1.2fr);gap:14px}.protocol-search-results{border:1px solid var(--line);border-radius:12px;max-height:240px;overflow:auto}.protocol-person{display:flex;gap:10px;align-items:center;padding:10px;border-bottom:1px solid var(--line);cursor:pointer}.protocol-person:hover{background:#f6faf8}.protocol-person img{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#e8eef5}.protocol-selected{padding:12px;border-radius:12px;background:#eef8f3;border:1px solid #cfe9dc;margin:10px 0}.protocol-selected b{color:var(--navy)}
 @media(max-width:800px){.protocol-layout{grid-template-columns:1fr}.protocol-table table,.protocol-table tbody,.protocol-table tr,.protocol-table td{display:block;width:100%}.protocol-table thead{display:none}.protocol-table tr{border:1px solid var(--line);border-radius:12px;margin:10px 0;padding:8px}.protocol-table td{border:0;padding:5px;white-space:normal}.protocol-table td:before{content:attr(data-label);font-weight:900;color:var(--muted);display:inline-block;min-width:105px}}
+.btn{transition:transform .08s ease,opacity .15s ease}.btn:active{transform:scale(.97);opacity:.78}.admin-click-toast{position:fixed;right:18px;bottom:18px;z-index:99999;background:#0d315d;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 25px #0003;font-weight:700;display:none}
 </style></head>
     <body>
       <header class="top">
@@ -552,11 +553,19 @@ main {
                 <input id="noticeTitle">
               </div>
               <div class="field">
-                <label>मिति</label>
-                <input id="noticeDate" type="date">
+                <label>नेपाली मिति</label>
+                <input id="noticeDate" type="text" inputmode="numeric" placeholder="२०८३/०६/१६">
+              </div>
+              <div class="field">
+                <label>समय</label>
+                <input id="noticeTime" type="text" placeholder="बिहान ७:०० बजे">
+              </div>
+              <div class="field">
+                <label>स्थान</label>
+                <input id="noticeVenue" type="text" placeholder="वडा कार्यालय">
               </div>
               <div class="field wide">
-                <label>विवरण</label>
+                <label>कार्यक्रमको विवरण</label>
                 <textarea id="noticeBody">
                 </textarea>
               </div>
@@ -620,6 +629,9 @@ let current=null;
 let designations=[];
 let noticeImageData='';
 let noticeImageName='';
+let editingNoticeId='';
+let editingNoticeImageURL='';
+let editingNoticeImageFileID='';
 let protocolRows=[];
 let protocolMember=null;
 let protocolEditId='';
@@ -977,8 +989,25 @@ async function loadNotices() {
   try {
     const r=await api('adminListNotices',{token});
     if(!r.ok)return;
-    noticeList.innerHTML=(r.notices||[]).slice().reverse().map(n=>`<div style="padding:11px;border-bottom:1px solid var(--line)">${n.ImageURL?`<img src="${attr(n.ImageURL)}" style="width:110px;max-height:80px;object-fit:cover;border-radius:9px;float:right;margin-left:10px">`:''}<b>${esc(n['शीर्षक'])}</b> <small>${esc(n['मिति'])}</small><div>${esc(n['विवरण'])}</div><div style="clear:both"></div><button class="btn danger" style="margin-top:6px" onclick="deleteNotice('${attr(n.ID)}')">हटाउनुहोस्</button></div>`).join('')||'<div class="empty">सूचना छैन ।</div>'
+    noticeList.innerHTML=(r.notices||[]).slice().reverse().map(n=>`<div style="padding:14px;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:#fff">${n.ImageURL?`<img src="${attr(n.ImageURL)}" style="width:120px;max-height:90px;object-fit:cover;border-radius:10px;float:right;margin-left:12px">`:''}<b>${esc(n['शीर्षक']||'सूचना')}</b><div style="font-size:13px;color:var(--muted);margin:5px 0">${esc(n['मिति']||'')}${n['समय']?' • '+esc(n['समय']):''}${n['स्थान']?' • '+esc(n['स्थान']):''}</div><div>${esc(n['विवरण']||'')}</div><div style="clear:both"></div><div class="actions" style="margin-top:8px"><button class="btn secondary" onclick='editNotice(${JSON.stringify(n)})'>सम्पादन</button><button class="btn danger" onclick="deleteNotice('${attr(n.ID)}')">हटाउनुहोस्</button></div></div>`).join('')||'<div class="empty">सूचना छैन ।</div>'
   } catch(e) {}
+}
+function editNotice(n){
+  editingNoticeId=String(n.ID||'');
+  editingNoticeImageURL=String(n.ImageURL||'');
+  editingNoticeImageFileID=String(n.ImageFileID||'');
+  noticeTitle.value=n['शीर्षक']||'';
+  noticeDate.value=n['मिति']||'';
+  noticeTime.value=n['समय']||'';
+  noticeVenue.value=n['स्थान']||'';
+  noticeBody.value=n['विवरण']||'';
+  if(editingNoticeImageURL){noticeImagePreview.src=editingNoticeImageURL;noticeImageBox.style.display='block';}else{noticeImagePreview.removeAttribute('src');noticeImageBox.style.display='none';}
+  noticeSaveBtn.textContent='सूचना अद्यावधिक गर्नुहोस्';
+  noticeActionMsg.style.display='block';noticeActionMsg.textContent='सम्पादनका लागि सूचना लोड भयो ।';
+  document.getElementById('pane-notice').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function resetNoticeForm(){
+  editingNoticeId='';editingNoticeImageURL='';editingNoticeImageFileID='';noticeTitle.value='';noticeDate.value='';noticeTime.value='';noticeVenue.value='';noticeBody.value='';removeNoticeImageSelection();noticeSaveBtn.textContent='सूचना प्रकाशित गर्नुहोस्';
 }
 function previewNoticeImage(input){
   const f=input.files&&input.files[0]; if(!f)return;
@@ -991,19 +1020,19 @@ async function saveNotice() {
   const b=noticeSaveBtn; b.disabled=true; b.textContent='सुरक्षित हुँदैछ...';
   noticeActionMsg.style.display='block'; noticeActionMsg.textContent='सूचना सुरक्षित हुँदैछ...';
   try{
-    let imageUrl='',imageFileId='';
+    let imageUrl=editingNoticeImageURL||'',imageFileId=editingNoticeImageFileID||'';
     if(noticeImageData){
       noticeActionMsg.textContent='Image Upload हुँदैछ...';
       const up=await api('adminUploadNoticeImage',{token,dataUrl:noticeImageData,fileName:noticeImageName});
       if(!up.ok)throw new Error(up.message);
       imageUrl=up.url||''; imageFileId=up.fileId||'';
     }
-    const r=await api('adminSaveNotice',{token,notice:{title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value,active:true,imageUrl,imageFileId}});
+    const r=await api('adminSaveNotice',{token,notice:{id:editingNoticeId,title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value.trim(),time:noticeTime.value.trim(),venue:noticeVenue.value.trim(),active:true,imageUrl,imageFileId}});
     if(!r.ok)throw new Error(r.message);
     noticeActionMsg.textContent=r.message;
-    noticeTitle.value=noticeBody.value=noticeDate.value=''; removeNoticeImageSelection(); await loadNotices();
+    resetNoticeForm(); await loadNotices();
   }catch(e){noticeActionMsg.textContent=e.message;}
-  finally{b.disabled=false;b.textContent='सूचना प्रकाशित गर्नुहोस्';}
+  finally{b.disabled=false;b.textContent=editingNoticeId?'सूचना अद्यावधिक गर्नुहोस्':'सूचना प्रकाशित गर्नुहोस्';}
 }
 async function deleteNotice(id) {
   if(!confirm('सूचना हटाउने हो ?'))return;
@@ -1117,5 +1146,6 @@ async function deleteProtocol(id){
 function esc(v) {
   return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}function attr(v){return esc(v)}
 if(token)openApp().catch(e=>msg(e.message));adminPass.addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin()});
-</script></body>
+</script><div id="adminClickToast" class="admin-click-toast">प्रक्रिया सुरु भयो...</div><script>document.addEventListener("click",function(e){const b=e.target.closest("button.btn");if(!b||b.disabled)return;const t=document.getElementById("adminClickToast");if(!t)return;t.textContent="प्रक्रिया सुरु भयो...";t.style.display="block";clearTimeout(window.__adminToastTimer);window.__adminToastTimer=setTimeout(()=>t.style.display="none",900);},true);</script>
+</body>
     </html>
