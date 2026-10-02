@@ -472,6 +472,7 @@ main {
           <div class="tabs">
             <button class="btn tab on" data-tab="data" onclick="showTab('data',this)">📊 सबै सदस्य Data</button>
             <button class="btn tab" data-tab="member" onclick="showTab('member',this)">👤 सदस्य Profile</button>
+            <button class="btn tab" data-tab="representative" onclick="showTab('representative',this)">🏛️ निर्वाचित प्रतिनिधि व्यवस्थापन</button>
             <button class="btn tab" data-tab="protocol" onclick="showTab('protocol',this)">🏛️ वडा कार्यसमिति / Protocol</button>
             <button class="btn tab" data-tab="notice" onclick="showTab('notice',this)">📢 सूचना</button>
             <button class="btn tab" data-tab="contact" onclick="showTab('contact',this)">☎ सम्पर्क / Social</button>
@@ -488,7 +489,6 @@ main {
                 Excel का <b>Renew Old &amp; New</b> र <b>Renew List</b> sheet यही Google Sheet मा Import गरेपछि Sync चलाउनुहोस् । खाली Mobile/Membership field मात्र स्वतः भरिन्छ । फरक पुरानो value भेटिएमा Review मा राखिन्छ ।
               </div>
               <button id="syncBtn" class="btn primary" onclick="syncMobileMembership()">↻ Mobile / Membership Sync</button>
-              <button class="btn secondary" onclick="addRepresentative()">＋ निर्वाचित प्रतिनिधि थप्नुहोस्</button>
               <div id="syncResult" class="sync-result"></div>
             </div>
 
@@ -521,6 +521,41 @@ main {
               <button class="btn primary" onclick="findMember()">खोज्नुहोस्</button>
             </div>
             <div id="memberEditor" class="empty">सम्पादन गर्न सदस्य खोज्नुहोस् ।</div>
+          </section>
+
+
+          <section id="pane-representative" class="card pane">
+            <h3>निर्वाचित प्रतिनिधि व्यवस्थापन</h3>
+            <div class="hint">क्रियाशील सदस्यलाई नाम वा NCID बाट खोजेर सही सदस्य Select गर्नुहोस् । Select भएपछि NCID, नाम, मोबाइल र Master Photo स्वतः प्रयोग हुन्छ । प्रतिनिधिको फोटो छुट्टै Upload गर्नुपर्दैन ।</div>
+            <div class="protocol-layout">
+              <div>
+                <div class="field">
+                  <label>सदस्य खोज्नुहोस्</label>
+                  <div class="search">
+                    <input id="repMemberSearch" placeholder="नाम वा NCID" oninput="searchRepresentativeMembers()">
+                    <button class="btn primary" onclick="searchRepresentativeMembers()">खोज्नुहोस्</button>
+                  </div>
+                </div>
+                <div id="repMemberResults" class="protocol-search-results"><div class="empty">सदस्य खोज्नुहोस् ।</div></div>
+                <div id="repSelectedMember" class="protocol-selected" style="display:none"></div>
+                <div class="grid">
+                  <div class="field wide"><label>प्रतिनिधि वर्ग / पद</label><input id="repRole" placeholder="सभापति / प्रतिनिधि खुल्ला (पुरुष) / युवा / खस आर्य ..."></div>
+                  <div class="field"><label>NCID</label><input id="repNCID" readonly></div>
+                  <div class="field"><label>नाम</label><input id="repName" readonly></div>
+                  <div class="field"><label>मोबाइल नम्बर</label><input id="repMobile" inputmode="numeric"></div>
+                  <div class="field"><label>क्र.सं.</label><input id="repSerial" inputmode="numeric"></div>
+                </div>
+                <div class="actions">
+                  <button class="btn secondary" onclick="resetRepresentativeForm()">नयाँ</button>
+                  <button id="repSaveBtn" class="btn primary" onclick="saveRepresentativeForm()">सुरक्षित गर्नुहोस्</button>
+                </div>
+                <div id="repActionMsg" class="msg" style="display:none"></div>
+              </div>
+              <div>
+                <h3>निर्वाचित प्रतिनिधि सूची</h3>
+                <div id="representativeManageList" class="protocol-table tablewrap"><div class="empty">लोड हुँदैछ...</div></div>
+              </div>
+            </div>
           </section>
 
           <section id="pane-protocol" class="card pane">
@@ -625,6 +660,8 @@ const API_URL='https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ys
 let token=sessionStorage.getItem('nc_admin_token')||'';
 let members=[];
 let representatives=[];
+let representativeMember=null;
+let representativeEditRow=0;
 let current=null;
 let designations=[];
 let noticeImageData='';
@@ -682,13 +719,14 @@ async function openApp() {
   renderSummaryCards();
   renderAllData();
   loadSettings();
-  loadNotices()
+  loadNotices();
+  renderRepresentativeManagement();
 }
 function stats() {
   stTotal.textContent=members.length;
   stPhoto.textContent=members.filter(x=>x.PhotoURL).length;
   stMobile.textContent=members.filter(x=>x['मोबाइल नम्बर']).length;
-  stRep.textContent=members.filter(x=>x['प्रतिनिधि स्थिति']).length
+  stRep.textContent=representatives.length
 }
 async function reloadMembers() {
   const r=await api('adminOverview',{token});
@@ -717,6 +755,7 @@ function showTab(n,b) {
   b.classList.add('on');
   if(n==='gallery') loadGalleryInfo();
   if(n==='protocol') loadProtocol();
+  if(n==='representative') renderRepresentativeManagement();
   if(n==='data') renderAllData()
 }
 
@@ -839,42 +878,148 @@ function openMemberFromList(ncid) {
 }
 
 
-function addRepresentative() {
-  if (!representatives.length) {
-    alert('निर्वाचित प्रतिनिधि Sheet मा header तयार हुनुपर्छ ।');
+function normalizeRepresentativeSearch(v) {
+  return String(v || '').trim().toLowerCase();
+}
+
+function searchRepresentativeMembers() {
+  const q = normalizeRepresentativeSearch(repMemberSearch.value);
+  if (!q) {
+    repMemberResults.innerHTML = '<div class="empty">नाम वा NCID लेख्नुहोस् ।</div>';
     return;
   }
-  const fields = Object.keys(representatives[0]).filter(k => k !== '_rowNumber');
-  const record = {};
-  for (const f of fields) {
-    const value = prompt(`${f}:`, '');
-    if (value === null) return;
-    record[f] = value.trim();
-  }
-  saveRepresentative(record);
+
+  const rows = members.filter(m => {
+    const name = normalizeRepresentativeSearch(m['सदस्यको नाम'] || m.Name);
+    const ncid = normalizeRepresentativeSearch(m.NCID);
+    return name.includes(q) || ncid.includes(q);
+  }).slice(0, 20);
+
+  repMemberResults.innerHTML = rows.length ? rows.map(m => `
+    <div class="protocol-person" onclick='selectRepresentativeMember(${JSON.stringify(String(m.NCID || ''))})'>
+      ${m.PhotoURL ? `<img src="${attr(m.PhotoURL)}" alt="">` : '<div style="width:42px;height:42px;border-radius:50%;background:#e8eef5"></div>'}
+      <div><b>${esc(m['सदस्यको नाम'] || m.Name || '')}</b><div class="hint">NCID: ${esc(m.NCID || '—')} ${m['मोबाइल नम्बर'] ? ' | ' + esc(m['मोबाइल नम्बर']) : ''}</div></div>
+    </div>
+  `).join('') : '<div class="empty">सदस्य भेटिएन ।</div>';
+}
+
+function selectRepresentativeMember(ncid) {
+  const m = members.find(x => String(x.NCID || '') === String(ncid || ''));
+  if (!m) return;
+  representativeMember = m;
+  repNCID.value = m.NCID || '';
+  repName.value = m['सदस्यको नाम'] || m.Name || '';
+  repMobile.value = m['मोबाइल नम्बर'] || '';
+  repSelectedMember.style.display = 'block';
+  repSelectedMember.innerHTML = `${m.PhotoURL ? `<img src="${attr(m.PhotoURL)}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;float:left;margin-right:10px">` : ''}<b>${esc(repName.value)}</b><div>NCID: ${esc(repNCID.value || '—')}</div><div>${esc(repMobile.value || '')}</div><div style="clear:both"></div>`;
+}
+
+function resetRepresentativeForm() {
+  representativeMember = null;
+  representativeEditRow = 0;
+  repMemberSearch.value = '';
+  repNCID.value = '';
+  repName.value = '';
+  repMobile.value = '';
+  repRole.value = '';
+  repSerial.value = '';
+  repSelectedMember.style.display = 'none';
+  repMemberResults.innerHTML = '<div class="empty">सदस्य खोज्नुहोस् ।</div>';
+  repSaveBtn.textContent = 'सुरक्षित गर्नुहोस्';
+  repActionMsg.style.display = 'none';
 }
 
 function editRepresentative(rowNumber) {
   const rep = representatives.find(r => Number(r._rowNumber) === Number(rowNumber));
   if (!rep) return;
 
-  const fields = Object.keys(rep).filter(k => k !== '_rowNumber');
-  const html = fields.map(f => {
-    const value = prompt(`${f}:`, rep[f] || '');
-    if (value === null) return null;
-    return [f, value.trim()];
-  });
+  representativeEditRow = Number(rowNumber);
+  repNCID.value = rep.NCID || '';
+  repName.value = rep['नाम'] || rep.Name || rep['सदस्यको नाम'] || '';
+  repMobile.value = rep['मोबाइल नम्बर'] || rep.Mobile || '';
+  repRole.value = rep['प्रतिनिधि वर्ग / पद'] || rep['प्रतिनिधि वर्ग'] || rep['पद'] || '';
+  repSerial.value = rep['क्र.सं.'] || '';
 
-  if (html.some(x => x === null)) return;
-  const record = { _rowNumber: rowNumber };
-  html.forEach(([k, v]) => record[k] = v);
-  saveRepresentative(record);
+  const m = members.find(x => String(x.NCID || '') === String(rep.NCID || ''));
+  representativeMember = m || null;
+  repSelectedMember.style.display = 'block';
+  repSelectedMember.innerHTML = `${m && m.PhotoURL ? `<img src="${attr(m.PhotoURL)}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;float:left;margin-right:10px">` : ''}<b>${esc(repName.value)}</b><div>NCID: ${esc(repNCID.value || '—')}</div><div>${esc(repMobile.value || '')}</div><div style="clear:both"></div>`;
+  repSaveBtn.textContent = 'Update गर्नुहोस्';
+  document.querySelector('[data-tab="representative"]')?.click();
 }
 
-async function saveRepresentative(record) {
-  const r = await api('adminSaveRepresentative', { token, record });
-  alert(r.message);
-  if (r.ok) await reloadMembers();
+async function saveRepresentativeForm() {
+  const ncid = repNCID.value.trim();
+  const name = repName.value.trim();
+  const role = repRole.value.trim();
+
+  if (!ncid || !name) {
+    showRepresentativeMessage('पहिले सही क्रियाशील सदस्य Select गर्नुहोस् ।', false);
+    return;
+  }
+  if (!role) {
+    showRepresentativeMessage('प्रतिनिधि वर्ग / पद अनिवार्य छ ।', false);
+    return;
+  }
+
+  const record = {
+    _rowNumber: representativeEditRow || undefined,
+    'क्र.सं.': repSerial.value.trim(),
+    'प्रतिनिधि वर्ग / पद': role,
+    'नाम': name,
+    'मोबाइल नम्बर': repMobile.value.trim(),
+    NCID: ncid
+  };
+
+  repSaveBtn.disabled = true;
+  repSaveBtn.textContent = representativeEditRow ? 'Update हुँदैछ...' : 'Save हुँदैछ...';
+  try {
+    const r = await api('adminSaveRepresentative', { token, record });
+    if (!r.ok) throw new Error(r.message);
+    showRepresentativeMessage(r.message, true);
+    await reloadAdminDataSilently();
+    resetRepresentativeForm();
+    renderRepresentativeManagement();
+  } catch (e) {
+    showRepresentativeMessage(e.message, false);
+  } finally {
+    repSaveBtn.disabled = false;
+    repSaveBtn.textContent = 'सुरक्षित गर्नुहोस्';
+  }
+}
+
+async function deleteRepresentative(rowNumber) {
+  if (!confirm('यो निर्वाचित प्रतिनिधिको record हटाउने हो ?')) return;
+  try {
+    const r = await api('adminDeleteRepresentative', { token, rowNumber });
+    if (!r.ok) throw new Error(r.message);
+    await reloadAdminDataSilently();
+    renderRepresentativeManagement();
+    alert(r.message);
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+async function reloadAdminDataSilently() {
+  const r = await api('adminOverview', { token });
+  if (!r.ok) throw new Error(r.message);
+  members = r.members || [];
+  representatives = r.representatives || [];
+  stats();
+  renderSummaryCards();
+  renderAllData();
+}
+
+function renderRepresentativeManagement() {
+  const box = document.getElementById('representativeManageList');
+  if (!box) return;
+  if (!representatives.length) {
+    box.innerHTML = '<div class="empty">निर्वाचित प्रतिनिधि छैन ।</div>';
+    return;
+  }
+
+  box.innerHTML = `<table class="table"><thead><tr><th>क्र.सं.</th><th>नाम</th><th>NCID</th><th>प्रतिनिधि वर्ग / पद</th><th>मोबाइल</th><th>कार्य</th></tr></thead><tbody>${representatives.map(r => `<tr><td>${esc(r['क्र.सं.'] || '')}</td><td>${esc(r['नाम'] || r.Name || '')}</td><td>${esc(r.NCID || '')}</td><td>${esc(r['प्रतिनिधि वर्ग / पद'] || r['प्रतिनिधि वर्ग'] || r['पद'] || '')}</td><td>${esc(r['मोबाइल नम्बर'] || r.Mobile || '')}</td><td><button class="btn secondary" onclick="editRepresentative(${Number(r._rowNumber)})">Edit</button> <button class="btn danger" onclick="deleteRepresentative(${Number(r._rowNumber)})">हटाउनुहोस्</button></td></tr>`).join('')}</tbody></table>`;
 }
 
 async function syncMobileMembership() {
