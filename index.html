@@ -1489,7 +1489,23 @@ function renderProfile(m,designations=[]) {
   const iconMap={'क्र.सं.':'#','NCID':'▣','सदस्यको नाम':'●','बाबु / आमाको नाम':'♟','पेशा / व्यवसाय':'▰','लिङ्ग':'⚥','उमेर':'◉','समावेशी समूह':'♣','मोबाइल नम्बर':'☎','PDF पृष्ठ':'▤','क्रियाशील नं.':'▣','कैफियत':'✓'};
   const rows=Object.keys(m).filter(k=>!hidden.has(k)&&k!=='PhotoURL'&&String(m[k]??'').trim()!=='').map(k=>`<div class="memberDetailItem"><div class="k"><span style="display:inline-block;width:22px;color:#075fc4;font-weight:900">${iconMap[k]||'•'}</span>${escapeHtml(k)}</div><div class="v">${escapeHtml(m[k])}</div></div>`).join('');
   const history=designations.length?`<div class="memberHistory"><h4>विगतको पद / जिम्मेवारी</h4>${designations.map(d=>`<div style="padding:7px 0;border-bottom:1px solid #e5edf4"><b>${escapeHtml(d['पद / जिम्मेवारी']||'')}</b>${d['निकाय / तह']?' — '+escapeHtml(d['निकाय / तह']):''}${d['सुरु वर्ष']||d['अन्त्य वर्ष']?` <small>(${escapeHtml(d['सुरु वर्ष']||'')}–${escapeHtml(d['अन्त्य वर्ष']||'')})</small>`:''}</div>`).join('')}</div>`:'';
-  p.innerHTML=`<div class="memberProfileCard"><div class="memberProfileHead">सदस्यको विवरण</div><div class="memberProfileBody"><div class="memberIdentity"><div>${photo}<div class="memberStatus" style="margin:9px 0 0;justify-content:center;width:100%;box-sizing:border-box">✓ सक्रिय सदस्य</div></div><div class="memberIdentityInfo"><h3>${escapeHtml(name)}</h3>${designation?`<div class="memberDesignation">${escapeHtml(designation)}</div>`:''}<div style="margin-top:14px;display:flex;gap:12px;align-items:center"><img src="flag-logo.png" alt="" style="width:72px;max-height:52px;object-fit:contain"><img src="tree-logo.png" alt="" style="width:58px;height:58px;object-fit:contain;opacity:.18"></div></div></div><div class="memberDetailGrid">${rows}</div>${history}<div class="memberProfileActions"><button class="memberPrintBtn" type="button" onclick="printMemberProfile()">🖨️ प्रिन्ट गर्नुहोस्</button><button class="memberPdfBtn" type="button" onclick="downloadMemberPdf()">📄 PDF डाउनलोड</button></div><div class="printOnly" style="margin-top:24px"><div style="display:flex;justify-content:space-between;align-items:end;gap:20px"><div>सदस्य परिचय विवरण</div><div style="text-align:center;min-width:190px">........................................<br><b>मोहन थापा</b><br>वडा सभापति<br>नेपाली कांग्रेस, वडा नं. १</div></div></div></div></div>`;
+  p.innerHTML=`<div class="memberProfileCard">
+<div class="memberPrintHeader">
+  <div class="memberPrintHeaderMain">राष्ट्रियता · लोकतन्त्र · समाजवाद | नेपाली कांग्रेस</div>
+  <div class="memberPrintHeaderSub">वडा कार्यसमिति, वडा नं. १ · गागलफेदी, काठमाडौं — सदस्य परिचय पत्र</div>
+</div>
+<div class="memberProfileHead">सदस्यको विवरण</div><div class="memberProfileBody"><div class="memberIdentity"><div>${photo}<div class="memberStatus" style="margin:9px 0 0;justify-content:center;width:100%;box-sizing:border-box">✓ सक्रिय सदस्य</div></div><div class="memberIdentityInfo">
+  <div class="memberIdentityTop">
+    <div class="memberIdentityText">
+      <h3>${escapeHtml(name)}</h3>
+      ${designation?`<div class="memberDesignation">${escapeHtml(designation)}</div>`:''}
+    </div>
+    <div class="memberPartyMarks">
+      <img src="flag-logo.png" alt="नेपाली कांग्रेसको झण्डा">
+      <img src="tree-logo.png" alt="नेपाली कांग्रेसको रुख चिन्ह">
+    </div>
+  </div>
+</div></div><div class="memberDetailGrid">${rows}</div>${history}<div class="memberProfileActions"><button class="memberPrintBtn" type="button" onclick="printMemberProfile()">🖨️ प्रिन्ट गर्नुहोस्</button><button class="memberPdfBtn" type="button" onclick="downloadMemberPdf()">📄 PDF डाउनलोड</button></div><div class="printOnly" style="margin-top:24px"><div style="display:flex;justify-content:space-between;align-items:end;gap:20px"><div>सदस्य परिचय विवरण</div><div style="text-align:center;min-width:190px">........................................<br><b>मोहन थापा</b><br>वडा सभापति<br>नेपाली कांग्रेस, वडा नं. १</div></div></div></div></div>`;
   p.style.display='block';
 }
 function printMemberProfile() {
@@ -1593,6 +1609,63 @@ function downloadMemberPdf() {
 
     .memberProfileHead {
       display: none;
+    }
+
+    .memberPrintHeader {
+      display: block;
+      text-align: center;
+      padding: 7px 8px 8px;
+      border-bottom: 2px solid #138a45;
+    }
+
+    .memberPrintHeaderMain {
+      color: #c51f2b;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .memberPrintHeaderSub {
+      margin-top: 2px;
+      color: #17753b;
+      font-size: 10px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .memberIdentityTop {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .memberIdentityText {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .memberPartyMarks {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 9px;
+    }
+
+    .memberPartyMarks img:first-child {
+      width: 62px;
+      max-height: 45px;
+      object-fit: contain;
+    }
+
+    .memberPartyMarks img:last-child {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      opacity: 1;
+      filter: none;
     }
 
     .memberProfileBody {
@@ -1716,7 +1789,15 @@ function downloadMemberPdf() {
       }
 
       .memberProfileCard {
-        break-inside: avoid-page !important;
+        break-inside: auto !important;
+        page-break-inside: auto !important;
+      }
+
+      .memberIdentity,
+      .memberDetailItem,
+      .memberHistory > div,
+      .printOnly {
+        break-inside: avoid !important;
         page-break-inside: avoid !important;
       }
     }
@@ -1734,6 +1815,299 @@ function downloadMemberPdf() {
       }
     }
   </style>
+
+<style>
+
+/* ============================================================
+   MEMBER PROFILE — OFFICIAL HEADER / PARTY MARKS
+   ============================================================ */
+
+.memberPrintHeader {
+  display: none;
+}
+
+.memberIdentityTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.memberIdentityText {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.memberPartyMarks {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 1px;
+}
+
+.memberPartyMarks img:first-child {
+  width: 68px;
+  max-height: 48px;
+  object-fit: contain;
+}
+
+.memberPartyMarks img:last-child {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.memberDesignation {
+  color: #12385f !important;
+  background: #eef5ff !important;
+  border: 1px solid #9fc4ef !important;
+  font-weight: 800 !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 700px) {
+  .memberPartyMarks {
+    gap: 6px;
+  }
+
+  .memberPartyMarks img:first-child {
+    width: 52px;
+  }
+
+  .memberPartyMarks img:last-child {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+</style>
+
+
+<style id="memberFinalPrintRules">
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+
+  html,
+  body {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  /*
+   * IMPORTANT:
+   * Do not use visibility:hidden for the whole website because hidden
+   * elements still reserve page height and create blank pages.
+   * Only the real ancestor chain of #profile remains in print layout.
+   */
+  body > * {
+    display: none !important;
+  }
+
+  body > main:first-of-type {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body > main:first-of-type > * {
+    display: none !important;
+  }
+
+  body > main:first-of-type > .contentgrid {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body > main:first-of-type > .contentgrid > * {
+    display: none !important;
+  }
+
+  body > main:first-of-type > .contentgrid > .card.panel:first-child {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+
+  body > main:first-of-type > .contentgrid > .card.panel:first-child > * {
+    display: none !important;
+  }
+
+  #profile {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #profile * {
+    visibility: visible !important;
+  }
+
+  .memberProfileCard {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    border: 1px solid #d7dee8 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+
+    /* Do NOT force the entire profile to stay on one page.
+       If designation history becomes genuinely long, it may flow naturally. */
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .memberPrintHeader {
+    display: block !important;
+    text-align: center !important;
+    padding: 7px 8px 8px !important;
+    border-bottom: 2px solid #138a45 !important;
+  }
+
+  .memberPrintHeaderMain {
+    color: #c51f2b !important;
+    font-size: 18px !important;
+    line-height: 1.2 !important;
+    font-weight: 900 !important;
+  }
+
+  .memberPrintHeaderSub {
+    margin-top: 2px !important;
+    color: #17753b !important;
+    font-size: 10px !important;
+    line-height: 1.25 !important;
+    font-weight: 800 !important;
+  }
+
+  .memberProfileHead {
+    display: none !important;
+  }
+
+  .memberProfileBody {
+    padding: 8px 10px !important;
+  }
+
+  .memberIdentity {
+    gap: 10px !important;
+    margin: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .memberIdentityPhoto {
+    width: 96px !important;
+    height: 114px !important;
+  }
+
+  .memberIdentityInfo h3 {
+    margin: 0 0 4px !important;
+    font-size: 22px !important;
+    line-height: 1.15 !important;
+  }
+
+  .memberPartyMarks {
+    gap: 8px !important;
+    padding-top: 0 !important;
+  }
+
+  .memberPartyMarks img:first-child {
+    width: 58px !important;
+    max-height: 43px !important;
+  }
+
+  .memberPartyMarks img:last-child {
+    width: 50px !important;
+    height: 50px !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+
+  .memberDesignation {
+    padding: 4px 7px !important;
+    color: #12385f !important;
+    background: #eef5ff !important;
+    border-color: #9fc4ef !important;
+    font-weight: 800 !important;
+    opacity: 1 !important;
+  }
+
+  .memberStatus {
+    margin-top: 5px !important;
+    padding: 4px 7px !important;
+  }
+
+  .memberDetailGrid {
+    margin-top: 6px !important;
+    gap: 4px 6px !important;
+  }
+
+  .memberDetailItem {
+    min-height: 0 !important;
+    padding: 4px 6px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .memberHistory {
+    margin-top: 6px !important;
+    padding: 6px 8px !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .memberHistory > div {
+    padding: 3px 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .memberProfileActions {
+    display: none !important;
+  }
+
+  .printOnly {
+    display: block !important;
+    margin-top: 7px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+</style>
+
 </head>
 <body>
   <div class="pdfToolbar">
