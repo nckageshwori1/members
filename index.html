@@ -961,7 +961,302 @@ main {
 }
 
 </style>
-  </head>
+  
+<style id="representationReferenceDesign">
+/* ============================================================
+   यस वडाबाट प्रतिनिधित्व — reference design
+   ============================================================ */
+
+.repSection {
+  --rep-dark: #0b5ea8;
+  --rep-light: #65b9eb;
+  --rep-bg: #f2f9ff;
+  margin: 12px 0;
+  overflow: hidden;
+  border: 1px solid #d7e3ee;
+  border-radius: 14px;
+  background: var(--rep-bg);
+  box-shadow: 0 4px 14px rgba(25,55,82,.08);
+}
+
+.repSectionHeader {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 12px 6px 7px;
+  background: linear-gradient(100deg, var(--rep-dark) 0%, var(--rep-dark) 46%, var(--rep-light) 100%);
+  color: #fff;
+}
+
+.repSectionTitleWrap {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.repSectionIcon {
+  width: 48px;
+  height: 40px;
+  flex: 0 0 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(255,255,255,.14);
+  border-right: 2px solid rgba(255,255,255,.92);
+  font-size: 21px;
+  line-height: 1;
+}
+
+.repSectionTitle {
+  color: #fff;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.repSectionCount {
+  flex: 0 0 auto;
+  min-width: 132px;
+  padding: 6px 12px;
+  border: 1px solid rgba(17,58,96,.45);
+  border-radius: 999px;
+  background: rgba(255,255,255,.92);
+  color: #173d64;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.repMemberGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+  padding: 10px;
+}
+
+.repMemberCard {
+  min-width: 0;
+  min-height: 128px;
+  display: grid;
+  grid-template-columns: 108px minmax(0,1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border: 1px solid #d5e0ea;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(30,56,79,.055);
+}
+
+.repPhotoWrap {
+  width: 104px;
+  height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.repMemberPhoto {
+  width: 96px !important;
+  height: 96px !important;
+  min-width: 96px !important;
+  min-height: 96px !important;
+  max-width: 96px !important;
+  max-height: 96px !important;
+  display: block !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border: 4px solid #fff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 2px rgba(17,76,128,.18), 0 4px 10px rgba(18,50,77,.12) !important;
+}
+
+.repNoPhoto {
+  display: grid !important;
+  place-items: center !important;
+  background: #edf2f6 !important;
+  color: #879bae !important;
+  font-size: 28px !important;
+}
+
+.repMemberInfo {
+  min-width: 0;
+}
+
+.repMemberName {
+  margin: 0 0 3px;
+  color: #113b6a;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.repMemberPost {
+  color: #ed1c2b;
+  font-size: 16px;
+  line-height: 1.25;
+  font-weight: 900;
+}
+
+.repMemberTerm {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  color: #61788d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.repMemberPhone {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 7px;
+  padding: 5px 11px;
+  border: 1px solid #b9e5ca;
+  border-radius: 999px;
+  background: #ecfaf2;
+  color: #008a40;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+/* Protocol level colors */
+.repCentral {
+  --rep-dark: #d71829;
+  --rep-light: #f3a1aa;
+  --rep-bg: #fff6f6;
+}
+
+.repProvince {
+  --rep-dark: #087e38;
+  --rep-light: #82c99e;
+  --rep-bg: #f2fbf5;
+}
+
+.repDistrict {
+  --rep-dark: #6331a0;
+  --rep-light: #ad8bd2;
+  --rep-bg: #f8f4fd;
+}
+
+.repArea {
+  --rep-dark: #d27400;
+  --rep-light: #edbb78;
+  --rep-bg: #fff9ef;
+}
+
+.repAssembly {
+  --rep-dark: #00899f;
+  --rep-light: #76ceda;
+  --rep-bg: #f0fbfd;
+}
+
+.repMunicipal {
+  --rep-dark: #0568b5;
+  --rep-light: #69b7e9;
+  --rep-bg: #f2f9ff;
+}
+
+.repDefault {
+  --rep-dark: #274f78;
+  --rep-light: #86aacb;
+  --rep-bg: #f4f8fb;
+}
+
+@media (max-width: 760px) {
+  .repSection {
+    margin: 9px 0 12px;
+    border-radius: 11px;
+  }
+
+  .repSectionHeader {
+    min-height: 47px;
+    padding: 5px 8px 5px 6px;
+  }
+
+  .repSectionIcon {
+    width: 38px;
+    height: 34px;
+    flex-basis: 38px;
+    font-size: 17px;
+  }
+
+  .repSectionTitle {
+    font-size: 15px;
+  }
+
+  .repSectionCount {
+    min-width: auto;
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  .repMemberGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .repMemberCard {
+    min-height: 96px;
+    grid-template-columns: 78px minmax(0,1fr);
+    gap: 10px;
+    padding: 9px 10px;
+  }
+
+  .repPhotoWrap {
+    width: 76px;
+    height: 76px;
+  }
+
+  .repMemberPhoto {
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px !important;
+    min-height: 72px !important;
+    max-width: 72px !important;
+    max-height: 72px !important;
+  }
+
+  .repMemberName {
+    font-size: 17px;
+  }
+
+  .repMemberPost {
+    font-size: 14px;
+  }
+
+  .repMemberTerm {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 430px) {
+  .repSectionTitleWrap {
+    gap: 6px;
+  }
+
+  .repSectionTitle {
+    font-size: 13px;
+  }
+
+  .repSectionCount {
+    white-space: nowrap;
+    font-size: 9px;
+  }
+}
+</style>
+</head>
   <body>
     <div class="topbar">
       <div class="topin">
@@ -1717,52 +2012,6 @@ function buildMemberDocumentHtml() {
   font-weight: 900;
 }
 </style>
-
-<style id="representationReferenceDesign">
-.repSection{--rep-a:#13569c;--rep-b:#4aa9df;--rep-soft:#f2f9ff;margin:12px 0;overflow:hidden;border:1px solid #d7e3ee;border-radius:14px;background:var(--rep-soft);box-shadow:0 4px 13px rgba(25,55,82,.08)}
-.repSectionHeader{position:relative;min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:6px 12px 6px 7px;color:#fff;background:linear-gradient(100deg,var(--rep-a) 0%,var(--rep-a) 43%,var(--rep-b) 100%)}
-.repSectionHeader::after{content:"❯";position:absolute;right:174px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.27);font-size:31px;font-weight:900}
-.repSectionTitleWrap{min-width:0;display:flex;align-items:center;gap:10px}
-.repSectionIcon{width:48px;height:40px;flex:0 0 48px;display:grid;place-items:center;border-radius:9px;background:rgba(255,255,255,.13);border-right:2px solid rgba(255,255,255,.85);color:#fff;font-size:23px;font-weight:900}
-.repSectionTitle{color:#fff;font-size:20px;line-height:1.2;font-weight:900;text-shadow:0 1px 1px rgba(0,0,0,.08)}
-.repSectionCount{position:relative;z-index:1;flex:0 0 auto;min-width:132px;padding:6px 12px;border:1px solid rgba(17,58,96,.45);border-radius:999px;background:rgba(255,255,255,.9);color:#173d64;text-align:center;font-size:12px;line-height:1.2;font-weight:900}
-.repMemberGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:10px}
-.repMemberCard{min-width:0;display:grid;grid-template-columns:112px minmax(0,1fr);align-items:center;gap:15px;min-height:130px;padding:10px 15px;border:1px solid #d5e0ea;border-radius:13px;background:#fff;box-shadow:0 2px 8px rgba(30,56,79,.055)}
-.repPhotoWrap{display:flex;align-items:center;justify-content:center}
-.repMemberPhoto{width:102px!important;height:102px!important;max-width:102px!important;max-height:102px!important;display:block!important;object-fit:cover!important;border:4px solid #fff;border-radius:50%!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--rep-a) 24%,white),0 4px 10px rgba(18,50,77,.12)}
-.repNoPhoto{display:grid!important;place-items:center;background:#edf2f6;color:#879bae;font-size:29px}
-.repMemberInfo{min-width:0}
-.repMemberName{margin:0 0 3px;color:#113b6a;font-size:20px;line-height:1.2;font-weight:900}
-.repMemberPost{color:#ed1c2b;font-size:16px;line-height:1.25;font-weight:900}
-.repMemberTerm{display:flex;align-items:center;gap:5px;margin-top:5px;color:#61788d;font-size:13px;font-weight:700}
-.repMemberPhone{width:fit-content;display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:5px 11px;border:1px solid #b9e5ca;border-radius:999px;background:#ecfaf2;color:#008a40;font-size:14px;line-height:1;font-weight:900;text-decoration:none}
-.repCentral{--rep-a:#d71829;--rep-b:#f5a2aa;--rep-soft:#fff6f6}
-.repProvince{--rep-a:#087e38;--rep-b:#7fc69b;--rep-soft:#f2fbf5}
-.repDistrict{--rep-a:#6331a0;--rep-b:#ad8bd2;--rep-soft:#f8f4fd}
-.repArea{--rep-a:#d27400;--rep-b:#edbb78;--rep-soft:#fff9ef}
-.repAssembly{--rep-a:#00899f;--rep-b:#76ceda;--rep-soft:#f0fbfd}
-.repMunicipal{--rep-a:#0568b5;--rep-b:#69b7e9;--rep-soft:#f2f9ff}
-.repDefault{--rep-a:#274f78;--rep-b:#86aacb;--rep-soft:#f4f8fb}
-@media(max-width:760px){
-.repSection{margin:9px 0 12px;border-radius:11px}
-.repSectionHeader{min-height:47px;padding:5px 8px 5px 6px}
-.repSectionHeader::after{display:none}
-.repSectionIcon{width:38px;height:34px;flex-basis:38px;font-size:18px}
-.repSectionTitle{font-size:15px}
-.repSectionCount{min-width:auto;padding:5px 8px;font-size:10px}
-.repMemberGrid{grid-template-columns:1fr;gap:8px;padding:8px}
-.repMemberCard{grid-template-columns:82px minmax(0,1fr);gap:11px;min-height:100px;padding:9px 10px}
-.repMemberPhoto{width:76px!important;height:76px!important;max-width:76px!important;max-height:76px!important}
-.repMemberName{font-size:17px}
-.repMemberPost{font-size:14px}
-.repMemberTerm{font-size:12px}
-}
-@media(max-width:430px){
-.repSectionTitleWrap{gap:6px}
-.repSectionTitle{font-size:13px}
-.repSectionCount{white-space:nowrap;font-size:9px}
-}
-</style>
 </head>
 <body>
   <div class="documentToolbar">
@@ -1921,7 +2170,7 @@ function escapeHtml(v) {
         return;
       }
 
-      // Data भएको तह मात्र heading सहित देखाइन्छ ।
+      // Active data भएको तह मात्र देखाइन्छ ।
       const grouped=[];
       rows.forEach(r=>{
         let group=grouped.find(g=>g.level===r.Level);
@@ -1933,16 +2182,44 @@ function escapeHtml(v) {
       });
 
       const levelDesign={
-        'केन्द्रीय महाधिवेशन प्रतिनिधि':{cls:'repCentral',icon:'◈',title:'केन्द्रीय महाधिवेशन प्रतिनिधि'},
-        'बागमती प्रदेश कार्यसमिति':{cls:'repProvince',icon:'♟',title:'बागमती प्रदेश कार्यसमिति'},
-        'काठमाडौं जिल्ला कार्यसमिति':{cls:'repDistrict',icon:'♟',title:'काठमाडौं जिल्ला कार्यसमिति'},
-        'क्षेत्रीय कार्यसमिति':{cls:'repArea',icon:'♟',title:'काठमाडौं क्षेत्र नं. ३ क्षेत्रीय कार्यसमिति'},
-        'प्रदेश सभा (२) कार्यसमिति':{cls:'repAssembly',icon:'♟',title:'प्रदेश सभा (२) कार्यसमिति'},
-        'नगर कार्यसमिति':{cls:'repMunicipal',icon:'▦',title:'कागेश्वरी मनोहरा नगर कार्यसमिति'}
+        'केन्द्रीय महाधिवेशन प्रतिनिधि':{
+          cls:'repCentral',
+          icon:'🏛',
+          title:'केन्द्रीय महाधिवेशन प्रतिनिधि'
+        },
+        'बागमती प्रदेश कार्यसमिति':{
+          cls:'repProvince',
+          icon:'👥',
+          title:'बागमती प्रदेश कार्यसमिति'
+        },
+        'काठमाडौं जिल्ला कार्यसमिति':{
+          cls:'repDistrict',
+          icon:'👥',
+          title:'काठमाडौं जिल्ला कार्यसमिति'
+        },
+        'क्षेत्रीय कार्यसमिति':{
+          cls:'repArea',
+          icon:'👥',
+          title:'काठमाडौं क्षेत्र नं. ३ क्षेत्रीय कार्यसमिति'
+        },
+        'प्रदेश सभा (२) कार्यसमिति':{
+          cls:'repAssembly',
+          icon:'👥',
+          title:'प्रदेश सभा (२) कार्यसमिति'
+        },
+        'नगर कार्यसमिति':{
+          cls:'repMunicipal',
+          icon:'🏢',
+          title:'कागेश्वरी मनोहरा नगर कार्यसमिति'
+        }
       };
 
       box.innerHTML=grouped.map(group=>{
-        const meta=levelDesign[group.level]||{cls:'repDefault',icon:'●',title:group.level};
+        const meta=levelDesign[group.level]||{
+          cls:'repDefault',
+          icon:'👥',
+          title:group.level
+        };
 
         return `
           <section class="repSection ${meta.cls}">
@@ -1951,7 +2228,7 @@ function escapeHtml(v) {
                 <span class="repSectionIcon">${meta.icon}</span>
                 <span class="repSectionTitle">${escapeHtml(meta.title||'')}</span>
               </div>
-              <div class="repSectionCount">सदस्य संख्या: ${nepaliNum(group.rows.length)}</div>
+              <span class="repSectionCount">सदस्य संख्या: ${nepaliNum(group.rows.length)}</span>
             </div>
 
             <div class="repMemberGrid">
@@ -1962,14 +2239,20 @@ function escapeHtml(v) {
                       ? `<img class="repMemberPhoto" src="${escapeAttr(r.PhotoURL)}" alt="${escapeAttr(r.Name||'')}">`
                       : `<div class="repMemberPhoto repNoPhoto">👤</div>`}
                   </div>
+
                   <div class="repMemberInfo">
                     <div class="repMemberName">${escapeHtml(r.Name||'')}</div>
                     <div class="repMemberPost">${escapeHtml(r.Designation||'')}</div>
+
                     ${r.From||r.To
-                      ? `<div class="repMemberTerm"><span>▣</span> ${escapeHtml(r.From||'')}${r.To?' - '+escapeHtml(r.To):''}</div>`
+                      ? `<div class="repMemberTerm"><span>▣</span><span>${escapeHtml(r.From||'')}${r.To?' - '+escapeHtml(r.To):''}</span></div>`
                       : ''}
+
                     ${r.Mobile
-                      ? `<a class="repMemberPhone" href="tel:${escapeAttr(String(r.Mobile).replace(/\s+/g,''))}"><span class="repPhoneIcon">☎</span><span>${escapeHtml(r.Mobile)}</span></a>`
+                      ? `<a class="repMemberPhone" href="tel:${escapeAttr(String(r.Mobile).replace(/\s+/g,''))}">
+                           <span>☎</span>
+                           <span>${escapeHtml(r.Mobile)}</span>
+                         </a>`
                       : ''}
                   </div>
                 </article>
