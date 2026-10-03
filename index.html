@@ -936,6 +936,30 @@ main {
   .officeInfoHead h3{font-size:21px}
 }
 
+
+/* ADVANCED MEMBER PROFILE CARD */
+.memberProfileCard{border:1px solid #d8e5f1;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 10px 28px #16324f12}
+.memberProfileHead{background:linear-gradient(135deg,#0d315d,#0758bd);color:#fff;padding:14px 18px;font-size:20px;font-weight:900}
+.memberProfileBody{padding:18px}.memberIdentity{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;align-items:start}
+.memberIdentityPhoto{width:150px;height:175px;object-fit:cover;border-radius:16px;border:1px solid #dbe7f2;background:#eef3f7}
+.memberIdentityInfo h3{margin:4px 0 6px;color:var(--red2);font-size:27px}.memberDesignation{display:inline-block;padding:7px 12px;border-radius:999px;background:#eaf4ff;color:#0758bd;font-weight:900}
+.memberStatus{display:inline-flex;padding:7px 12px;border-radius:999px;background:#eaf8ef;color:#08783d;font-weight:900;margin-left:7px}
+.memberDetailGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;margin-top:16px}
+.memberDetailItem{display:grid;grid-template-columns:145px minmax(0,1fr);gap:8px;padding:10px 12px;border:1px solid #e3ebf3;border-radius:12px;background:#fbfdff}
+.memberDetailItem .k{color:#64748b}.memberDetailItem .v{font-weight:900;color:#11233d;overflow-wrap:anywhere}
+.memberProfileActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.memberProfileActions button{border:0;border-radius:11px;padding:11px 16px;font-weight:900}
+.memberPrintBtn{background:#0878e8;color:#fff}.memberPdfBtn{background:#d71920;color:#fff}
+.memberHistory{margin-top:14px;padding:13px;border:1px solid #e3ebf3;border-radius:12px;background:#f8fbfe}.memberHistory h4{margin:0 0 8px;color:var(--navy)}
+.printOnly{display:none}
+@media(max-width:700px){.memberIdentity{grid-template-columns:100px minmax(0,1fr);gap:13px}.memberIdentityPhoto{width:100px;height:120px}.memberIdentityInfo h3{font-size:21px}.memberDetailGrid{grid-template-columns:1fr}.memberDetailItem{grid-template-columns:120px minmax(0,1fr)}.memberStatus{margin:7px 0 0}}
+@media print{
+ body *{visibility:hidden!important}#profile,#profile *{visibility:visible!important}
+ #profile{display:block!important;position:absolute;left:0;top:0;width:100%;margin:0!important;padding:0!important}
+ .memberProfileCard{box-shadow:none;border:1px solid #9aa9b8;border-radius:0}.memberProfileHead{background:#fff!important;color:#b91c1c!important;text-align:center;border-bottom:3px solid #079447;font-size:0}
+ .memberProfileHead:before{content:"नेपाली कांग्रेस";display:block;font-size:27px}.memberProfileHead:after{content:"वडा कार्यसमिति, वडा नं. १ • गागलफेदी, काठमाडौं";display:block;font-size:15px;color:#166534;margin-top:4px}
+ .memberProfileActions{display:none!important}.memberDetailGrid{grid-template-columns:1fr 1fr}.printOnly{display:block!important;visibility:visible!important}@page{size:A4;margin:12mm}
+}
+
 </style>
   </head>
   <body>
@@ -1159,7 +1183,7 @@ let adminToken = sessionStorage.getItem('nc_admin_token') || '';
 let adminMembers = [];
 const labels = [     ['total','जम्मा क्रियाशील सदस्य'],['male','पुरुष'],['female','महिला'],['khasArya','खस–आर्य'],['janajati','आदिवासी जनजाति'],     ['dalit','दलित'],['newMember','नयाँ सदस्य'],['renewed','नवीकरण सदस्य'],['representatives','निर्वाचित प्रतिनिधि']   ];
 async function api(action, data={}) {
-  if(API_URL.includes('PASTE_')) throw new Error('पहिला index.html मा Apps Script Web App URL राख्नुहोस्&#x20;।');
+  if(API_URL.includes('PASTE_')) throw new Error('पहिला index.html मा Apps Script Web App URL राख्नुहोस् ।');
   const r = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data})});
   return r.json();
 }
@@ -1283,15 +1307,15 @@ async function searchMember() {
   document.getElementById('verifyBox').style.display='none';
   document.getElementById('profile').style.display='none';
   msg.style.display='block';
-  msg.textContent='खोजिँदैछ...';
+  msg.textContent='सदस्यको विवरण खोजिँदैछ...';
   try {
     const r=await api('searchMember',{ncid});
     if(!r.ok) throw new Error(r.message);
     currentNCID=r.member.ncid;
     document.getElementById('foundName').textContent=r.member.name;
-    document.getElementById('masked').textContent=r.member.hasMobile?`दर्ता मोबाइल: ${r.member.mobileMasked}`:'मोबाइल नम्बर दर्ता गरिएको छैन&#x20;।';
+    document.getElementById('masked').textContent=r.member.hasMobile?`दर्ता मोबाइल: ${r.member.mobileMasked}`:'मोबाइल नम्बर दर्ता गरिएको छैन ।';
     document.getElementById('verifyBox').style.display='block';
-    msg.textContent='सदस्य भेटियो&#x20;। मोबाइल नम्बरबाट प्रमाणीकरण गर्नुहोस्&#x20;।';
+    msg.textContent='सदस्यको विवरण भेटियो । पूर्ण विवरण हेर्न दर्ता भएको मोबाइल नम्बरबाट प्रमाणीकरण गर्नुहोस् ।';
   } catch(e) {
     msg.textContent=e.message;
   }
@@ -1299,7 +1323,7 @@ async function searchMember() {
 async function verifyMobile() {
   const msg=document.getElementById('searchMsg');
   msg.style.display='block';
-  msg.textContent='प्रमाणीकरण हुँदैछ...';
+  msg.textContent='मोबाइल नम्बर प्रमाणीकरण हुँदैछ...';
   try {
     const r=await api('verifyMobile',{ncid:currentNCID,mobile:document.getElementById('mobile').value});
     if(!r.ok) throw new Error(r.message);
@@ -1312,13 +1336,17 @@ async function verifyMobile() {
 function renderProfile(m,designations=[]) {
   const p=document.getElementById('profile');
   const hidden=new Set(['PhotoFileID']);
-  const rows=Object.keys(m).filter(k=>!hidden.has(k)&&String(m[k]??'').trim()!=='').map(k=>`<dt>${escapeHtml(k)}</dt><dd>${k==='PhotoURL'?'<a href="'+escapeAttr(m[k])+'" target="_blank">फोटो खोल्नुहोस्</a>':escapeHtml(m[k])}</dd>`).join('');
-  const photo=m.PhotoURL?`<img class="memberphoto" src="${escapeAttr(m.PhotoURL)}" alt="सदस्य फोटो">`:'';
-  const current=m['हालको पद / जिम्मेवारी']?`<div><b>हालको पद / जिम्मेवारी:</b> ${escapeHtml(m['हालको पद / जिम्मेवारी'])}</div>`:'';
-  const hist=designations.length?`<div class="designationBox"><h4>विगतको पद / जिम्मेवारी</h4>${designations.map(d=>`<div style="padding:7px 0;border-bottom:1px solid #e5edf4"><b>${escapeHtml(d['पद / जिम्मेवारी']||'')}</b>${d['निकाय / तह']?' — '+escapeHtml(d['निकाय / तह']):''}${d['सुरु वर्ष']||d['अन्त्य वर्ष']?` <small>(${escapeHtml(d['सुरु वर्ष']||'')}–${escapeHtml(d['अन्त्य वर्ष']||'')})</small>`:''}</div>`).join('')}</div>`:'';
-  p.innerHTML=`<div class="memberhero">${photo}<div><h3 style="margin:0 0 6px">${escapeHtml(m['सदस्यको नाम']||'सदस्य')}</h3>${current}</div></div><dl>${rows}</dl>${hist}`;
+  const designation=String(m['हालको पद / जिम्मेवारी']||'').trim();
+  const name=String(m['सदस्यको नाम']||'सदस्य').trim();
+  const photo=m.PhotoURL?`<img class="memberIdentityPhoto" src="${escapeAttr(m.PhotoURL)}" alt="${escapeAttr(name)}">`:`<div class="memberIdentityPhoto"></div>`;
+  const rows=Object.keys(m).filter(k=>!hidden.has(k)&&k!=='PhotoURL'&&k!=='हालको पद / जिम्मेवारी'&&String(m[k]??'').trim()!=='').map(k=>`<div class="memberDetailItem"><div class="k">${escapeHtml(k)}</div><div class="v">${escapeHtml(m[k])}</div></div>`).join('');
+  const history=designations.length?`<div class="memberHistory"><h4>विगतको पद / जिम्मेवारी</h4>${designations.map(d=>`<div style="padding:7px 0;border-bottom:1px solid #e5edf4"><b>${escapeHtml(d['पद / जिम्मेवारी']||'')}</b>${d['निकाय / तह']?' — '+escapeHtml(d['निकाय / तह']):''}${d['सुरु वर्ष']||d['अन्त्य वर्ष']?` <small>(${escapeHtml(d['सुरु वर्ष']||'')}–${escapeHtml(d['अन्त्य वर्ष']||'')})</small>`:''}</div>`).join('')}</div>`:'';
+  p.innerHTML=`<div class="memberProfileCard"><div class="memberProfileHead">सदस्यको विवरण</div><div class="memberProfileBody"><div class="memberIdentity">${photo}<div class="memberIdentityInfo"><h3>${escapeHtml(name)}</h3>${designation?`<div class="memberDesignation">हालको पद: ${escapeHtml(designation)}</div>`:''}<div class="memberStatus">✓ सक्रिय सदस्य</div></div></div><div class="memberDetailGrid">${rows}</div>${history}<div class="memberProfileActions"><button class="memberPrintBtn" type="button" onclick="printMemberProfile()">🖨️ प्रिन्ट गर्नुहोस्</button><button class="memberPdfBtn" type="button" onclick="downloadMemberPdf()">📄 PDF डाउनलोड</button></div><div class="printOnly" style="margin-top:24px;text-align:right">........................................<br><b>वडा सभापति</b><br>नेपाली कांग्रेस, वडा नं. १</div></div></div>`;
   p.style.display='block';
 }
+function printMemberProfile(){window.print();}
+function downloadMemberPdf(){window.print();}
+
 function openAdmin() {
   document.getElementById('adminModal').classList.add('on');
   if(adminToken) {
@@ -1367,7 +1395,7 @@ function loadMemberForEdit() {
   const ncid=document.getElementById('adminNcid').value.trim();
   const m=adminMembers.find(x=>String(x.NCID).trim()===ncid);
   if(!m) {
-    alert('सदस्य भेटिएन&#x20;।');
+    alert('सदस्य भेटिएन ।');
     return;
   }
   renderEditForm(m);
