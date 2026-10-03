@@ -1068,6 +1068,44 @@ main {
 }
 
 </style>
+
+<style>
+
+/* ============================================================
+   MEMBER PROFILE — ROLE / LOGO ALIGNMENT
+   ============================================================ */
+.memberDesignation {
+  color: #12385f !important;
+  background: #eef5ff !important;
+  border: 1px solid #bfd4ee !important;
+  font-weight: 800 !important;
+  opacity: 1 !important;
+}
+
+.memberIdentityInfo img {
+  transform: translateY(-4px);
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .memberDesignation {
+    color: #12385f !important;
+    background: #eef5ff !important;
+    border-color: #bfd4ee !important;
+    font-weight: 800 !important;
+    opacity: 1 !important;
+  }
+
+  .memberIdentityInfo img {
+    transform: translateY(-5px) !important;
+  }
+}
+
+</style>
 </head>
   <body>
     <div class="topbar">
@@ -1454,14 +1492,263 @@ function renderProfile(m,designations=[]) {
   p.innerHTML=`<div class="memberProfileCard"><div class="memberProfileHead">सदस्यको विवरण</div><div class="memberProfileBody"><div class="memberIdentity"><div>${photo}<div class="memberStatus" style="margin:9px 0 0;justify-content:center;width:100%;box-sizing:border-box">✓ सक्रिय सदस्य</div></div><div class="memberIdentityInfo"><h3>${escapeHtml(name)}</h3>${designation?`<div class="memberDesignation">${escapeHtml(designation)}</div>`:''}<div style="margin-top:14px;display:flex;gap:12px;align-items:center"><img src="flag-logo.png" alt="" style="width:72px;max-height:52px;object-fit:contain"><img src="tree-logo.png" alt="" style="width:58px;height:58px;object-fit:contain;opacity:.18"></div></div></div><div class="memberDetailGrid">${rows}</div>${history}<div class="memberProfileActions"><button class="memberPrintBtn" type="button" onclick="printMemberProfile()">🖨️ प्रिन्ट गर्नुहोस्</button><button class="memberPdfBtn" type="button" onclick="downloadMemberPdf()">📄 PDF डाउनलोड</button></div><div class="printOnly" style="margin-top:24px"><div style="display:flex;justify-content:space-between;align-items:end;gap:20px"><div>सदस्य परिचय विवरण</div><div style="text-align:center;min-width:190px">........................................<br><b>मोहन थापा</b><br>वडा सभापति<br>नेपाली कांग्रेस, वडा नं. १</div></div></div></div></div>`;
   p.style.display='block';
 }
-function printMemberProfile(){window.print();}
+function printMemberProfile() {
+  // Directly opens the browser/printer print dialog.
+  window.print();
+}
+
 function downloadMemberPdf() {
   /*
-   * Native browser print keeps the profile as real HTML/text.
-   * Choose "Save as PDF" in the print destination.
-   * No canvas/image conversion is used.
+   * Opens a clean, text-based PDF preview in a new tab.
+   * The preview remains real HTML text (not canvas/image).
+   * From there the user can print or choose Save as PDF.
    */
-  window.print();
+  const profile = document.getElementById('profile');
+
+  if (!profile || !profile.innerHTML.trim()) {
+    alert('पहिला सदस्यको विवरण खोल्नुहोस् ।');
+    return;
+  }
+
+  const previewWindow = window.open('', '_blank');
+
+  if (!previewWindow) {
+    alert('PDF Preview खोल्न browser popup अनुमति दिनुहोस् ।');
+    return;
+  }
+
+  const profileHtml = profile.innerHTML;
+
+  previewWindow.document.open();
+  previewWindow.document.write(`
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>सदस्य परिचय विवरण — PDF Preview</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #eef2f6;
+      color: #152536;
+      font-family: Arial, "Noto Sans Devanagari", sans-serif;
+    }
+
+    .pdfToolbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px;
+      background: #ffffff;
+      border-bottom: 1px solid #d8e0e8;
+    }
+
+    .pdfToolbar button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .savePdf {
+      background: #c91f2c;
+      color: #ffffff;
+    }
+
+    .printPdf {
+      background: #0877d8;
+      color: #ffffff;
+    }
+
+    .closePdf {
+      background: #eef2f6;
+      color: #22384d;
+    }
+
+    .pdfPage {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 16px auto;
+      padding: 8mm;
+      background: #ffffff;
+      box-shadow: 0 2px 16px rgba(0,0,0,.14);
+    }
+
+    .memberProfileCard {
+      width: 100%;
+      border: 1px solid #d7dee8;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .memberProfileHead {
+      display: none;
+    }
+
+    .memberProfileBody {
+      padding: 10px 12px;
+    }
+
+    .memberIdentity {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+    }
+
+    .memberIdentityPhoto {
+      width: 112px;
+      height: 132px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .memberIdentityInfo h3 {
+      margin: 0 0 5px;
+      color: #c81f2c;
+      font-size: 25px;
+    }
+
+    .memberDesignation {
+      display: inline-block;
+      padding: 6px 10px;
+      color: #12385f;
+      background: #eef5ff;
+      border: 1px solid #bfd4ee;
+      border-radius: 8px;
+      font-weight: 800;
+    }
+
+    .memberIdentityInfo img {
+      transform: translateY(-5px);
+    }
+
+    .memberStatus {
+      margin-top: 6px;
+      color: #087b3c;
+      font-weight: 800;
+    }
+
+    .memberDetailGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 8px;
+      margin-top: 9px;
+    }
+
+    .memberDetailItem {
+      display: grid;
+      grid-template-columns: 135px minmax(0, 1fr);
+      gap: 6px;
+      padding: 6px 8px;
+      border: 1px solid #dfe7ef;
+      border-radius: 9px;
+    }
+
+    .memberDetailItem .k {
+      color: #53687c;
+    }
+
+    .memberDetailItem .v {
+      color: #172b3e;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .memberHistory {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border: 1px solid #dfe7ef;
+      border-radius: 9px;
+    }
+
+    .memberHistory h4 {
+      margin: 0 0 4px;
+    }
+
+    .memberProfileActions {
+      display: none !important;
+    }
+
+    .printOnly {
+      display: block !important;
+      margin-top: 10px !important;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 8mm;
+    }
+
+    @media print {
+      html,
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .pdfToolbar {
+        display: none !important;
+      }
+
+      .pdfPage {
+        width: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+
+      .memberProfileCard {
+        break-inside: avoid-page !important;
+        page-break-inside: avoid !important;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .pdfPage {
+        width: calc(100% - 16px);
+        min-height: auto;
+        margin: 8px;
+        padding: 12px;
+      }
+
+      .memberDetailGrid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="pdfToolbar">
+    <button class="savePdf" onclick="window.print()">📄 PDF डाउनलोड / Save as PDF</button>
+    <button class="printPdf" onclick="window.print()">🖨️ प्रिन्ट</button>
+    <button class="closePdf" onclick="window.close()">बन्द गर्नुहोस्</button>
+  </div>
+
+  <main class="pdfPage">
+    ${profileHtml}
+  </main>
+</body>
+</html>
+  `);
+  previewWindow.document.close();
 }
 
 function openAdmin() {
