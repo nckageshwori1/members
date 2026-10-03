@@ -1091,6 +1091,7 @@ main {
         <div class="protocolTabs">
           <button id="tabCommittee" class="on" onclick="showProtocolPublic('committee')">वर्तमान वडा कार्यसमिति</button>
           <button id="tabRepresentatives" onclick="showProtocolPublic('representatives')">निर्वाचित प्रतिनिधिहरू</button>
+          <button id="tabRepresentation" onclick="showProtocolPublic('representation')">यस वडाबाट प्रतिनिधित्व</button>
           <button id="tabFormer" onclick="showProtocolPublic('former')">पूर्व सभापतिहरू</button>
         </div>
         <div id="protocolPublicContent"><div class="noticeItem">विवरण लोड हुँदैछ...</div></div>
@@ -1695,6 +1696,27 @@ function buildMemberDocumentHtml() {
   transform: none !important;
 }
 </style>
+
+<style id="currentRepresentationStyles">
+.representationLevelBlock {
+  margin-top: 14px;
+}
+
+.representationLevelBlock:first-child {
+  margin-top: 0;
+}
+
+.representationLevelTitle {
+  margin: 0 0 9px;
+  padding: 8px 11px;
+  border-left: 4px solid var(--red);
+  border-radius: 8px;
+  background: #f7f9fc;
+  color: var(--navy);
+  font-size: 16px;
+  font-weight: 900;
+}
+</style>
 </head>
 <body>
   <div class="documentToolbar">
@@ -1827,6 +1849,7 @@ function escapeHtml(v) {
 
   let publicProtocolData={committee:[],formerPresidents:[]};
   let publicRepresentativesData=[];
+  let publicRepresentationData={levels:[],rows:[]};
   let activeProtocolMode='committee';
   async function loadPublicProtocol(){
     try{const r=await api('publicProtocol');if(!r.ok)throw new Error(r.message);publicProtocolData=r;showProtocolPublic(activeProtocolMode)}catch(e){document.getElementById('protocolPublicContent').innerHTML='<div class="noticeItem">वडा कार्यसमिति विवरण उपलब्ध छैन ।</div>'}
@@ -1836,8 +1859,61 @@ function escapeHtml(v) {
     activeProtocolMode=mode;
     document.getElementById('tabCommittee').classList.toggle('on',mode==='committee');
     document.getElementById('tabRepresentatives').classList.toggle('on',mode==='representatives');
+    document.getElementById('tabRepresentation').classList.toggle('on',mode==='representation');
     document.getElementById('tabFormer').classList.toggle('on',mode==='former');
     const box=document.getElementById('protocolPublicContent');
+
+    if(mode==='representation'){
+      const rows=(publicRepresentationData.rows||[]).slice().sort((a,b)=>{
+        const levelDiff=Number(a.LevelOrder||9999)-Number(b.LevelOrder||9999);
+        if(levelDiff)return levelDiff;
+        return Number(a.PostOrder||9999)-Number(b.PostOrder||9999);
+      });
+
+      if(!rows.length){
+        box.innerHTML='<div class="noticeItem">हाल यस वडाबाट प्रतिनिधित्वको विवरण उपलब्ध छैन ।</div>';
+        return;
+      }
+
+      const grouped=[];
+      rows.forEach(r=>{
+        let group=grouped.find(g=>g.level===r.Level);
+        if(!group){
+          group={level:r.Level,rows:[]};
+          grouped.push(group);
+        }
+        group.rows.push(r);
+      });
+
+      box.innerHTML=grouped.map(group=>`
+        <div class="representationLevelBlock">
+          <div class="representationLevelTitle">${escapeHtml(group.level||'')}</div>
+          <div class="committeeGrid">
+            ${group.rows.map(r=>`
+              <div class="committeeCard">
+                ${r.PhotoURL
+                  ? `<img class="committeePhoto" src="${escapeAttr(r.PhotoURL)}" alt="">`
+                  : `<div class="committeePhoto"></div>`}
+                <div>
+                  <h4>${escapeHtml(r.Name||'')}</h4>
+                  <div class="post">${escapeHtml(r.Designation||'')}</div>
+                  ${r.From||r.To
+                    ? `<small>${escapeHtml(r.From||'')}${r.To?' - '+escapeHtml(r.To):''}</small>`
+                    : ''}
+                  ${r.Mobile
+                    ? `<a class="committeePhone" href="tel:${escapeAttr(String(r.Mobile).replace(/\s+/g,''))}">
+                         <span class="callIcon">☎</span><span>${escapeHtml(r.Mobile)}</span>
+                       </a>`
+                    : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+      return;
+    }
+
     if(mode==='representatives'){
       const rows=publicRepresentativesData||[];
       if(!rows.length){box.innerHTML='<div class="noticeItem">हाल निर्वाचित प्रतिनिधिको विवरण उपलब्ध छैन ।</div>';return;}
@@ -1850,6 +1926,21 @@ function escapeHtml(v) {
     else{box.innerHTML='<div class="formerList">'+rows.map(r=>`<div class="formerItem">${r.PhotoURL?`<img class="committeePhoto" src="${escapeAttr(r.PhotoURL)}" alt="">`:`<div class="committeePhoto"></div>`}<div><h4>${escapeHtml(r.Name||'')}</h4><div class="post">${escapeHtml(r.Designation||'पूर्व सभापति')}</div><small>${escapeHtml(r.From||'')}${r.To?' - '+escapeHtml(r.To):''}</small>${r.Mobile?`<a class="committeePhone" href="tel:${escapeAttr(String(r.Mobile).replace(/\s+/g,''))}"><span class="callIcon">☎</span><span>${escapeHtml(r.Mobile)}</span></a>`:''}</div></div>`).join('')+'</div>'}
   }
 
+
+
+  async function loadPublicRepresentation(){
+    try{
+      const r=await api('publicRepresentation');
+      if(!r.ok)throw new Error(r.message||'विवरण लोड हुन सकेन ।');
+      publicRepresentationData={
+        levels:Array.isArray(r.levels)?r.levels:[],
+        rows:Array.isArray(r.rows)?r.rows:[]
+      };
+      if(activeProtocolMode==='representation')showProtocolPublic('representation');
+    }catch(e){
+      publicRepresentationData={levels:[],rows:[]};
+    }
+  }
 
   async function loadPublicRepresentatives(){
     try{const r=await api('publicRepresentatives');if(!r.ok)throw new Error(r.message||'विवरण लोड हुन सकेन ।');publicRepresentativesData=Array.isArray(r.rows)?r.rows:[];if(activeProtocolMode==='representatives')showProtocolPublic('representatives');}catch(e){publicRepresentativesData=[];}
@@ -1965,6 +2056,7 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];if(s.Email)items.p
   loadGallery(false);
   loadPublicProtocol();
   loadPublicRepresentatives();
+  loadPublicRepresentation();
   loadDashboard();
 </script>
     </body>
