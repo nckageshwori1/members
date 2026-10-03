@@ -595,6 +595,14 @@ main {
                 <label>समय</label>
                 <input id="noticeTime" type="text" placeholder="बिहान ७:०० बजे">
               </div>
+        <div class="row" style="margin-top:10px">
+          <div><label>सुरु समय</label><input id="noticeStartTime" type="time"></div>
+          <div><label>समाप्ति समय</label><input id="noticeEndTime" type="time"></div>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;margin-top:10px">
+          <input id="noticeAllDay" type="checkbox" style="width:auto"> दिनभरिको कार्यक्रम (All Day)
+        </label>
+
               <div class="field">
                 <label>स्थान</label>
                 <input id="noticeVenue" type="text" placeholder="वडा कार्यालय">
@@ -1161,6 +1169,14 @@ function previewNoticeImage(input){
   const rd=new FileReader(); rd.onload=()=>{noticeImageData=rd.result;noticeImageName=f.name;noticeImagePreview.src=rd.result;noticeImageBox.style.display='block';}; rd.readAsDataURL(f);
 }
 function removeNoticeImageSelection(){noticeImageData='';noticeImageName='';noticeImageInput.value='';noticeImagePreview.removeAttribute('src');noticeImageBox.style.display='none';}
+function syncNoticeTimeMode(){
+  const allDay=noticeAllDay.checked;
+  noticeStartTime.disabled=allDay;
+  noticeEndTime.disabled=allDay;
+  if(allDay){noticeStartTime.value='';noticeEndTime.value='';}
+}
+noticeAllDay.addEventListener('change',syncNoticeTimeMode);
+
 async function saveNotice() {
   const b=noticeSaveBtn; b.disabled=true; b.textContent='सुरक्षित हुँदैछ...';
   noticeActionMsg.style.display='block'; noticeActionMsg.textContent='सूचना सुरक्षित हुँदैछ...';
@@ -1172,7 +1188,7 @@ async function saveNotice() {
       if(!up.ok)throw new Error(up.message);
       imageUrl=up.url||''; imageFileId=up.fileId||'';
     }
-    const r=await api('adminSaveNotice',{token,notice:{id:editingNoticeId,title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value.trim(),time:noticeTime.value.trim(),venue:noticeVenue.value.trim(),active:true,imageUrl,imageFileId}});
+    const r=await api('adminSaveNotice',{token,notice:{id:editingNoticeId,title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value.trim(),time:noticeTime.value.trim(),startTime:noticeStartTime.value,endTime:noticeEndTime.value,allDay:noticeAllDay.checked,venue:noticeVenue.value.trim(),active:true,imageUrl,imageFileId}});
     if(!r.ok)throw new Error(r.message);
     noticeActionMsg.textContent=r.message;
     resetNoticeForm(); await loadNotices();
