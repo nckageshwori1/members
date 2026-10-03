@@ -1,0 +1,2117 @@
+<!doctype html>
+<html lang="ne">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <title>नेपाली कांग्रेस — वडा नं. १ डिजिटल अभिलेख प्रणाली</title>
+    <style>
+:root {
+  --red:#e5232f;
+  --red2:#b91c1c;
+  --green:#079447;
+  --navy:#0d315d;
+  --blue:#1687f8;
+  --ink:#11233d;
+  --muted:#64748b;
+  --bg:#f4f8fc;
+  --line:#dce7f2;
+  --white:#fff
+}
+* {
+  box-sizing:border-box
+}
+html {
+  scroll-behavior:smooth
+}
+body {
+  margin:0;
+  font-family:"Noto Sans Devanagari","Nirmala UI","Mangal",Arial,sans-serif;
+  background:linear-gradient(180deg,#fff 0,#f4f8fc 240px);
+  color:var(--ink)
+}
+button,input,select {
+  font:inherit
+}
+button {
+  cursor:pointer
+}
+/* Main display typography: stylish, readable Nepali/Devanagari */
+    .brandtext h1,.official h2,.welcome h3,.panel h3,.stat span {
+  font-family:"Noto Sans Devanagari","Nirmala UI","Mangal",Arial,sans-serif;
+  letter-spacing:.05px
+}
+.official h2 {
+  font-weight:800
+}
+.welcome h3,.panel h3 {
+  font-weight:800
+}
+.stat span {
+  font-weight:800
+}
+.topbar {
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:10;
+  box-shadow:0 3px 16px #16324f10
+}
+.topin {
+  max-width:1280px;
+  margin:auto;
+  padding:10px 18px;
+  display:flex;
+  align-items:center;
+  gap:14px
+}
+.brandmark {
+  width:54px;
+  height:54px;
+  border-radius:14px;
+  background:#fff;
+  border:1px solid #edf2f7;
+  display:grid;
+  place-items:center;
+  overflow:hidden
+}
+.brandmark img {
+  width:48px;
+  height:48px;
+  object-fit:contain
+}
+.brandtext {
+  min-width:0
+}
+.brandtext h1 {
+  font-size:20px;
+  margin:0;
+  color:var(--red2);
+  line-height:1.2
+}
+.brandtext p {
+  margin:3px 0 0;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700
+}
+.topactions {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:9px
+}
+.topbtn {
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--navy);
+  padding:10px 13px;
+  border-radius:11px;
+  font-weight:800
+}
+.adminbtn {
+  background:var(--green);
+  border-color:var(--green);
+  color:#fff
+}
+.official {
+  background:#fff
+}
+.officialin {
+  max-width:1280px;
+  margin:auto;
+  padding:13px 18px;
+  display:grid;
+  grid-template-columns:110px 1fr 110px;
+  align-items:center;
+  text-align:center
+}
+.logoBox {
+  height:94px;
+  display:grid;
+  place-items:center
+}
+.logoBox img {
+  max-width:100%;
+  max-height:90px;
+  object-fit:contain
+}
+.logoBox:last-child img {
+  width:92px;
+  height:92px;
+  max-width:none;
+  max-height:none
+}
+.motto {
+  display:flex;
+  justify-content:space-between;
+  color:var(--red);
+  font-size:14px;
+  font-weight:900;
+  margin-bottom:3px
+}
+.official h2 {
+  margin:0;
+  color:var(--red);
+  font-size:31px;
+  line-height:1.15
+}
+.official p {
+  margin:3px 0;
+  font-weight:800;
+  color:#17406d;
+  font-size:14px
+}
+.tricolor {
+  height:7px;
+  background:linear-gradient(to bottom,var(--red) 0 40%,#fff 40% 58%,var(--green) 58%)
+}
+.nav {
+  background:linear-gradient(90deg,#102f55,#0c416d);
+  color:#fff
+}
+.navin {
+  max-width:1280px;
+  margin:auto;
+  display:flex;
+  gap:5px;
+  align-items:center;
+  padding:8px 18px;
+  overflow:auto
+}
+.nav button {
+  border:0;
+  background:transparent;
+  color:#fff;
+  padding:10px 13px;
+  border-radius:10px;
+  font-weight:800;
+  white-space:nowrap
+}
+.nav button:hover {
+  background:#ffffff18
+}
+.spacer {
+  flex:1
+}
+main {
+  max-width:1280px;
+  margin:16px auto 0;
+  padding:0 18px 42px
+}
+.welcome {
+  background:linear-gradient(120deg,#eef7ff,#f9fcff);
+  border:1px solid #cfe4f7;
+  border-radius:18px;
+  padding:16px 18px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:18px;
+  align-items:center
+}
+.welcome h3 {
+  font-size:25px;
+  margin:0 0 4px;
+  color:#0758bd
+}
+.welcome p {
+  margin:0;
+  color:#355878
+}
+.welcomeRight {
+  display:flex;
+  gap:10px;
+  align-items:stretch
+}
+.quote,.datebox {
+  background:#fff;
+  border:1px solid #d7e6f5;
+  border-radius:13px;
+  padding:12px 15px;
+  font-size:13px;
+  font-weight:800
+}
+.quote {
+  border-left:4px solid #f5b800;
+  color:#0758bd
+}
+.datebox {
+  color:#0758bd
+}
+.stats {
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:12px;
+  margin-top:14px
+}
+.stat {
+  position:relative;
+  overflow:hidden;
+  min-height:145px;
+  border-radius:16px;
+  padding:16px;
+  color:#fff;
+  box-shadow:0 8px 18px #16324f18;
+  transition:.18s
+}
+.stat:hover {
+  transform:translateY(-3px);
+  box-shadow:0 13px 26px #16324f24
+}
+.stat:nth-child(1) {
+  background:linear-gradient(135deg,#208cf5,#176ee7)
+}
+.stat:nth-child(2) {
+  background:linear-gradient(135deg,#10b96a,#06994e)
+}
+.stat:nth-child(3) {
+  background:linear-gradient(135deg,#ff5362,#ed2d46)
+}
+.stat:nth-child(4) {
+  background:linear-gradient(135deg,#17a8c3,#098da8)
+}
+.stat:nth-child(5) {
+  background:linear-gradient(135deg,#ff8128,#f45d18)
+}
+.stat:nth-child(6) {
+  background:linear-gradient(135deg,#7548f6,#5a28dc)
+}
+.stat:nth-child(7) {
+  background:linear-gradient(135deg,#14b8a6,#0d9488)
+}
+.stat:nth-child(8) {
+  background:linear-gradient(135deg,#f7c52b,#eaa900);
+  color:#0d315d
+}
+.stat:nth-child(9) {
+  background:linear-gradient(135deg,#e13bd3,#bb20ac)
+}
+.stat b {
+  display:block;
+  font-size:35px;
+  line-height:1;
+  margin-top:10px
+}
+.stat span {
+  display:block;
+  font-size:14px;
+  font-weight:900;
+  max-width:135px
+}
+.stat:after {
+  content:"हेर्नुहोस् →";
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:10px;
+  background:#00000012;
+  border-radius:9px;
+  padding:7px 9px;
+  font-size:12px;
+  font-weight:900
+}
+.stat:before {
+  content:"";
+  position:absolute;
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  right:-12px;
+  top:-12px;
+  background:#ffffff20
+}
+.contentgrid {
+  display:grid;
+  grid-template-columns:1.25fr .75fr;
+  gap:14px;
+  margin-top:14px
+}
+.card {
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:17px;
+  box-shadow:0 7px 22px #16324f0b
+}
+.panel {
+  padding:18px
+}
+.paneltitle {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:13px
+}
+.paneltitle .ico {
+  width:38px;
+  height:38px;
+  border-radius:11px;
+  background:#eaf4ff;
+  display:grid;
+  place-items:center;
+  font-size:19px
+}
+.panel h3 {
+  margin:0;
+  font-size:18px
+}
+.search {
+  display:flex;
+  gap:8px
+}
+.search input {
+  flex:1;
+  min-width:0;
+  border:1px solid #c9d7e6;
+  border-radius:11px;
+  padding:13px 14px;
+  outline:none;
+  background:#fbfdff
+}
+.search input:focus {
+  border-color:#208cf5;
+  box-shadow:0 0 0 3px #208cf51c
+}
+.primary {
+  border:0;
+  background:linear-gradient(135deg,#0aa457,#078b49);
+  color:#fff;
+  border-radius:11px;
+  padding:12px 17px;
+  font-weight:900
+}
+.secondary {
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:11px;
+  padding:11px 14px;
+  font-weight:800
+}
+.msg {
+  margin-top:12px;
+  padding:12px;
+  border-radius:11px;
+  background:#f4f8fc;
+  display:none
+}
+.member {
+  display:none;
+  margin-top:13px;
+  border-top:1px solid var(--line);
+  padding-top:14px
+}
+.member dl {
+  display:grid;
+  grid-template-columns:150px 1fr;
+  gap:8px;
+  margin:0
+}
+.member dt {
+  color:var(--muted)
+}
+.member dd {
+  margin:0;
+  font-weight:800
+}
+.notice {
+  padding:14px;
+  background:#fff8e8;
+  border:1px solid #f8d77b;
+  border-radius:13px;
+  color:#805d00;
+  line-height:1.65
+}
+.quick {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:12px
+}
+.quick div {
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  background:#fbfdff
+}
+.quick b {
+  display:block;
+  color:var(--navy);
+  font-size:13px
+}
+.quick small {
+  color:var(--muted)
+}
+.footer {
+  text-align:center;
+  color:var(--muted);
+  padding:20px;
+  font-size:13px;
+  border-top:1px solid var(--line);
+  background:#fff
+}
+.footer .credit {
+  display:block;
+  margin-top:6px;
+  font-weight:800;
+  color:var(--navy)
+}
+.footer .credit a {
+  color:var(--green);
+  text-decoration:none;
+  font-weight:900
+}
+.footer .credit a:hover {
+  text-decoration:underline
+}
+.modal {
+  position:fixed;
+  inset:0;
+  background:#0b1f36a8;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:30
+}
+.modal.on {
+  display:flex
+}
+.dialog {
+  background:#fff;
+  border-radius:18px;
+  padding:20px;
+  width:min(650px,100%);
+  max-height:92vh;
+  overflow:auto;
+  box-shadow:0 30px 70px #0005
+}
+.dialog h3 {
+  margin-top:0
+}
+.adminBox {
+  display:none
+}
+.login {
+  display:grid;
+  gap:9px
+}
+.login input {
+  border:1px solid #cbd5e1;
+  border-radius:11px;
+  padding:12px
+}
+.row {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
+.field {
+  display:grid;
+  gap:5px;
+  margin-bottom:10px
+}
+.field label {
+  font-size:12px;
+  font-weight:900;
+  color:var(--muted)
+}
+.field input,.field select {
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  padding:10px
+}
+.actions {
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  margin-top:14px
+}
+@media(max-width:1000px) {
+  .stats {
+    grid-template-columns:repeat(3,1fr)
+  }
+  .contentgrid {
+    grid-template-columns:1fr
+  }
+  .officialin {
+    grid-template-columns:90px 1fr 90px
+  }
+  .welcomeRight {
+    display:none
+  }
+}
+.contactstrip {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:14px
+}
+.contactitem {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:13px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  text-decoration:none;
+  color:var(--navy);
+  font-weight:800
+}
+.contactitem .ci {
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#eef5fb;
+  font-size:18px
+}
+.noticeList {
+  display:grid;
+  gap:9px
+}
+.noticeItem {
+  padding:13px;
+  border:1px solid #f3d88d;
+  background:#fffaf0;
+  border-radius:12px
+}
+.noticeItem.noticeRich{display:grid;grid-template-columns:minmax(240px,38%) 1fr;gap:18px;align-items:start;padding:16px}.noticeVisual{background:#f5f8fb;border-radius:14px;overflow:hidden;min-height:180px;display:flex;align-items:center;justify-content:center}.noticeMeta{display:flex;flex-wrap:wrap;gap:7px;margin:7px 0 12px}.noticeMeta span{background:#f1f5f9;border:1px solid var(--line);border-radius:999px;padding:5px 9px;font-size:13px;color:var(--navy)}.noticeDetails h4{margin:0 0 6px;color:var(--navy);font-size:20px}.noticeDetails .programLabel{font-weight:900;color:var(--red);margin-bottom:5px}.noticeProgramInfo{display:grid;gap:7px;margin:8px 0 12px;color:var(--ink);line-height:1.55}.noticeProgramInfo b{color:var(--navy)}.noticeBodyText{border-top:1px solid #eadfca;padding-top:10px;line-height:1.65}
+.noticeTitleRow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.noticeStatus{border:0;border-radius:999px;padding:8px 13px;font-weight:900;white-space:nowrap;background:#eaf7ef;color:#08783d}
+.noticeStatus.today{background:#fff0d8;color:#a85a00}
+.noticeStatus.done{background:#eef1f4;color:#5c6670}
+@media(max-width:700px){.noticeTitleRow{display:block}.noticeStatus{margin-top:8px;white-space:normal}}@media(max-width:700px){.noticeItem.noticeRich{grid-template-columns:1fr}.noticeVisual{min-height:0}}
+.noticeImage {
+  width:100%;
+  max-height:420px;
+  object-fit:contain;
+  display:block;
+  margin:10px 0;
+  border-radius:12px;
+  background:#f6f9fc;
+}
+.noticeItem b {
+  color:var(--navy)
+}
+.noticeItem small {
+  display:block;
+  color:var(--muted);
+  margin-top:3px
+}
+.albums {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px
+}
+.album {
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:hidden;
+  background:#fff;
+  cursor:pointer
+}
+.albumcover {
+  height:150px;
+  background:#eaf0f6;
+  display:grid;
+  place-items:center;
+  overflow:hidden
+}
+.albumcover img {
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+.albumname {
+  padding:11px;
+  font-weight:900;
+  color:var(--navy)
+}
+.photos {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px
+}
+.photos img {
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:10px;
+  cursor:pointer
+}
+.memberhero {
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  margin-bottom:14px
+}
+.memberphoto {
+  width:120px;
+  height:140px;
+  object-fit:cover;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#eef3f7
+}
+.designationBox {
+  margin-top:14px;
+  padding:13px;
+  background:#f7fafc;
+  border:1px solid var(--line);
+  border-radius:12px
+}
+.designationBox h4 {
+  margin:0 0 8px;
+  color:var(--navy)
+}
+@media(max-width:650px) {
+  .contactstrip {
+    grid-template-columns:1fr 1fr
+  }
+  .albums {
+    grid-template-columns:1fr 1fr
+  }
+  .photos {
+    grid-template-columns:repeat(2,1fr)
+  }
+  .memberhero {
+    flex-direction:column
+  }
+  .topin {
+    padding:8px 10px
+  }
+  .brandmark {
+    width:45px;
+    height:45px
+  }
+  .brandmark img {
+    width:40px;
+    height:40px
+  }
+  .brandtext h1 {
+    font-size:16px
+  }
+  .brandtext p {
+    display:none
+  }
+  .topbtn:not(.adminbtn) {
+    display:none
+  }
+  .officialin {
+    grid-template-columns:58px 1fr 58px;
+    padding:9px 8px
+  }
+  .logoBox {
+    height:62px
+  }
+  .logoBox img {
+    max-height:60px
+  }
+  .logoBox:last-child img {
+    width:58px;
+    height:58px
+  }
+  .motto {
+    font-size:9px
+  }
+  .official h2 {
+    font-size:21px
+  }
+  .official p {
+    font-size:10px;
+    margin:2px 0
+  }
+  .navin {
+    padding:6px 9px
+  }
+  .nav button {
+    padding:8px 10px;
+    font-size:12px
+  }
+  main {
+    padding:0 10px 30px;
+    margin-top:10px
+  }
+  .welcome {
+    padding:13px
+  }
+  .welcome h3 {
+    font-size:19px
+  }
+  .welcome p {
+    font-size:12px
+  }
+  .stats {
+    grid-template-columns:repeat(2,1fr);
+    gap:9px
+  }
+  .stat {
+    min-height:126px;
+    padding:13px
+  }
+  .stat b {
+    font-size:29px
+  }
+  .stat span {
+    font-size:12px
+  }
+  .panel {
+    padding:14px
+  }
+  .search {
+    flex-direction:column
+  }
+  .member dl {
+    grid-template-columns:1fr
+  }
+  .row {
+    grid-template-columns:1fr
+  }
+  .quick {
+    grid-template-columns:1fr
+  }
+}
+
+
+    /* Dashboard detail popup - universal responsive design */
+    .stat { cursor: pointer; }
+    .listModal {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(7, 28, 54, .68);
+      backdrop-filter: blur(3px);
+    }
+    .listModal.on { display: flex; }
+    .listModalBox {
+      width: min(980px, 100%);
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.28);
+    }
+    .listModalHead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 17px;
+      border-bottom: 1px solid var(--line);
+      background: #f8fbff;
+    }
+    .listModalHead h3 { margin: 0; font-size: 19px; color: var(--navy); }
+    .listClose {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      border: 0;
+      border-radius: 50%;
+      background: #e9f0f7;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .listModalBody { overflow-y: auto; padding: 12px; }
+    .memberList { display: grid; gap: 9px; }
+    .memberListRow {
+      display: grid;
+      grid-template-columns: 52px minmax(160px,1.4fr) minmax(110px,.8fr) minmax(120px,1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 11px 12px;
+      border: 1px solid #e1eaf3;
+      border-radius: 12px;
+      background: #fff;
+    }
+    .memberListRow.header {
+      position: sticky;
+      top: -12px;
+      z-index: 2;
+      background: #eef6ff;
+      font-weight: 900;
+      color: var(--navy);
+    }
+    .memberListRow .name { font-weight: 900; color: #15395d; }
+    .memberListRow .meta { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+
+    @media (max-width: 650px) {
+      html, body { max-width: 100%; overflow-x: hidden; }
+      .listModal { padding: 0; align-items: flex-end; }
+      .listModalBox { width: 100%; max-height: 92vh; border-radius: 18px 18px 0 0; }
+      .listModalHead { padding: 13px 14px; }
+      .listModalHead h3 { font-size: 17px; }
+      .listModalBody { padding: 10px; }
+      .memberListRow, .memberListRow.header {
+        grid-template-columns: 38px minmax(0,1fr);
+        gap: 7px 9px;
+      }
+      .memberListRow.header { display: none; }
+      .memberListRow > div:nth-child(3),
+      .memberListRow > div:nth-child(4) { grid-column: 2; }
+      .memberListRow .meta { font-size: 12px; }
+    }
+
+
+/* ============================================================
+   v2.4 MOBILE UNIVERSAL + DASHBOARD POPUP FIX
+   ============================================================ */
+@media (max-width: 650px) {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { width: 100%; max-width: 100%; overflow-x: hidden !important; }
+  main, .wrap, .panel, .card, .contactstrip, .contactitem { min-width: 0 !important; max-width: 100% !important; }
+  .contactstrip { grid-template-columns: 1fr !important; gap: 10px !important; }
+  .contactitem { width: 100% !important; overflow: hidden; }
+  .contactitem, .contactitem * { overflow-wrap: anywhere; word-break: break-word; }
+  .albums { grid-template-columns: 1fr !important; }
+  .galleryPanel { padding: 14px !important; }
+  .listModal { padding: 0 !important; align-items: flex-end !important; }
+  .listModalBox { width: 100% !important; max-width: 100% !important; max-height: 94dvh !important; border-radius: 20px 20px 0 0 !important; }
+  .listModalBody { overflow-y: auto !important; overflow-x: hidden !important; padding: 10px !important; }
+  .memberList { width: 100%; min-width: 0; }
+  .memberListRow, .memberListRow.header {
+    width: 100%; min-width: 0;
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+  }
+  .memberListRow.header { display: none !important; }
+  .memberListRow > div { min-width: 0; overflow-wrap: anywhere; }
+  .memberListRow > div:nth-child(3), .memberListRow > div:nth-child(4) { grid-column: 2 !important; }
+}
+
+
+/* Current Ward Committee / Former Presidents */
+.protocolPublic{margin-top:14px}.protocolTabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px;justify-content:flex-start}.protocolTabs button{border:1px solid var(--line);background:#fff;color:var(--navy);padding:10px 14px;border-radius:10px;font-weight:800}.protocolTabs button.on{background:var(--red);color:#fff;border-color:var(--red)}.committeeGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.committeeCard{position:relative;border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px;text-align:center;box-shadow:0 6px 18px #0d315d0d}.committeeOrder{display:none}.committeePhone{display:inline-flex;align-items:center;justify-content:center;gap:7px;margin-top:9px;padding:7px 11px;border:1px solid #cfe9dc;border-radius:999px;background:#f0faf5;color:var(--green);font-weight:900;text-decoration:none;font-size:13px}.committeePhone:hover{background:#e3f6ec}.committeePhone .callIcon{font-size:15px;line-height:1}.formerItem .committeePhone{margin-top:6px;padding:6px 10px;font-size:12px}.committeePhoto{width:88px;height:88px;border-radius:50%;object-fit:cover;background:#e8eef5;margin:3px auto 9px}.committeeCard h4{margin:4px 0;color:var(--navy);font-size:16px}.committeeCard .post{color:var(--red);font-weight:900}.committeeCard small{display:block;color:var(--muted);margin-top:5px}.formerList{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.formerItem{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}.formerItem .committeePhoto{width:58px;height:58px;margin:0}.formerItem h4{margin:0;color:var(--navy)}
+@media(max-width:900px){.committeeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.formerList{grid-template-columns:1fr 1fr}}@media(max-width:600px){.committeeGrid,.formerList{grid-template-columns:1fr}.committeeCard{display:grid;grid-template-columns:76px 1fr;text-align:left;align-items:center;gap:10px}.committeePhoto{width:68px;height:68px;margin:0}.committeeOrder{display:none}.protocolTabs button{flex:0 0 auto}}
+
+.noticeStatus.eventStatus{cursor:default;border:0;min-width:155px;padding:9px 13px;border-radius:14px;line-height:1.2;box-shadow:0 7px 18px rgba(0,0,0,.08)}
+.eventStatus .statusTop{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:900}
+.eventStatus .statusMain{display:block;margin-top:3px;font-size:14px;font-weight:900}
+.eventStatus.upcoming{background:#fff4df;color:#a85b00}.eventStatus.soon{background:#fff0d8;color:#a84f00;border:1px solid #ffd39b}
+.eventStatus.live{background:#fff0f1;color:#b11226;border:1px solid #ffc7cf}.eventStatus.done{background:#edf8f1;color:#18753b;border:1px solid #c7ead3}
+.liveDot{width:8px;height:8px;border-radius:50%;background:#d71920;display:inline-block;box-shadow:0 0 0 0 rgba(215,25,32,.55);animation:livePulse 1.5s infinite}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(215,25,32,.5)}70%{box-shadow:0 0 0 7px rgba(215,25,32,0)}100%{box-shadow:0 0 0 0 rgba(215,25,32,0)}}
+@media(max-width:700px){.noticeStatus.eventStatus{width:100%;min-width:0}}
+
+
+/* ============================================================
+   OFFICE INFORMATION — TARGETED PUBLIC UPDATE
+   ============================================================ */
+.officeInfoSection{
+  margin-top:14px;padding:20px;border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 7px 22px #16324f0b
+}
+.officeInfoHead{text-align:center;margin-bottom:16px}
+.officeInfoHead h3{margin:0;color:var(--red2);font-size:24px;font-weight:900}
+.officeInfoHead p{margin:5px 0 0;color:var(--green);font-weight:900}
+.officeInfoGrid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:18px}
+.officePhotoBox{overflow:hidden;border-radius:16px;background:#eef3f7;min-height:310px}
+.officePhotoBox img{display:block;width:100%;height:100%;min-height:310px;object-fit:cover}
+.officeDetails{display:flex;flex-direction:column;gap:10px}
+.officeDetail{
+  display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--line);
+  border-radius:14px;background:#fff;color:var(--ink);text-decoration:none;min-width:0
+}
+.officeDetailIcon{width:42px;height:42px;flex:0 0 42px;border-radius:50%;display:grid;place-items:center;background:#eef5fb;font-size:19px}
+.officeDetail b{display:block;color:var(--navy);margin-bottom:2px}
+.officeDetail span:last-child{min-width:0;overflow-wrap:anywhere}
+.officeLinks{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.officeLink{
+  display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;
+  border-radius:12px;text-decoration:none;font-weight:900
+}
+.officeLink.map{background:var(--red2);color:#fff}
+.officeLink.facebook{background:#1769aa;color:#fff}
+@media(max-width:700px){
+  .officeInfoSection{padding:14px}
+  .officeInfoGrid{grid-template-columns:1fr}
+  .officePhotoBox,.officePhotoBox img{min-height:0}
+  .officePhotoBox img{aspect-ratio:16/10}
+  .officeLinks{grid-template-columns:1fr}
+  .officeInfoHead h3{font-size:21px}
+}
+
+
+/* ADVANCED MEMBER PROFILE CARD */
+.memberProfileCard{border:1px solid #d8e5f1;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 10px 28px #16324f12}
+.memberProfileHead{background:linear-gradient(135deg,#082d59,#075fc4);color:#fff;padding:16px 20px;font-size:22px;font-weight:900}
+.memberProfileBody{padding:18px}.memberIdentity{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;align-items:start}
+.memberIdentityPhoto{width:150px;height:175px;object-fit:cover;border-radius:16px;border:1px solid #dbe7f2;background:#eef3f7}
+.memberIdentityInfo h3{margin:4px 0 9px;color:var(--red2);font-size:30px}.memberDesignation{display:inline-block;padding:8px 13px;border-radius:10px;background:linear-gradient(135deg,#0879e8,#0759bd);color:#fff;font-weight:900;box-shadow:0 5px 12px #0759bd22}
+.memberStatus{display:inline-flex;padding:7px 12px;border-radius:999px;background:#eaf8ef;color:#08783d;font-weight:900;margin-left:7px}
+.memberDetailGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;margin-top:16px}
+.memberDetailItem{display:grid;grid-template-columns:145px minmax(0,1fr);gap:8px;padding:10px 12px;border:1px solid #e3ebf3;border-radius:12px;background:#fbfdff}
+.memberDetailItem .k{color:#64748b}.memberDetailItem .v{font-weight:900;color:#11233d;overflow-wrap:anywhere}
+.memberProfileActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.memberProfileActions button{border:0;border-radius:11px;padding:11px 16px;font-weight:900}
+.memberPrintBtn{background:#0878e8;color:#fff}.memberPdfBtn{background:#d71920;color:#fff}
+.memberHistory{margin-top:14px;padding:13px;border:1px solid #e3ebf3;border-radius:12px;background:#f8fbfe}.memberHistory h4{margin:0 0 8px;color:var(--navy)}
+.printOnly{display:none}
+@media(max-width:700px){.memberIdentity{grid-template-columns:100px minmax(0,1fr);gap:13px}.memberIdentityPhoto{width:100px;height:120px}.memberIdentityInfo h3{font-size:21px}.memberDetailGrid{grid-template-columns:1fr}.memberDetailItem{grid-template-columns:120px minmax(0,1fr)}.memberStatus{margin:7px 0 0}}
+@media print{
+ body *{visibility:hidden!important}#profile,#profile *{visibility:visible!important}
+ #profile{display:block!important;position:absolute;left:0;top:0;width:100%;margin:0!important;padding:0!important}
+ .memberProfileCard{box-shadow:none;border:1px solid #9aa9b8;border-radius:0}.memberProfileHead{background:#fff!important;color:#b91c1c!important;text-align:center;border-bottom:3px solid #079447;font-size:0}
+ .memberProfileHead:before{content:"राष्ट्रियता · लोकतन्त्र · समाजवाद  |  नेपाली कांग्रेस";display:block;font-size:25px}.memberProfileHead:after{content:"वडा कार्यसमिति, वडा नं. १ · गागलफेदी, काठमाडौं  —  सदस्य परिचय पत्र";display:block;font-size:15px;color:#166534;margin-top:5px}
+ .memberProfileActions{display:none!important}.memberDetailGrid{grid-template-columns:1fr 1fr}.printOnly{display:block!important;visibility:visible!important}@page{size:A4;margin:12mm}
+}
+
+</style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topin">
+        <div class="brandmark">
+          <img src="tree-logo.png" alt="रुख चिन्ह">
+        </div>
+        <div class="brandtext">
+          <h1>नेपाली कांग्रेस — वडा नं. १</h1>
+          <p>क्रियाशील सदस्य डिजिटल अभिलेख तथा व्यवस्थापन प्रणाली</p>
+        </div>
+        <div class="topactions">
+          <button class="topbtn" onclick="focusSearch()">🔎 सदस्य खोजी</button>
+          <button class="topbtn adminbtn" onclick="window.location.href='admin.html'">👤 प्रशासन</button>
+        </div>
+      </div>
+    </div>
+    <header class="official">
+      <div class="officialin">
+        <div class="logoBox">
+          <img src="flag-logo.png" alt="नेपाली कांग्रेसको झण्डा">
+        </div>
+        <div>
+          <div class="motto">
+            <span>राष्ट्रियता</span>
+            <span>लोकतन्त्र</span>
+            <span>समाजवाद</span>
+          </div>
+          <h2>नेपाली कांग्रेस</h2>
+          <p>बागमती प्रदेश, काठमाडौं क्षेत्र नं. ३, प्रदेश (ख)</p>
+          <p>कागेश्वरी मनोहरा नगरपालिका, वडा नं. १, वडा कार्यसमिति</p>
+          <p>गागलफेदी, काठमाडौं</p>
+        </div>
+        <div class="logoBox">
+          <img src="tree-logo.png" alt="रुख चिन्ह">
+        </div>
+      </div>
+      <div class="tricolor">
+      </div>
+    </header>
+    <nav class="nav">
+      <div class="navin">
+        <button onclick="showHome()">⌂ गृहपृष्ठ</button>
+        <button onclick="focusSearch()">👥 क्रियाशील सदस्य</button>
+        <button onclick="scrollToId('protocolSection')">🏛️ वडा कार्यसमिति</button>
+        <button onclick="loadDashboard()">▥ तथ्याङ्क / विश्लेषण</button>
+        <button onclick="scrollToId('noticeSection')">📢 सूचना</button>
+        <button onclick="loadGallery()">🖼️ फोटो ग्यालरी</button>
+        <span class="spacer">
+        </span>
+        <button onclick="window.location.href='admin.html'">⚙ प्रशासन</button>
+      </div>
+    </nav>
+    <main>
+      <section class="welcome">
+        <div>
+          <h3>स्वागत छ !</h3>
+          <p>वडा नं. १ का क्रियाशील सदस्य, प्रतिनिधि तथा सदस्यता विवरण एउटै सुरक्षित प्रणालीमा&#x20;।</p>
+        </div>
+        <div class="welcomeRight">
+          <div class="quote">“संगठित अभिलेख • सहज सेवा • पारदर्शी व्यवस्थापन”</div>
+          <div class="datebox">📅 डिजिटल सदस्य प्रणाली</div>
+        </div>
+      </section>
+      <section class="stats" id="stats">
+      </section>
+      <section class="contentgrid">
+        <div class="card panel">
+          <div class="paneltitle">
+            <div class="ico">🔎</div>
+            <div>
+              <h3>NCID बाट क्रियाशील सदस्य खोज्नुहोस्</h3>
+            </div>
+          </div>
+          <div class="search">
+            <input id="ncid" inputmode="numeric" placeholder="NCID नम्बर लेख्नुहोस्">
+            <button class="primary" onclick="searchMember()">खोज्नुहोस्</button>
+          </div>
+          <div id="searchMsg" class="msg">
+          </div>
+          <div id="verifyBox" class="member">
+            <p>
+              <b id="foundName">
+              </b>
+              <br>
+              <small id="masked">
+              </small>
+            </p>
+            <div class="search">
+              <input id="mobile" inputmode="tel" placeholder="दर्ता भएको मोबाइल नम्बर">
+              <button class="primary" onclick="verifyMobile()">प्रमाणीकरण</button>
+            </div>
+          </div>
+          <div id="profile" class="member">
+          </div>
+        </div>
+        <div class="card panel">
+          <div class="paneltitle">
+            <div class="ico">🛡️</div>
+            <h3>सिस्टम सम्बन्धी सूचना</h3>
+          </div>
+          <div class="notice">व्यक्तिगत सदस्य विवरण हेर्न NCID खोजीपछि दर्ता भएको मोबाइल नम्बरबाट प्रमाणीकरण अनिवार्य छ&#x20;। मूल विवरण थप्ने वा सच्याउने अधिकार प्रशासनमा मात्र रहनेछ&#x20;।</div>
+          <div class="quick">
+            <div>
+              <b>NCID आधारित खोजी</b>
+              <small>छिटो र स्पष्ट सदस्य पहिचान</small>
+            </div>
+            <div>
+              <b>मोबाइल प्रमाणीकरण</b>
+              <small>व्यक्तिगत विवरणको सुरक्षा</small>
+            </div>
+            <div>
+              <b>Admin Data Edit</b>
+              <small>Google Sheet मा सुरक्षित अपडेट</small>
+            </div>
+            <div>
+              <b>Live Dashboard</b>
+              <small>Sheet अनुसार स्वतः तथ्याङ्क</small>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <main style="margin-top:0">
+
+      <section id="protocolSection" class="card panel protocolPublic">
+        <div class="paneltitle"><div class="ico">🏛️</div><div><h3>वर्तमान वडा कार्यसमिति</h3></div></div>
+        <div class="protocolTabs">
+          <button id="tabCommittee" class="on" onclick="showProtocolPublic('committee')">वर्तमान वडा कार्यसमिति</button>
+          <button id="tabRepresentatives" onclick="showProtocolPublic('representatives')">निर्वाचित प्रतिनिधिहरू</button>
+          <button id="tabRepresentation" onclick="showProtocolPublic('representation')">यस वडाबाट प्रतिनिधित्व</button>
+          <button id="tabFormer" onclick="showProtocolPublic('former')">पूर्व सभापतिहरू</button>
+        </div>
+        <div id="protocolPublicContent"><div class="noticeItem">विवरण लोड हुँदैछ...</div></div>
+      </section>
+      <section id="noticeSection" class="card panel" style="margin-top:14px">
+        <div class="paneltitle">
+          <div class="ico">📢</div>
+          <h3>सूचना</h3>
+        </div>
+        <div id="publicNotices" class="noticeList">
+          <div class="noticeItem">सूचना लोड हुँदैछ...</div>
+        </div>
+      </section>
+      <section id="gallerySection" class="card panel" style="margin-top:14px">
+        <div class="paneltitle">
+          <div class="ico">🖼️</div>
+          <h3>फोटो ग्यालरी</h3>
+        </div>
+        <div id="galleryContent" class="albums">
+          <div class="albumname">Gallery लोड हुँदैछ...</div>
+        </div>
+      </section>
+
+      <section id="officeSection" class="officeInfoSection">
+        <div class="officeInfoHead">
+          <h3>हाम्रो कार्यालय</h3>
+          <p>नेपाली कांग्रेस • वडा कार्यसमिति, वडा नं. १</p>
+        </div>
+        <div class="officeInfoGrid">
+          <div class="officePhotoBox">
+            <img src="office-photo.png" alt="नेपाली कांग्रेस वडा नं. १ पार्टी कार्यालय" loading="lazy">
+          </div>
+          <div id="officeDetails" class="officeDetails">
+            <div class="officeDetail">
+              <span class="officeDetailIcon">📍</span>
+              <span><b>कार्यालयको ठेगाना</b><span>गागलफेदी, काठमाडौं</span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div class="footer">नेपाली कांग्रेस • कागेश्वरी मनोहरा नगरपालिका वडा नं. १ • डिजिटल अभिलेख प्रणाली<span class="credit">Designed &amp; Developed by Nirajan Aryal (<a href="tel:9851113811" aria-label="Call Nirajan Aryal at 9851113811">9851113811</a>)</span>
+    </div>
+    <div class="modal" id="adminModal">
+      <div class="dialog">
+        <div id="loginView">
+          <h3>प्रशासन Login</h3>
+          <div class="login">
+            <input id="adminUser" placeholder="Username">
+            <input id="adminPass" type="password" placeholder="Password">
+            <button class="primary" onclick="adminLogin()">Login</button>
+            <button class="secondary" onclick="closeAdmin()">बन्द गर्नुहोस्</button>
+          </div>
+          <div id="adminMsg" class="msg">
+          </div>
+        </div>
+        <div id="adminView" class="adminBox">
+          <h3>सदस्य व्यवस्थापन</h3>
+          <p id="adminWelcome">
+          </p>
+          <div class="search">
+            <input id="adminNcid" placeholder="Edit गर्न NCID">
+            <button class="primary" onclick="loadMemberForEdit()">खोज्नुहोस्</button>
+          </div>
+          <div id="editForm">
+          </div>
+          <div class="actions">
+            <button class="secondary" onclick="closeAdmin()">बन्द</button>
+            <button class="secondary" onclick="adminLogout()">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div id="statListModal" class="listModal" onclick="closeStatList(event)">
+  <div class="listModalBox" role="dialog" aria-modal="true" aria-labelledby="statListTitle">
+    <div class="listModalHead">
+      <h3 id="statListTitle">विवरण</h3>
+      <button class="listClose" type="button" onclick="closeStatList()" aria-label="बन्द गर्नुहोस्">×</button>
+    </div>
+    <div id="statListBody" class="listModalBody">लोड हुँदैछ...</div>
+  </div>
+</div>
+
+<script>
+// Google Apps Script Web App deploy गरेपछि यहाँ URL राख्नुहोस्&#x20;।
+const API_URL = 'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
+let currentNCID = '';
+let adminToken = sessionStorage.getItem('nc_admin_token') || '';
+let adminMembers = [];
+const labels = [     ['total','जम्मा क्रियाशील सदस्य'],['male','पुरुष'],['female','महिला'],['khasArya','खस–आर्य'],['janajati','आदिवासी जनजाति'],     ['dalit','दलित'],['newMember','नयाँ सदस्य'],['renewed','नवीकरण सदस्य'],['representatives','निर्वाचित प्रतिनिधि']   ];
+async function api(action, data={}) {
+  if(API_URL.includes('PASTE_')) throw new Error('पहिला index.html मा Apps Script Web App URL राख्नुहोस् ।');
+  const r = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data})});
+  return r.json();
+}
+async function loadDashboard() {
+  const el=document.getElementById('stats');
+  el.innerHTML='<div class="card stat">लोड हुँदैछ...</div>';
+  try {
+    const r=await api('dashboard');
+    if(!r.ok) throw new Error(r.message);
+    el.innerHTML=labels.map(([k,l])=>`<div class="card stat" role="button" tabindex="0" onclick="openStatList('${k}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStatList('${k}')}"><b>${nepaliNum(r.stats[k]??0)}</b><span>${l}</span></div>`).join('');
+  } catch(e) {
+    el.innerHTML=`<div class="card stat"><span>${escapeHtml(e.message)}</span></div>`;
+  }
+}
+async function openStatList(category) {
+  const modal = document.getElementById('statListModal');
+  const title = document.getElementById('statListTitle');
+  const body = document.getElementById('statListBody');
+  const label = labels.find(item => item[0] === category);
+
+  if (!modal || !title || !body) {
+    alert('विवरण Popup तयार हुन सकेन ।');
+    return;
+  }
+
+  title.textContent = label ? label[1] : 'विवरण';
+  body.innerHTML = '<div class="msg" style="display:block">विवरण लोड हुँदैछ...</div>';
+  modal.classList.add('on');
+  document.body.style.overflow = 'hidden';
+
+  try {
+    const result = await api('publicStatList', { category: category });
+
+    if (!result || result.ok !== true) {
+      throw new Error((result && result.message) || 'विवरण लोड हुन सकेन ।');
+    }
+
+    const rows = Array.isArray(result.rows) ? result.rows : [];
+    title.textContent = `${nepaliNum(rows.length)} ${result.title || (label ? label[1] : 'विवरण')}`;
+    renderStatRows(rows, category);
+  } catch (error) {
+    body.innerHTML = `
+      <div class="msg" style="display:block">
+        ${escapeHtml(error.message || 'विवरण लोड हुन सकेन ।')}
+        <br><br>
+        <button class="primary" type="button" onclick="openStatList('${category}')">पुनः प्रयास गर्नुहोस्</button>
+      </div>`;
+  }
+}
+
+function firstValue(record, keys) {
+  for (const key of keys) {
+    if (record && String(record[key] ?? '').trim() !== '') {
+      return String(record[key]).trim();
+    }
+  }
+  return '';
+}
+
+function renderStatRows(rows, category) {
+  const body = document.getElementById('statListBody');
+
+  if (!rows.length) {
+    body.innerHTML = '<div class="msg" style="display:block">कुनै विवरण भेटिएन ।</div>';
+    return;
+  }
+
+  const isRepresentative = category === 'representatives';
+
+  const items = rows.map((record, index) => {
+    const name = firstValue(record, ['सदस्यको नाम', 'नाम', 'Name', 'प्रतिनिधिको नाम']);
+    const ncid = firstValue(record, ['NCID', 'क्रियाशील नं.', 'Membership Number', 'Membership No']);
+    const mobile = firstValue(record, ['मोबाइल नम्बर', 'Mobile Number', 'मोबाइल', 'Mobile']);
+    const group = isRepresentative
+      ? firstValue(record, ['प्रतिनिधि वर्ग', 'वर्ग', 'पद', 'समूह', 'Category'])
+      : firstValue(record, ['समावेशी समूह', 'कैफियत']);
+
+    return `
+      <div class="memberListRow">
+        <div>${nepaliNum(index + 1)}</div>
+        <div class="name">${escapeHtml(name || '—')}</div>
+        <div class="meta">${escapeHtml(ncid ? `NCID / क्रियाशील नं.: ${ncid}` : (group || '—'))}</div>
+        <div class="meta">${escapeHtml(mobile ? `मोबाइल: ${mobile}` : (group || '—'))}</div>
+      </div>`;
+  }).join('');
+
+  body.innerHTML = `
+    <div class="memberList">
+      <div class="memberListRow header">
+        <div>क्र.सं.</div>
+        <div>नाम</div>
+        <div>NCID / विवरण</div>
+        <div>मोबाइल / वर्ग</div>
+      </div>
+      ${items}
+    </div>`;
+}
+
+function closeStatList(event) {
+  if (event && event.target !== document.getElementById('statListModal')) return;
+  document.getElementById('statListModal').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') closeStatList();
+});
+
+function nepaliNum(v) {
+  return String(v).replace(/[0-9]/g,d=>'०१२३४५६७८९'[d]);
+}
+function focusSearch() {
+  document.getElementById('ncid').focus();
+}
+function showHome() {
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function searchMember() {
+  const ncid=document.getElementById('ncid').value.trim();
+  const msg=document.getElementById('searchMsg');
+  document.getElementById('verifyBox').style.display='none';
+  document.getElementById('profile').style.display='none';
+  msg.style.display='block';
+  msg.textContent='सदस्यको विवरण खोजिँदैछ...';
+  try {
+    const r=await api('searchMember',{ncid});
+    if(!r.ok) throw new Error(r.message);
+    currentNCID=r.member.ncid;
+    document.getElementById('foundName').textContent=r.member.name;
+    document.getElementById('masked').textContent=r.member.hasMobile?`दर्ता मोबाइल: ${r.member.mobileMasked}`:'मोबाइल नम्बर दर्ता गरिएको छैन ।';
+    document.getElementById('verifyBox').style.display='block';
+    msg.textContent='सदस्यको विवरण भेटियो । पूर्ण विवरण हेर्न दर्ता भएको मोबाइल नम्बरबाट प्रमाणीकरण गर्नुहोस् ।';
+  } catch(e) {
+    msg.textContent=e.message;
+  }
+}
+async function verifyMobile() {
+  const msg=document.getElementById('searchMsg');
+  msg.style.display='block';
+  msg.textContent='मोबाइल नम्बर प्रमाणीकरण हुँदैछ...';
+  try {
+    const r=await api('verifyMobile',{ncid:currentNCID,mobile:document.getElementById('mobile').value});
+    if(!r.ok) throw new Error(r.message);
+    renderProfile(r.member,r.designations||[]);
+    msg.textContent=r.message;
+  } catch(e) {
+    msg.textContent=e.message;
+  }
+}
+function renderProfile(m,designations=[]) {
+  const p=document.getElementById('profile');
+  const hidden=new Set(['PhotoFileID','हालको पद / जिम्मेवारी','प्रतिनिधि वर्ग / पद']);
+  const representativeRole=String(m['प्रतिनिधि वर्ग / पद']||'').trim();
+  const futureDesignation=String(m['हालको पद / जिम्मेवारी']||'').trim();
+  const designation=futureDesignation||representativeRole;
+  const name=String(m['सदस्यको नाम']||'सदस्य').trim();
+  const photo=m.PhotoURL?`<img class="memberIdentityPhoto" src="${escapeAttr(m.PhotoURL)}" alt="${escapeAttr(name)}">`:`<div class="memberIdentityPhoto"></div>`;
+  const iconMap={'क्र.सं.':'#','NCID':'▣','सदस्यको नाम':'●','बाबु / आमाको नाम':'♟','पेशा / व्यवसाय':'▰','लिङ्ग':'⚥','उमेर':'◉','समावेशी समूह':'♣','मोबाइल नम्बर':'☎','PDF पृष्ठ':'▤','क्रियाशील नं.':'▣','कैफियत':'✓'};
+  const rows=Object.keys(m).filter(k=>!hidden.has(k)&&k!=='PhotoURL'&&String(m[k]??'').trim()!=='').map(k=>`<div class="memberDetailItem"><div class="k"><span style="display:inline-block;width:22px;color:#075fc4;font-weight:900">${iconMap[k]||'•'}</span>${escapeHtml(k)}</div><div class="v">${escapeHtml(m[k])}</div></div>`).join('');
+  const history=designations.length?`<div class="memberHistory"><h4>विगतको पद / जिम्मेवारी</h4>${designations.map(d=>`<div style="padding:7px 0;border-bottom:1px solid #e5edf4"><b>${escapeHtml(d['पद / जिम्मेवारी']||'')}</b>${d['निकाय / तह']?' — '+escapeHtml(d['निकाय / तह']):''}${d['सुरु वर्ष']||d['अन्त्य वर्ष']?` <small>(${escapeHtml(d['सुरु वर्ष']||'')}–${escapeHtml(d['अन्त्य वर्ष']||'')})</small>`:''}</div>`).join('')}</div>`:'';
+  p.innerHTML=`<div class="memberProfileCard"><div class="memberProfileHead">सदस्यको विवरण</div><div class="memberProfileBody"><div class="memberIdentity"><div>${photo}<div class="memberStatus" style="margin:9px 0 0;justify-content:center;width:100%;box-sizing:border-box">✓ सक्रिय सदस्य</div></div><div class="memberIdentityInfo">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;width:100%">
+    <div style="min-width:0;flex:1">
+      <h3>${escapeHtml(name)}</h3>
+      ${designation?`<div class="memberDesignation" style="color:#12385f;background:#eef5ff;border:1px solid #9fc4ef;font-weight:800;opacity:1">${escapeHtml(designation)}</div>`:''}
+    </div>
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 0 auto">
+      <img src="flag-logo.png" alt="नेपाली कांग्रेसको झण्डा" style="display:block;width:58px;height:44px;max-width:58px;max-height:44px;object-fit:contain;opacity:1">
+      <img src="tree-logo.png" alt="नेपाली कांग्रेसको रुख चिन्ह" style="display:block;width:50px;height:50px;max-width:50px;max-height:50px;object-fit:contain;opacity:1;filter:none">
+    </div>
+  </div>
+</div></div><div class="memberDetailGrid">${rows}</div>${history}<div class="memberProfileActions"><button class="memberPrintBtn" type="button" onclick="printMemberProfile()">🖨️ प्रिन्ट गर्नुहोस्</button><button class="memberPdfBtn" type="button" onclick="downloadMemberPdf()">📄 PDF डाउनलोड</button></div><div class="printOnly" style="margin-top:24px"><div style="display:flex;justify-content:space-between;align-items:end;gap:20px"><div>सदस्य परिचय विवरण</div><div style="text-align:center;min-width:190px">........................................<br><b>मोहन थापा</b><br>वडा सभापति<br>नेपाली कांग्रेस, वडा नं. १</div></div></div></div></div>`;
+  p.style.display='block';
+}
+function buildMemberDocumentHtml() {
+  const profile = document.getElementById('profile');
+
+  if (!profile || !profile.innerHTML.trim()) {
+    return '';
+  }
+
+  const clone = profile.cloneNode(true);
+
+  clone.querySelectorAll('.memberProfileActions').forEach(function(el) {
+    el.remove();
+  });
+
+  const profileCard = clone.querySelector('.memberProfileCard');
+  const profileHead = clone.querySelector('.memberProfileHead');
+
+  if (profileHead) {
+    profileHead.remove();
+  }
+
+  if (profileCard) {
+    const officialHeader = document.createElement('div');
+    officialHeader.className = 'memberDocumentHeader';
+    officialHeader.innerHTML =
+      '<div class="documentTitle">राष्ट्रियता · लोकतन्त्र · समाजवाद | नेपाली कांग्रेस</div>' +
+      '<div class="documentSubTitle">वडा कार्यसमिति, वडा नं. १ · गागलफेदी, काठमाडौं — सदस्य परिचय पत्र</div>';
+
+    profileCard.insertBefore(officialHeader, profileCard.firstChild);
+  }
+
+  return `
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>सदस्य परिचय विवरण</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #eef2f6;
+      color: #172b3e;
+      font-family: Arial, "Noto Sans Devanagari", sans-serif;
+    }
+
+    .documentToolbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px;
+      background: #ffffff;
+      border-bottom: 1px solid #d7e0e8;
+    }
+
+    .documentToolbar button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .saveButton {
+      background: #c91f2c;
+      color: #ffffff;
+    }
+
+    .printButton {
+      background: #0877d8;
+      color: #ffffff;
+    }
+
+    .closeButton {
+      background: #edf2f6;
+      color: #24394d;
+    }
+
+    .documentPage {
+      width: 194mm;
+      min-height: 0;
+      margin: 14px auto;
+      padding: 0;
+      background: #ffffff;
+      box-shadow: 0 2px 14px rgba(0,0,0,.13);
+    }
+
+    .memberProfileCard {
+      width: 100%;
+      margin: 0;
+      border: 1px solid #cfd9e3;
+      background: #ffffff;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .memberDocumentHeader {
+      text-align: center;
+      padding: 7px 8px 8px;
+      border-bottom: 2px solid #138a45;
+    }
+
+    .documentTitle {
+      color: #c51f2b;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .documentSubTitle {
+      margin-top: 2px;
+      color: #17753b;
+      font-size: 10px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .memberProfileBody {
+      padding: 8px 10px;
+    }
+
+    .memberIdentity {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .memberIdentityPhoto {
+      display: block;
+      width: 96px !important;
+      height: 114px !important;
+      max-width: 96px !important;
+      max-height: 114px !important;
+      object-fit: cover !important;
+      border-radius: 11px;
+    }
+
+    .memberIdentityInfo {
+      min-width: 0;
+    }
+
+    .memberIdentityInfo h3 {
+      margin: 0 0 4px;
+      color: #c51f2b;
+      font-size: 22px;
+      line-height: 1.15;
+    }
+
+    .memberIdentityInfo img {
+      transform: none !important;
+    }
+
+    .memberIdentityInfo img[alt="नेपाली कांग्रेसको झण्डा"] {
+      display: block !important;
+      width: 58px !important;
+      height: 44px !important;
+      max-width: 58px !important;
+      max-height: 44px !important;
+      object-fit: contain !important;
+      opacity: 1 !important;
+    }
+
+    .memberIdentityInfo img[alt="नेपाली कांग्रेसको रुख चिन्ह"] {
+      display: block !important;
+      width: 50px !important;
+      height: 50px !important;
+      max-width: 50px !important;
+      max-height: 50px !important;
+      object-fit: contain !important;
+      opacity: 1 !important;
+      filter: none !important;
+    }
+
+    .memberDesignation {
+      display: inline-block;
+      padding: 4px 7px;
+      color: #12385f !important;
+      background: #eef5ff !important;
+      border: 1px solid #9fc4ef !important;
+      border-radius: 8px;
+      font-weight: 800 !important;
+      opacity: 1 !important;
+    }
+
+    .memberStatus {
+      margin-top: 5px !important;
+      padding: 4px 7px !important;
+      color: #087b3c;
+      font-weight: 800;
+    }
+
+    .memberDetailGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 6px;
+      margin-top: 6px;
+    }
+
+    .memberDetailItem {
+      display: grid;
+      grid-template-columns: 135px minmax(0, 1fr);
+      gap: 5px;
+      min-height: 0;
+      padding: 4px 6px;
+      border: 1px solid #dfe7ef;
+      border-radius: 8px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .memberDetailItem .k {
+      color: #53687c;
+    }
+
+    .memberDetailItem .v {
+      color: #172b3e;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .memberHistory {
+      margin-top: 6px;
+      padding: 6px 8px;
+      border: 1px solid #dfe7ef;
+      border-radius: 8px;
+    }
+
+    .memberHistory h4 {
+      margin: 0 0 3px;
+    }
+
+    .memberHistory > div {
+      padding: 3px 0 !important;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .printOnly {
+      display: block !important;
+      margin-top: 7px !important;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 8mm;
+    }
+
+    @media print {
+      html,
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .documentToolbar {
+        display: none !important;
+      }
+
+      .documentPage {
+        width: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+
+      .memberProfileCard {
+        width: 100% !important;
+        border: 1px solid #cfd9e3 !important;
+        overflow: visible !important;
+        break-inside: auto !important;
+        page-break-inside: auto !important;
+      }
+
+      .memberIdentity,
+      .memberDetailItem,
+      .memberHistory > div,
+      .printOnly {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .documentPage {
+        width: calc(100% - 16px);
+        margin: 8px;
+      }
+
+      .memberDetailGrid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+<style id="memberPartyMarkScreenFix">
+.memberIdentityInfo img[alt="नेपाली कांग्रेसको झण्डा"] {
+  width: 58px !important;
+  height: 44px !important;
+  max-width: 58px !important;
+  max-height: 44px !important;
+  object-fit: contain !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.memberIdentityInfo img[alt="नेपाली कांग्रेसको रुख चिन्ह"] {
+  width: 50px !important;
+  height: 50px !important;
+  max-width: 50px !important;
+  max-height: 50px !important;
+  object-fit: contain !important;
+  opacity: 1 !important;
+  filter: none !important;
+  transform: none !important;
+}
+</style>
+
+<style id="currentRepresentationStyles">
+.representationLevelBlock {
+  margin-top: 14px;
+}
+
+.representationLevelBlock:first-child {
+  margin-top: 0;
+}
+
+.representationLevelTitle {
+  margin: 0 0 9px;
+  padding: 8px 11px;
+  border-left: 4px solid var(--red);
+  border-radius: 8px;
+  background: #f7f9fc;
+  color: var(--navy);
+  font-size: 16px;
+  font-weight: 900;
+}
+</style>
+
+<style id="representationUniqueDesign">
+.representationGroup{--rep-main:#123f72;--rep-light:#edf5ff;margin:13px 0 17px;overflow:hidden;border:1px solid #dce5ef;border-radius:15px;background:linear-gradient(180deg,var(--rep-light),#fff 42%);box-shadow:0 5px 18px rgba(28,55,84,.07)}
+.representationGroupHead{min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:7px 13px 7px 7px;color:#fff;background:linear-gradient(100deg,var(--rep-main),color-mix(in srgb,var(--rep-main) 64%,white))}
+.representationHeadLeft{min-width:0;display:flex;align-items:center;gap:10px}
+.representationHeadIcon{width:43px;height:38px;flex:0 0 43px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.16);font-size:21px}
+.representationHeadText{font-size:19px;line-height:1.2;font-weight:900}
+.representationCount{flex:0 0 auto;min-width:108px;padding:6px 12px;border:1px solid rgba(255,255,255,.65);border-radius:999px;background:rgba(255,255,255,.92);color:var(--rep-main);text-align:center;font-size:12px;font-weight:900}
+.representationCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:10px}
+.representationPerson{min-width:0;display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:13px;padding:10px 13px;border:1px solid #dce5ef;border-radius:13px;background:rgba(255,255,255,.96);box-shadow:0 3px 10px rgba(25,52,78,.055)}
+.representationPhoto{width:88px;height:88px;display:block;object-fit:cover;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2px color-mix(in srgb,var(--rep-main) 24%,white)}
+.representationPhotoEmpty{display:grid;place-items:center;background:#eef3f7;color:#8ca0b4;font-size:28px}
+.representationPersonInfo{min-width:0}
+.representationPersonInfo h4{margin:0 0 3px;color:#123a67;font-size:18px;line-height:1.25;font-weight:900}
+.representationPost{color:#e02431;font-size:15px;line-height:1.25;font-weight:900}
+.representationTerm{margin-top:4px;color:#6a7d90;font-size:12px;font-weight:700}
+.representationPhone{width:fit-content;display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:5px 10px;border:1px solid #bfe6cf;border-radius:999px;background:#edfaf2;color:#07853f;font-size:13px;font-weight:900;text-decoration:none}
+.repLevelCentral{--rep-main:#d91f2d;--rep-light:#fff1f2}
+.repLevelProvince{--rep-main:#168448;--rep-light:#eefaf3}
+.repLevelDistrict{--rep-main:#6736a6;--rep-light:#f6f0fd}
+.repLevelArea{--rep-main:#d27a00;--rep-light:#fff7e9}
+.repLevelAssembly{--rep-main:#0791a6;--rep-light:#ebfbfd}
+.repLevelMunicipal{--rep-main:#0878c9;--rep-light:#edf7ff}
+.repLevelDefault{--rep-main:#345b82;--rep-light:#f0f5fa}
+@media(max-width:760px){
+.representationGroup{margin:10px 0 14px;border-radius:12px}
+.representationGroupHead{min-height:47px;padding:6px 8px}
+.representationHeadIcon{width:36px;height:34px;flex-basis:36px;font-size:18px}
+.representationHeadText{font-size:15px}
+.representationCount{min-width:auto;padding:5px 8px;font-size:10px}
+.representationCards{grid-template-columns:1fr;gap:8px;padding:8px}
+.representationPerson{grid-template-columns:72px minmax(0,1fr);gap:10px;padding:9px 10px}
+.representationPhoto{width:70px;height:70px}
+.representationPersonInfo h4{font-size:16px}
+.representationPost{font-size:14px}
+}
+@media(max-width:440px){.representationCount{white-space:nowrap}.representationHeadText{font-size:14px}}
+</style>
+</head>
+<body>
+  <div class="documentToolbar">
+    <button class="saveButton" onclick="window.print()">📄 PDF डाउनलोड / Save as PDF</button>
+    <button class="printButton" onclick="window.print()">🖨️ प्रिन्ट</button>
+    <button class="closeButton" onclick="window.close()">बन्द गर्नुहोस्</button>
+  </div>
+
+  <main class="documentPage">
+    ${clone.innerHTML}
+  </main>
+</body>
+</html>`;
+}
+
+function openMemberDocument(autoPrint) {
+  const documentHtml = buildMemberDocumentHtml();
+
+  if (!documentHtml) {
+    alert('पहिला सदस्यको विवरण खोल्नुहोस् ।');
+    return;
+  }
+
+  const documentWindow = window.open('', '_blank');
+
+  if (!documentWindow) {
+    alert('नयाँ window खोल्न browser popup अनुमति दिनुहोस् ।');
+    return;
+  }
+
+  documentWindow.document.open();
+  documentWindow.document.write(documentHtml);
+  documentWindow.document.close();
+
+  if (autoPrint) {
+    documentWindow.addEventListener('load', function() {
+      setTimeout(function() {
+        documentWindow.focus();
+        documentWindow.print();
+      }, 250);
+    });
+  }
+}
+
+function printMemberProfile() {
+  // Opens a clean isolated member document, then the printer dialog.
+  openMemberDocument(true);
+}
+
+function downloadMemberPdf() {
+  // Opens the same clean text-based document in preview mode.
+  openMemberDocument(false);
+}
+
+function openAdmin() {
+  document.getElementById('adminModal').classList.add('on');
+  if(adminToken) {
+    openAdminPanel();
+  }
+}
+function closeAdmin() {
+  document.getElementById('adminModal').classList.remove('on');
+}
+async function adminLogin() {
+  const msg=document.getElementById('adminMsg');
+  msg.style.display='block';
+  msg.textContent='Login हुँदैछ...';
+  try {
+    const r=await api('adminLogin',{username:document.getElementById('adminUser').value,password:document.getElementById('adminPass').value});
+    if(!r.ok)throw new Error(r.message);
+    adminToken=r.token;
+    sessionStorage.setItem('nc_admin_token',adminToken);
+    document.getElementById('adminWelcome').textContent='स्वागत छ, '+r.name;
+    await openAdminPanel();
+  } catch(e) {
+    msg.textContent=e.message;
+  }
+}
+async function openAdminPanel() {
+  try {
+    const r=await api('adminListMembers',{token:adminToken});
+    if(!r.ok)throw new Error(r.message);
+    adminMembers=r.members;
+    document.getElementById('loginView').style.display='none';
+    document.getElementById('adminView').style.display='block';
+  } catch(e) {
+    adminLogout();
+    document.getElementById('adminMsg').style.display='block';
+    document.getElementById('adminMsg').textContent=e.message;
+  }
+}
+function adminLogout() {
+  adminToken='';
+  adminMembers=[];
+  sessionStorage.removeItem('nc_admin_token');
+  document.getElementById('loginView').style.display='block';
+  document.getElementById('adminView').style.display='none';
+}
+function loadMemberForEdit() {
+  const ncid=document.getElementById('adminNcid').value.trim();
+  const m=adminMembers.find(x=>String(x.NCID).trim()===ncid);
+  if(!m) {
+    alert('सदस्य भेटिएन ।');
+    return;
+  }
+  renderEditForm(m);
+}
+function renderEditForm(m) {
+  const fields=['NCID','सदस्यको नाम','बाबु / आमाको नाम','पेशा / व्यवसाय','लिङ्ग','उमेर','समावेशी समूह','कैफियत','मोबाइल नम्बर','प्रतिनिधि स्थिति','प्रतिनिधि वर्ग'];
+  document.getElementById('editForm').innerHTML='<div class="row">'+fields.map(f=>`<div class="field"><label>${escapeHtml(f)}${f==='मोबाइल नम्बर'?' *':''}</label><input data-field="${escapeAttr(f)}" value="${escapeAttr(m[f]||'')}" ${f==='NCID'?'readonly':''}></div>`).join('')+'</div><div class="actions"><button class="primary" onclick="saveMember()">परिवर्तन सुरक्षित गर्नुहोस्</button></div>';
+}
+async function saveMember() {
+  const member= {
+  }
+  ;
+  document.querySelectorAll('#editForm [data-field]').forEach(i=>member[i.dataset.field]=i.value.trim());
+  try {
+    const r=await api('adminSaveMember',{token:adminToken,member});
+    if(!r.ok)throw new Error(r.message);
+    alert(r.message);
+    await openAdminPanel();
+  } catch(e) {
+    alert(e.message);
+  }
+}
+function escapeHtml(v) {
+  return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function escapeAttr(v){return escapeHtml(v);}
+  function scrollToId(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});}
+
+  let publicProtocolData={committee:[],formerPresidents:[]};
+  let publicRepresentativesData=[];
+  let publicRepresentationData={levels:[],rows:[]};
+  let activeProtocolMode='committee';
+  async function loadPublicProtocol(){
+    try{const r=await api('publicProtocol');if(!r.ok)throw new Error(r.message);publicProtocolData=r;showProtocolPublic(activeProtocolMode)}catch(e){document.getElementById('protocolPublicContent').innerHTML='<div class="noticeItem">वडा कार्यसमिति विवरण उपलब्ध छैन ।</div>'}
+  }
+  function protocolMemberPhoto(ncid){const m=(window.__publicMembers||[]).find(x=>String(x.NCID||'')===String(ncid||''));return m&&m.PhotoURL?m.PhotoURL:''}
+  function showProtocolPublic(mode){
+    activeProtocolMode=mode;
+    document.getElementById('tabCommittee').classList.toggle('on',mode==='committee');
+    document.getElementById('tabRepresentatives').classList.toggle('on',mode==='representatives');
+    document.getElementById('tabRepresentation').classList.toggle('on',mode==='representation');
+    document.getElementById('tabFormer').classList.toggle('on',mode==='former');
+    const box=document.getElementById('protocolPublicContent');
+
+    if(mode==='representation'){
+      const rows=(publicRepresentationData.rows||[]).slice().sort((a,b)=>{
+        const levelDiff=Number(a.LevelOrder||9999)-Number(b.LevelOrder||9999);
+        if(levelDiff)return levelDiff;
+        return Number(a.PostOrder||9999)-Number(b.PostOrder||9999);
+      });
+
+      if(!rows.length){
+        box.innerHTML='<div class="noticeItem">हाल यस वडाबाट प्रतिनिधित्वको विवरण उपलब्ध छैन ।</div>';
+        return;
+      }
+
+      // Active data भएको तह मात्र render हुन्छ; खाली तहको heading देखिँदैन ।
+      const grouped=[];
+      rows.forEach(r=>{
+        let group=grouped.find(g=>g.level===r.Level);
+        if(!group){
+          group={level:r.Level,rows:[]};
+          grouped.push(group);
+        }
+        group.rows.push(r);
+      });
+
+      const levelMeta={
+        'केन्द्रीय महाधिवेशन प्रतिनिधि':{icon:'🏛️',cls:'repLevelCentral',short:'केन्द्रीय महाधिवेशन प्रतिनिधि'},
+        'बागमती प्रदेश कार्यसमिति':{icon:'👥',cls:'repLevelProvince',short:'बागमती प्रदेश कार्यसमिति'},
+        'काठमाडौं जिल्ला कार्यसमिति':{icon:'👥',cls:'repLevelDistrict',short:'काठमाडौं जिल्ला कार्यसमिति'},
+        'क्षेत्रीय कार्यसमिति':{icon:'👥',cls:'repLevelArea',short:'काठमाडौं क्षेत्र नं. ३ क्षेत्रीय कार्यसमिति'},
+        'प्रदेश सभा (२) कार्यसमिति':{icon:'👥',cls:'repLevelAssembly',short:'प्रदेश सभा (२) कार्यसमिति'},
+        'नगर कार्यसमिति':{icon:'🏢',cls:'repLevelMunicipal',short:'कागेश्वरी मनोहरा नगर कार्यसमिति'}
+      };
+
+      box.innerHTML=grouped.map(group=>{
+        const meta=levelMeta[group.level]||{icon:'👥',cls:'repLevelDefault',short:group.level};
+        return `
+          <section class="representationGroup ${meta.cls}">
+            <div class="representationGroupHead">
+              <div class="representationHeadLeft">
+                <span class="representationHeadIcon">${meta.icon}</span>
+                <span class="representationHeadText">${escapeHtml(meta.short||'')}</span>
+              </div>
+              <span class="representationCount">सदस्य संख्या: ${nepaliNum(group.rows.length)}</span>
+            </div>
+            <div class="representationCards">
+              ${group.rows.map(r=>`
+                <article class="representationPerson">
+                  ${r.PhotoURL
+                    ? `<img class="representationPhoto" src="${escapeAttr(r.PhotoURL)}" alt="${escapeAttr(r.Name||'')}">`
+                    : `<div class="representationPhoto representationPhotoEmpty">👤</div>`}
+                  <div class="representationPersonInfo">
+                    <h4>${escapeHtml(r.Name||'')}</h4>
+                    <div class="representationPost">${escapeHtml(r.Designation||'')}</div>
+                    ${r.From||r.To
+                      ? `<div class="representationTerm">▣ ${escapeHtml(r.From||'')}${r.To?' - '+escapeHtml(r.To):''}</div>`
+                      : ''}
+                    ${r.Mobile
+                      ? `<a class="representationPhone" href="tel:${escapeAttr(String(r.Mobile).replace(/\s+/g,''))}"><span>☎</span><span>${escapeHtml(r.Mobile)}</span></a>`
+                      : ''}
+                  </div>
+                </article>
+              `).join('')}
+            </div>
+          </section>
+        `;
+      }).join('');
+      return;
+    }
+    if(mode==='representatives'){
+      const rows=publicRepresentativesData||[];
+      if(!rows.length){box.innerHTML='<div class="noticeItem">हाल निर्वाचित प्रतिनिधिको विवरण उपलब्ध छैन ।</div>';return;}
+      box.innerHTML='<div class="committeeGrid">'+rows.map(x=>`<div class="committeeCard">${x.PhotoURL?`<img class="committeePhoto" src="${escapeAttr(x.PhotoURL)}" alt="">`:`<div class="committeePhoto"></div>`}<div><h4>${escapeHtml(x.Name||'')}</h4><div class="post">${escapeHtml(x.Role||'निर्वाचित प्रतिनिधि')}</div>${x.Mobile?`<a class="committeePhone" href="tel:${escapeAttr(String(x.Mobile).replace(/\s+/g,''))}"><span class="callIcon">☎</span><span>${escapeHtml(x.Mobile)}</span></a>`:''}</div></div>`).join('')+'</div>';return;
+    }
+    const committee=mode==='committee';
+    const sourceRows=committee?(publicProtocolData.committee||[]):(publicProtocolData.formerPresidents||[]); const seen=new Set(); const rows=sourceRows.filter(r=>{const key=String(r.Category|| (committee?'वर्तमान वडा कार्यसमिति':'पूर्व सभापति'))+'|'+String(r.NCID||r.Name||'');if(seen.has(key))return false;seen.add(key);return true});
+    if(!rows.length){box.innerHTML='<div class="noticeItem">हाल विवरण उपलब्ध छैन ।</div>';return}
+    if(committee){box.innerHTML='<div class="committeeGrid">'+rows.map(r=>`<div class="committeeCard">${r.PhotoURL?`<img class="committeePhoto" src="${escapeAttr(r.PhotoURL)}" alt="">`:`<div class="committeePhoto"></div>`}<div><h4>${escapeHtml(r.Name||'')}</h4><div class="post">${escapeHtml(r.Designation||'')}</div>${r.From||r.To?`<small>${escapeHtml(r.From||'')}${r.To?' - '+escapeHtml(r.To):''}</small>`:''}${r.Mobile?`<a class="committeePhone" href="tel:${escapeAttr(String(r.Mobile).replace(/\s+/g,''))}"><span class="callIcon">☎</span><span>${escapeHtml(r.Mobile)}</span></a>`:''}</div></div>`).join('')+'</div>'}
+    else{box.innerHTML='<div class="formerList">'+rows.map(r=>`<div class="formerItem">${r.PhotoURL?`<img class="committeePhoto" src="${escapeAttr(r.PhotoURL)}" alt="">`:`<div class="committeePhoto"></div>`}<div><h4>${escapeHtml(r.Name||'')}</h4><div class="post">${escapeHtml(r.Designation||'पूर्व सभापति')}</div><small>${escapeHtml(r.From||'')}${r.To?' - '+escapeHtml(r.To):''}</small>${r.Mobile?`<a class="committeePhone" href="tel:${escapeAttr(String(r.Mobile).replace(/\s+/g,''))}"><span class="callIcon">☎</span><span>${escapeHtml(r.Mobile)}</span></a>`:''}</div></div>`).join('')+'</div>'}
+  }
+
+
+
+  async function loadPublicRepresentation(){
+    try{
+      const r=await api('publicRepresentation');
+      if(!r.ok)throw new Error(r.message||'विवरण लोड हुन सकेन ।');
+      publicRepresentationData={
+        levels:Array.isArray(r.levels)?r.levels:[],
+        rows:Array.isArray(r.rows)?r.rows:[]
+      };
+      if(activeProtocolMode==='representation')showProtocolPublic('representation');
+    }catch(e){
+      publicRepresentationData={levels:[],rows:[]};
+    }
+  }
+
+  async function loadPublicRepresentatives(){
+    try{const r=await api('publicRepresentatives');if(!r.ok)throw new Error(r.message||'विवरण लोड हुन सकेन ।');publicRepresentativesData=Array.isArray(r.rows)?r.rows:[];if(activeProtocolMode==='representatives')showProtocolPublic('representatives');}catch(e){publicRepresentativesData=[];}
+  }
+
+  function nepaliDigitsToEnglish(value) {
+    const map = {'०':'0','१':'1','२':'2','३':'3','४':'4','५':'5','६':'6','७':'7','८':'8','९':'9'};
+    return String(value || '').replace(/[०-९]/g, d => map[d]);
+  }
+
+  function noticeEventDate(dateText) {
+    const clean = nepaliDigitsToEnglish(dateText).trim().replace(/-/g, '/');
+    const p = clean.split('/').map(Number);
+    if (p.length !== 3 || !p.every(Number.isFinite)) return null;
+    const [year, month, day] = p;
+
+    // हालको २०८३ वि.सं. कार्यक्रमका लागि verified month-start mapping ।
+    // २०८३/०६/१७ = 2026-10-03 जस्ता मिति यसैबाट exact गणना हुन्छ ।
+    if (year === 2083) {
+      const starts = [
+        '2026-04-14','2026-05-15','2026-06-15','2026-07-17',
+        '2026-08-17','2026-09-17','2026-10-18','2026-11-17',
+        '2026-12-16','2027-01-15','2027-02-13','2027-03-15'
+      ];
+      if (month < 1 || month > 12 || day < 1) return null;
+      const base = new Date(starts[month - 1] + 'T00:00:00');
+      base.setDate(base.getDate() + day - 1);
+      return base;
+    }
+    return null;
+  }
+
+  function parseClockMinutes(value){
+    const raw=String(value||'').trim();
+    if(!raw)return null;
+    const ascii=raw.replace(/[०-९]/g,d=>'०१२३४५६७८९'.indexOf(d)).replace(/\s+/g,' ');
+    const m=ascii.match(/(\d{1,2})\s*[:.]\s*(\d{1,2})/);
+    if(!m)return null;
+    let h=Number(m[1]),min=Number(m[2]),lower=ascii.toLowerCase();
+    if(/बेलुका|साँझ|रात|pm/.test(lower)&&h<12)h+=12;
+    if(/बिहान|am/.test(lower)&&h===12)h=0;
+    return h<=23&&min<=59?h*60+min:null;
+  }
+  function remainingText(v){
+    v=Math.max(0,Math.ceil(v));const h=Math.floor(v/60),m=v%60;
+    if(h&&m)return `${nepaliNum(h)} घण्टा ${nepaliNum(m)} मिनेट`;
+    if(h)return `${nepaliNum(h)} घण्टा`;return `${nepaliNum(m)} मिनेट`;
+  }
+  function noticeStatus(n){
+    const eventDate=noticeEventDate(n&&n['मिति']);
+    if(!eventDate)return{text:'',cls:'',html:''};
+    const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    const day=new Date(eventDate.getFullYear(),eventDate.getMonth(),eventDate.getDate());
+    const diff=Math.round((day-today)/86400000);
+    if(diff>0)return{text:`${diff} दिन बाँकी`,cls:'upcoming',html:`<span class="statusTop">📅 आगामी कार्यक्रम</span><span class="statusMain">${nepaliNum(diff)} दिन बाँकी</span>`};
+    if(diff<0)return{text:'कार्यक्रम सम्पन्न',cls:'done',html:'<span class="statusTop">✓ सम्पन्न</span><span class="statusMain">कार्यक्रम सम्पन्न</span>'};
+    if(String(n['दिनभरि']||'').toLowerCase()==='true')return{text:'आज कार्यक्रम',cls:'soon',html:'<span class="statusTop">📅 आज</span><span class="statusMain">दिनभरि कार्यक्रम</span>'};
+    const start=parseClockMinutes(n['सुरु समय']),end=parseClockMinutes(n['समाप्ति समय']);
+    const cur=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+    if(start===null&&end===null)return{text:'आज कार्यक्रम',cls:'soon',html:'<span class="statusTop">📅 आज</span><span class="statusMain">आज कार्यक्रम</span>'};
+    if(start!==null&&cur<start){const x=remainingText(start-cur);return{text:`सुरु हुन ${x} बाँकी`,cls:'soon',html:`<span class="statusTop">🕘 आज कार्यक्रम</span><span class="statusMain">सुरु हुन ${x} बाँकी</span>`};}
+    if(end!==null&&cur>=end)return{text:'कार्यक्रम सम्पन्न',cls:'done',html:'<span class="statusTop">✓ सम्पन्न</span><span class="statusMain">कार्यक्रम सम्पन्न</span>'};
+    const x=end!==null?remainingText(end-cur):'';
+    return{text:'कार्यक्रम सञ्चालनमा',cls:'live',html:`<span class="statusTop"><span class="liveDot"></span> LIVE</span><span class="statusMain">कार्यक्रम सञ्चालनमा${x?' • '+x+' बाँकी':''}</span>`};
+  }
+
+  async function loadPublicHome() {
+    try {
+      const r = await api('publicHome');
+      if (!r.ok) return;
+      const ns = r.notices || [];
+      document.getElementById('publicNotices').innerHTML = ns.length ? ns.map(n => {
+        const status = noticeStatus(n);
+        return `<div class="noticeItem noticeRich">
+          ${n.ImageURL ? `<div class="noticeVisual"><img class="noticeImage" src="${escapeAttr(n.ImageURL)}" alt="सूचना Image" loading="lazy"></div>` : ''}
+          <div class="noticeDetails">
+            <div class="noticeTitleRow">
+              <h4>${escapeHtml(n['शीर्षक'] || 'सूचना')}</h4>
+              ${status.text ? `<div class="noticeStatus eventStatus ${status.cls}" aria-label="${escapeAttr(status.text)}">${status.html}</div>` : ''}
+            </div>
+            <div class="programLabel">कार्यक्रम विवरण</div>
+            <div class="noticeProgramInfo">
+              ${n['मिति'] ? `<div><b>📅 मिति:</b> ${escapeHtml(n['मिति'])}</div>` : ''}
+              ${n['समय'] ? `<div><b>🕒 समय:</b> ${escapeHtml(n['समय'])}</div>` : ''}
+              ${n['स्थान'] ? `<div><b>📍 स्थान:</b> ${escapeHtml(n['स्थान'])}</div>` : ''}
+            </div>
+            ${n['विवरण'] ? `<div class="noticeBodyText">${escapeHtml(n['विवरण'])}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('') : '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
+      renderContacts(r.settings || {});
+    } catch (e) {}
+  }
+  
+  function renderOfficeInfo(s){
+    const box=document.getElementById('officeDetails');
+    if(!box)return;
+    const rows=[];
+    if(s.Email)rows.push(`<a class="officeDetail" href="mailto:${escapeAttr(s.Email)}"><span class="officeDetailIcon">✉</span><span><b>इमेल</b><span>${escapeHtml(s.Email)}</span></span></a>`);
+    if(s.Phone)rows.push(`<a class="officeDetail" href="tel:${escapeAttr(String(s.Phone).replace(/\s+/g,''))}"><span class="officeDetailIcon">☎</span><span><b>सम्पर्क नम्बर</b><span>${escapeHtml(s.Phone)}</span></span></a>`);
+    rows.push(`<div class="officeDetail"><span class="officeDetailIcon">📍</span><span><b>कार्यालयको ठेगाना</b><span>${escapeHtml(s.Location||'गागलफेदी, काठमाडौं')}</span></span></div>`);
+    const links=[];
+    if(s.MapURL)links.push(`<a class="officeLink map" href="${escapeAttr(s.MapURL)}" target="_blank" rel="noopener">📍 Google Map मा हेर्नुहोस्</a>`);
+    if(s.FacebookURL)links.push(`<a class="officeLink facebook" href="${escapeAttr(s.FacebookURL)}" target="_blank" rel="noopener">f&nbsp; Facebook मा हेर्नुहोस्</a>`);
+    if(links.length)rows.push(`<div class="officeLinks">${links.join('')}</div>`);
+    box.innerHTML=rows.join('');
+  }
+
+function renderContacts(s){renderOfficeInfo(s);const items=[];if(s.Email)items.push(`<a class="contactitem" href="mailto:${escapeAttr(s.Email)}"><span class="ci">✉</span><span>${escapeHtml(s.Email)}</span></a>`);if(s.Phone)items.push(`<a class="contactitem" href="tel:${escapeAttr(s.Phone)}"><span class="ci">☎</span><span>${escapeHtml(s.Phone)}</span></a>`);if(s.Location)items.push(`<a class="contactitem" ${s.MapURL?'href="'+escapeAttr(s.MapURL)+'" target="_blank"':''}><span class="ci">📍</span><span>${escapeHtml(s.Location)}</span></a>`);if(s.FacebookURL)items.push(`<a class="contactitem" href="${escapeAttr(s.FacebookURL)}" target="_blank"><span class="ci" style="font-family:Arial;font-weight:900">f</span><span>Facebook</span></a>`);document.getElementById('contactStrip').innerHTML=items.join('');}
+  async function loadGallery(shouldScroll=true){if(shouldScroll)scrollToId('gallerySection');const c=document.getElementById('galleryContent');c.innerHTML='<div class="albumname">Gallery लोड हुँदैछ...</div>';try{const r=await api('gallery');if(!r.ok)throw new Error(r.message);const a=r.albums||[];c.className='albums';c.innerHTML=a.length?a.map((x,i)=>`<div class="album" onclick="openAlbum(${i})"><div class="albumcover">${x.photos&&x.photos[0]?'<img src="'+escapeAttr(x.photos[0].url)+'">':'🖼️'}</div><div class="albumname">${escapeHtml(x.name)} <small>(${(x.photos||[]).length})</small></div></div>`).join(''):'<div class="albumname">Photo Gallery folder भित्र Album folder थपिएको छैन ।</div>';window._albums=a;}catch(e){c.innerHTML='<div class="albumname">'+escapeHtml(e.message)+'</div>'}}
+  function openAlbum(i){const a=(window._albums||[])[i];if(!a)return;const c=document.getElementById('galleryContent');c.className='';c.innerHTML=`<button class="secondary" onclick="loadGallery()">← Album</button><h3>${escapeHtml(a.name)}</h3><div class="photos">${(a.photos||[]).map(p=>`<a href="${escapeAttr(p.url)}" target="_blank"><img src="${escapeAttr(p.url)}" alt="${escapeAttr(p.name)}"></a>`).join('')}</div>`;}
+  loadPublicHome();
+  loadGallery(false);
+  loadPublicProtocol();
+  loadPublicRepresentatives();
+  loadPublicRepresentation();
+  loadDashboard();
+</script>
+    </body>
+  </html>
