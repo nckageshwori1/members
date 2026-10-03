@@ -961,152 +961,7 @@ main {
 }
 
 </style>
-  
-<style>
-
-/* ============================================================
-   MEMBER PROFILE — UNIVERSAL A4 TEXT PRINT / PDF
-   Keeps real HTML text selectable/searchable in PDF.
-   ============================================================ */
-
-@media print {
-  @page {
-    size: A4 portrait;
-    margin: 8mm;
-  }
-
-  html,
-  body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #ffffff !important;
-    overflow: visible !important;
-  }
-
-  /*
-   * Do not use body > * display:none here.
-   * #profile is nested inside the page layout, so that rule can hide
-   * its parent and create a blank print preview.
-   */
-  body * {
-    visibility: hidden !important;
-  }
-
-  #profile,
-  #profile * {
-    visibility: visible !important;
-  }
-
-  #profile {
-    display: block !important;
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  .memberProfileCard {
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    border: 1px solid #d7dee8 !important;
-    box-shadow: none !important;
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-  }
-
-  .memberProfileHead {
-    padding: 9px 14px !important;
-  }
-
-  .memberProfileBody {
-    padding: 9px 11px !important;
-  }
-
-  .memberIdentity {
-    gap: 10px !important;
-    margin: 0 !important;
-  }
-
-  .memberIdentityPhoto {
-    width: 105px !important;
-    height: 124px !important;
-  }
-
-  .memberDetailGrid {
-    margin-top: 7px !important;
-    gap: 5px 7px !important;
-  }
-
-  .memberDetailItem {
-    padding: 5px 7px !important;
-    min-height: 0 !important;
-    break-inside: avoid !important;
-  }
-
-  .memberHistory {
-    margin-top: 7px !important;
-    padding: 7px 9px !important;
-    break-inside: avoid !important;
-  }
-
-  .memberHistory > div {
-    padding: 4px 0 !important;
-  }
-
-  .memberProfileActions {
-    display: none !important;
-  }
-
-  .printOnly {
-    display: block !important;
-    margin-top: 8px !important;
-  }
-}
-
-</style>
-
-<style>
-
-/* ============================================================
-   MEMBER PROFILE — ROLE / LOGO ALIGNMENT
-   ============================================================ */
-.memberDesignation {
-  color: #12385f !important;
-  background: #eef5ff !important;
-  border: 1px solid #bfd4ee !important;
-  font-weight: 800 !important;
-  opacity: 1 !important;
-}
-
-.memberIdentityInfo img {
-  transform: translateY(-4px);
-}
-
-@media print {
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  .memberDesignation {
-    color: #12385f !important;
-    background: #eef5ff !important;
-    border-color: #bfd4ee !important;
-    font-weight: 800 !important;
-    opacity: 1 !important;
-  }
-
-  .memberIdentityInfo img {
-    transform: translateY(-5px) !important;
-  }
-}
-
-</style>
-</head>
+  </head>
   <body>
     <div class="topbar">
       <div class="topin">
@@ -1489,73 +1344,72 @@ function renderProfile(m,designations=[]) {
   const iconMap={'क्र.सं.':'#','NCID':'▣','सदस्यको नाम':'●','बाबु / आमाको नाम':'♟','पेशा / व्यवसाय':'▰','लिङ्ग':'⚥','उमेर':'◉','समावेशी समूह':'♣','मोबाइल नम्बर':'☎','PDF पृष्ठ':'▤','क्रियाशील नं.':'▣','कैफियत':'✓'};
   const rows=Object.keys(m).filter(k=>!hidden.has(k)&&k!=='PhotoURL'&&String(m[k]??'').trim()!=='').map(k=>`<div class="memberDetailItem"><div class="k"><span style="display:inline-block;width:22px;color:#075fc4;font-weight:900">${iconMap[k]||'•'}</span>${escapeHtml(k)}</div><div class="v">${escapeHtml(m[k])}</div></div>`).join('');
   const history=designations.length?`<div class="memberHistory"><h4>विगतको पद / जिम्मेवारी</h4>${designations.map(d=>`<div style="padding:7px 0;border-bottom:1px solid #e5edf4"><b>${escapeHtml(d['पद / जिम्मेवारी']||'')}</b>${d['निकाय / तह']?' — '+escapeHtml(d['निकाय / तह']):''}${d['सुरु वर्ष']||d['अन्त्य वर्ष']?` <small>(${escapeHtml(d['सुरु वर्ष']||'')}–${escapeHtml(d['अन्त्य वर्ष']||'')})</small>`:''}</div>`).join('')}</div>`:'';
-  p.innerHTML=`<div class="memberProfileCard">
-<div class="memberPrintHeader">
-  <div class="memberPrintHeaderMain">राष्ट्रियता · लोकतन्त्र · समाजवाद | नेपाली कांग्रेस</div>
-  <div class="memberPrintHeaderSub">वडा कार्यसमिति, वडा नं. १ · गागलफेदी, काठमाडौं — सदस्य परिचय पत्र</div>
-</div>
-<div class="memberProfileHead">सदस्यको विवरण</div><div class="memberProfileBody"><div class="memberIdentity"><div>${photo}<div class="memberStatus" style="margin:9px 0 0;justify-content:center;width:100%;box-sizing:border-box">✓ सक्रिय सदस्य</div></div><div class="memberIdentityInfo">
-  <div class="memberIdentityTop">
-    <div class="memberIdentityText">
+  p.innerHTML=`<div class="memberProfileCard"><div class="memberProfileHead">सदस्यको विवरण</div><div class="memberProfileBody"><div class="memberIdentity"><div>${photo}<div class="memberStatus" style="margin:9px 0 0;justify-content:center;width:100%;box-sizing:border-box">✓ सक्रिय सदस्य</div></div><div class="memberIdentityInfo">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;width:100%">
+    <div style="min-width:0;flex:1">
       <h3>${escapeHtml(name)}</h3>
-      ${designation?`<div class="memberDesignation">${escapeHtml(designation)}</div>`:''}
+      ${designation?`<div class="memberDesignation" style="color:#12385f;background:#eef5ff;border:1px solid #9fc4ef;font-weight:800;opacity:1">${escapeHtml(designation)}</div>`:''}
     </div>
-    <div class="memberPartyMarks">
-      <img src="flag-logo.png" alt="नेपाली कांग्रेसको झण्डा">
-      <img src="tree-logo.png" alt="नेपाली कांग्रेसको रुख चिन्ह">
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 0 auto">
+      <img src="flag-logo.png" alt="नेपाली कांग्रेसको झण्डा" style="display:block;width:58px;height:44px;max-width:58px;max-height:44px;object-fit:contain;opacity:1">
+      <img src="tree-logo.png" alt="नेपाली कांग्रेसको रुख चिन्ह" style="display:block;width:50px;height:50px;max-width:50px;max-height:50px;object-fit:contain;opacity:1;filter:none">
     </div>
   </div>
 </div></div><div class="memberDetailGrid">${rows}</div>${history}<div class="memberProfileActions"><button class="memberPrintBtn" type="button" onclick="printMemberProfile()">🖨️ प्रिन्ट गर्नुहोस्</button><button class="memberPdfBtn" type="button" onclick="downloadMemberPdf()">📄 PDF डाउनलोड</button></div><div class="printOnly" style="margin-top:24px"><div style="display:flex;justify-content:space-between;align-items:end;gap:20px"><div>सदस्य परिचय विवरण</div><div style="text-align:center;min-width:190px">........................................<br><b>मोहन थापा</b><br>वडा सभापति<br>नेपाली कांग्रेस, वडा नं. १</div></div></div></div></div>`;
   p.style.display='block';
 }
-function printMemberProfile() {
-  // Directly opens the browser/printer print dialog.
-  window.print();
-}
-
-function downloadMemberPdf() {
-  /*
-   * Opens a clean, text-based PDF preview in a new tab.
-   * The preview remains real HTML text (not canvas/image).
-   * From there the user can print or choose Save as PDF.
-   */
+function buildMemberDocumentHtml() {
   const profile = document.getElementById('profile');
 
   if (!profile || !profile.innerHTML.trim()) {
-    alert('पहिला सदस्यको विवरण खोल्नुहोस् ।');
-    return;
+    return '';
   }
 
-  const previewWindow = window.open('', '_blank');
+  const clone = profile.cloneNode(true);
 
-  if (!previewWindow) {
-    alert('PDF Preview खोल्न browser popup अनुमति दिनुहोस् ।');
-    return;
+  clone.querySelectorAll('.memberProfileActions').forEach(function(el) {
+    el.remove();
+  });
+
+  const profileCard = clone.querySelector('.memberProfileCard');
+  const profileHead = clone.querySelector('.memberProfileHead');
+
+  if (profileHead) {
+    profileHead.remove();
   }
 
-  const profileHtml = profile.innerHTML;
+  if (profileCard) {
+    const officialHeader = document.createElement('div');
+    officialHeader.className = 'memberDocumentHeader';
+    officialHeader.innerHTML =
+      '<div class="documentTitle">राष्ट्रियता · लोकतन्त्र · समाजवाद | नेपाली कांग्रेस</div>' +
+      '<div class="documentSubTitle">वडा कार्यसमिति, वडा नं. १ · गागलफेदी, काठमाडौं — सदस्य परिचय पत्र</div>';
 
-  previewWindow.document.open();
-  previewWindow.document.write(`
+    profileCard.insertBefore(officialHeader, profileCard.firstChild);
+  }
+
+  return `
 <!DOCTYPE html>
 <html lang="ne">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>सदस्य परिचय विवरण — PDF Preview</title>
+  <title>सदस्य परिचय विवरण</title>
   <style>
     * {
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
+      padding: 0;
       background: #eef2f6;
-      color: #152536;
+      color: #172b3e;
       font-family: Arial, "Noto Sans Devanagari", sans-serif;
     }
 
-    .pdfToolbar {
+    .documentToolbar {
       position: sticky;
       top: 0;
       z-index: 100;
@@ -1564,68 +1418,65 @@ function downloadMemberPdf() {
       gap: 10px;
       padding: 10px;
       background: #ffffff;
-      border-bottom: 1px solid #d8e0e8;
+      border-bottom: 1px solid #d7e0e8;
     }
 
-    .pdfToolbar button {
+    .documentToolbar button {
       border: 0;
       border-radius: 8px;
       padding: 10px 16px;
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
     }
 
-    .savePdf {
+    .saveButton {
       background: #c91f2c;
       color: #ffffff;
     }
 
-    .printPdf {
+    .printButton {
       background: #0877d8;
       color: #ffffff;
     }
 
-    .closePdf {
-      background: #eef2f6;
-      color: #22384d;
+    .closeButton {
+      background: #edf2f6;
+      color: #24394d;
     }
 
-    .pdfPage {
-      width: 210mm;
-      min-height: 297mm;
-      margin: 16px auto;
-      padding: 8mm;
+    .documentPage {
+      width: 194mm;
+      min-height: 0;
+      margin: 14px auto;
+      padding: 0;
       background: #ffffff;
-      box-shadow: 0 2px 16px rgba(0,0,0,.14);
+      box-shadow: 0 2px 14px rgba(0,0,0,.13);
     }
 
     .memberProfileCard {
       width: 100%;
-      border: 1px solid #d7dee8;
+      margin: 0;
+      border: 1px solid #cfd9e3;
       background: #ffffff;
-      overflow: hidden;
+      box-shadow: none;
+      overflow: visible;
     }
 
-    .memberProfileHead {
-      display: none;
-    }
-
-    .memberPrintHeader {
-      display: block;
+    .memberDocumentHeader {
       text-align: center;
       padding: 7px 8px 8px;
       border-bottom: 2px solid #138a45;
     }
 
-    .memberPrintHeaderMain {
+    .documentTitle {
       color: #c51f2b;
       font-size: 18px;
       line-height: 1.2;
       font-weight: 900;
     }
 
-    .memberPrintHeaderSub {
+    .documentSubTitle {
       margin-top: 2px;
       color: #17753b;
       font-size: 10px;
@@ -1633,81 +1484,79 @@ function downloadMemberPdf() {
       font-weight: 800;
     }
 
-    .memberIdentityTop {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      width: 100%;
-    }
-
-    .memberIdentityText {
-      min-width: 0;
-      flex: 1 1 auto;
-    }
-
-    .memberPartyMarks {
-      flex: 0 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 9px;
-    }
-
-    .memberPartyMarks img:first-child {
-      width: 62px;
-      max-height: 45px;
-      object-fit: contain;
-    }
-
-    .memberPartyMarks img:last-child {
-      width: 52px;
-      height: 52px;
-      object-fit: contain;
-      opacity: 1;
-      filter: none;
-    }
-
     .memberProfileBody {
-      padding: 10px 12px;
+      padding: 8px 10px;
     }
 
     .memberIdentity {
       display: grid;
-      grid-template-columns: 112px minmax(0, 1fr);
-      gap: 12px;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 10px;
       align-items: center;
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
 
     .memberIdentityPhoto {
-      width: 112px;
-      height: 132px;
-      object-fit: cover;
-      border-radius: 12px;
+      display: block;
+      width: 96px !important;
+      height: 114px !important;
+      max-width: 96px !important;
+      max-height: 114px !important;
+      object-fit: cover !important;
+      border-radius: 11px;
+    }
+
+    .memberIdentityInfo {
+      min-width: 0;
     }
 
     .memberIdentityInfo h3 {
-      margin: 0 0 5px;
-      color: #c81f2c;
-      font-size: 25px;
+      margin: 0 0 4px;
+      color: #c51f2b;
+      font-size: 22px;
+      line-height: 1.15;
+    }
+
+    .memberIdentityInfo img {
+      transform: none !important;
+    }
+
+    .memberIdentityInfo img[alt="नेपाली कांग्रेसको झण्डा"] {
+      display: block !important;
+      width: 58px !important;
+      height: 44px !important;
+      max-width: 58px !important;
+      max-height: 44px !important;
+      object-fit: contain !important;
+      opacity: 1 !important;
+    }
+
+    .memberIdentityInfo img[alt="नेपाली कांग्रेसको रुख चिन्ह"] {
+      display: block !important;
+      width: 50px !important;
+      height: 50px !important;
+      max-width: 50px !important;
+      max-height: 50px !important;
+      object-fit: contain !important;
+      opacity: 1 !important;
+      filter: none !important;
     }
 
     .memberDesignation {
       display: inline-block;
-      padding: 6px 10px;
-      color: #12385f;
-      background: #eef5ff;
-      border: 1px solid #bfd4ee;
+      padding: 4px 7px;
+      color: #12385f !important;
+      background: #eef5ff !important;
+      border: 1px solid #9fc4ef !important;
       border-radius: 8px;
-      font-weight: 800;
-    }
-
-    .memberIdentityInfo img {
-      transform: translateY(-5px);
+      font-weight: 800 !important;
+      opacity: 1 !important;
     }
 
     .memberStatus {
-      margin-top: 6px;
+      margin-top: 5px !important;
+      padding: 4px 7px !important;
       color: #087b3c;
       font-weight: 800;
     }
@@ -1715,17 +1564,20 @@ function downloadMemberPdf() {
     .memberDetailGrid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 6px 8px;
-      margin-top: 9px;
+      gap: 4px 6px;
+      margin-top: 6px;
     }
 
     .memberDetailItem {
       display: grid;
       grid-template-columns: 135px minmax(0, 1fr);
-      gap: 6px;
-      padding: 6px 8px;
+      gap: 5px;
+      min-height: 0;
+      padding: 4px 6px;
       border: 1px solid #dfe7ef;
-      border-radius: 9px;
+      border-radius: 8px;
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
 
     .memberDetailItem .k {
@@ -1739,23 +1591,27 @@ function downloadMemberPdf() {
     }
 
     .memberHistory {
-      margin-top: 8px;
-      padding: 8px 10px;
+      margin-top: 6px;
+      padding: 6px 8px;
       border: 1px solid #dfe7ef;
-      border-radius: 9px;
+      border-radius: 8px;
     }
 
     .memberHistory h4 {
-      margin: 0 0 4px;
+      margin: 0 0 3px;
     }
 
-    .memberProfileActions {
-      display: none !important;
+    .memberHistory > div {
+      padding: 3px 0 !important;
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
 
     .printOnly {
       display: block !important;
-      margin-top: 10px !important;
+      margin-top: 7px !important;
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
 
     @page {
@@ -1776,11 +1632,11 @@ function downloadMemberPdf() {
         print-color-adjust: exact !important;
       }
 
-      .pdfToolbar {
+      .documentToolbar {
         display: none !important;
       }
 
-      .pdfPage {
+      .documentPage {
         width: auto !important;
         min-height: 0 !important;
         margin: 0 !important;
@@ -1789,6 +1645,9 @@ function downloadMemberPdf() {
       }
 
       .memberProfileCard {
+        width: 100% !important;
+        border: 1px solid #cfd9e3 !important;
+        overflow: visible !important;
         break-inside: auto !important;
         page-break-inside: auto !important;
       }
@@ -1803,11 +1662,9 @@ function downloadMemberPdf() {
     }
 
     @media (max-width: 800px) {
-      .pdfPage {
+      .documentPage {
         width: calc(100% - 16px);
-        min-height: auto;
         margin: 8px;
-        padding: 12px;
       }
 
       .memberDetailGrid {
@@ -1816,313 +1673,80 @@ function downloadMemberPdf() {
     }
   </style>
 
-<style>
-
-/* ============================================================
-   MEMBER PROFILE — OFFICIAL HEADER / PARTY MARKS
-   ============================================================ */
-
-.memberPrintHeader {
-  display: none;
+<style id="memberPartyMarkScreenFix">
+.memberIdentityInfo img[alt="नेपाली कांग्रेसको झण्डा"] {
+  width: 58px !important;
+  height: 44px !important;
+  max-width: 58px !important;
+  max-height: 44px !important;
+  object-fit: contain !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
-.memberIdentityTop {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-}
-
-.memberIdentityText {
-  min-width: 0;
-  flex: 1 1 auto;
-}
-
-.memberPartyMarks {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  padding-top: 1px;
-}
-
-.memberPartyMarks img:first-child {
-  width: 68px;
-  max-height: 48px;
-  object-fit: contain;
-}
-
-.memberPartyMarks img:last-child {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
+.memberIdentityInfo img[alt="नेपाली कांग्रेसको रुख चिन्ह"] {
+  width: 50px !important;
+  height: 50px !important;
+  max-width: 50px !important;
+  max-height: 50px !important;
+  object-fit: contain !important;
   opacity: 1 !important;
   filter: none !important;
-}
-
-.memberDesignation {
-  color: #12385f !important;
-  background: #eef5ff !important;
-  border: 1px solid #9fc4ef !important;
-  font-weight: 800 !important;
-  opacity: 1 !important;
-}
-
-@media (max-width: 700px) {
-  .memberPartyMarks {
-    gap: 6px;
-  }
-
-  .memberPartyMarks img:first-child {
-    width: 52px;
-  }
-
-  .memberPartyMarks img:last-child {
-    width: 45px;
-    height: 45px;
-  }
-}
-
-</style>
-
-
-<style id="memberFinalPrintRules">
-@media print {
-  @page {
-    size: A4 portrait;
-    margin: 8mm;
-  }
-
-  html,
-  body {
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-    background: #ffffff !important;
-  }
-
-  /*
-   * IMPORTANT:
-   * Do not use visibility:hidden for the whole website because hidden
-   * elements still reserve page height and create blank pages.
-   * Only the real ancestor chain of #profile remains in print layout.
-   */
-  body > * {
-    display: none !important;
-  }
-
-  body > main:first-of-type {
-    display: block !important;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  body > main:first-of-type > * {
-    display: none !important;
-  }
-
-  body > main:first-of-type > .contentgrid {
-    display: block !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  body > main:first-of-type > .contentgrid > * {
-    display: none !important;
-  }
-
-  body > main:first-of-type > .contentgrid > .card.panel:first-child {
-    display: block !important;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    background: #ffffff !important;
-  }
-
-  body > main:first-of-type > .contentgrid > .card.panel:first-child > * {
-    display: none !important;
-  }
-
-  #profile {
-    display: block !important;
-    position: static !important;
-    width: 100% !important;
-    max-width: none !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  #profile * {
-    visibility: visible !important;
-  }
-
-  .memberProfileCard {
-    display: block !important;
-    width: 100% !important;
-    max-width: none !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    border: 1px solid #d7dee8 !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-
-    /* Do NOT force the entire profile to stay on one page.
-       If designation history becomes genuinely long, it may flow naturally. */
-    break-inside: auto !important;
-    page-break-inside: auto !important;
-  }
-
-  .memberPrintHeader {
-    display: block !important;
-    text-align: center !important;
-    padding: 7px 8px 8px !important;
-    border-bottom: 2px solid #138a45 !important;
-  }
-
-  .memberPrintHeaderMain {
-    color: #c51f2b !important;
-    font-size: 18px !important;
-    line-height: 1.2 !important;
-    font-weight: 900 !important;
-  }
-
-  .memberPrintHeaderSub {
-    margin-top: 2px !important;
-    color: #17753b !important;
-    font-size: 10px !important;
-    line-height: 1.25 !important;
-    font-weight: 800 !important;
-  }
-
-  .memberProfileHead {
-    display: none !important;
-  }
-
-  .memberProfileBody {
-    padding: 8px 10px !important;
-  }
-
-  .memberIdentity {
-    gap: 10px !important;
-    margin: 0 !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  .memberIdentityPhoto {
-    width: 96px !important;
-    height: 114px !important;
-  }
-
-  .memberIdentityInfo h3 {
-    margin: 0 0 4px !important;
-    font-size: 22px !important;
-    line-height: 1.15 !important;
-  }
-
-  .memberPartyMarks {
-    gap: 8px !important;
-    padding-top: 0 !important;
-  }
-
-  .memberPartyMarks img:first-child {
-    width: 58px !important;
-    max-height: 43px !important;
-  }
-
-  .memberPartyMarks img:last-child {
-    width: 50px !important;
-    height: 50px !important;
-    opacity: 1 !important;
-    filter: none !important;
-  }
-
-  .memberDesignation {
-    padding: 4px 7px !important;
-    color: #12385f !important;
-    background: #eef5ff !important;
-    border-color: #9fc4ef !important;
-    font-weight: 800 !important;
-    opacity: 1 !important;
-  }
-
-  .memberStatus {
-    margin-top: 5px !important;
-    padding: 4px 7px !important;
-  }
-
-  .memberDetailGrid {
-    margin-top: 6px !important;
-    gap: 4px 6px !important;
-  }
-
-  .memberDetailItem {
-    min-height: 0 !important;
-    padding: 4px 6px !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  .memberHistory {
-    margin-top: 6px !important;
-    padding: 6px 8px !important;
-    break-inside: auto !important;
-    page-break-inside: auto !important;
-  }
-
-  .memberHistory > div {
-    padding: 3px 0 !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  .memberProfileActions {
-    display: none !important;
-  }
-
-  .printOnly {
-    display: block !important;
-    margin-top: 7px !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+  transform: none !important;
 }
 </style>
-
 </head>
 <body>
-  <div class="pdfToolbar">
-    <button class="savePdf" onclick="window.print()">📄 PDF डाउनलोड / Save as PDF</button>
-    <button class="printPdf" onclick="window.print()">🖨️ प्रिन्ट</button>
-    <button class="closePdf" onclick="window.close()">बन्द गर्नुहोस्</button>
+  <div class="documentToolbar">
+    <button class="saveButton" onclick="window.print()">📄 PDF डाउनलोड / Save as PDF</button>
+    <button class="printButton" onclick="window.print()">🖨️ प्रिन्ट</button>
+    <button class="closeButton" onclick="window.close()">बन्द गर्नुहोस्</button>
   </div>
 
-  <main class="pdfPage">
-    ${profileHtml}
+  <main class="documentPage">
+    ${clone.innerHTML}
   </main>
 </body>
-</html>
-  `);
-  previewWindow.document.close();
+</html>`;
+}
+
+function openMemberDocument(autoPrint) {
+  const documentHtml = buildMemberDocumentHtml();
+
+  if (!documentHtml) {
+    alert('पहिला सदस्यको विवरण खोल्नुहोस् ।');
+    return;
+  }
+
+  const documentWindow = window.open('', '_blank');
+
+  if (!documentWindow) {
+    alert('नयाँ window खोल्न browser popup अनुमति दिनुहोस् ।');
+    return;
+  }
+
+  documentWindow.document.open();
+  documentWindow.document.write(documentHtml);
+  documentWindow.document.close();
+
+  if (autoPrint) {
+    documentWindow.addEventListener('load', function() {
+      setTimeout(function() {
+        documentWindow.focus();
+        documentWindow.print();
+      }, 250);
+    });
+  }
+}
+
+function printMemberProfile() {
+  // Opens a clean isolated member document, then the printer dialog.
+  openMemberDocument(true);
+}
+
+function downloadMemberPdf() {
+  // Opens the same clean text-based document in preview mode.
+  openMemberDocument(false);
 }
 
 function openAdmin() {
