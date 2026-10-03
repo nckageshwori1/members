@@ -965,47 +965,31 @@ main {
 <style>
 
 /* ============================================================
-   MEMBER PROFILE PRINT — SINGLE PAGE FIX
-   Removes hidden website layout from print pagination.
+   MEMBER PROFILE — UNIVERSAL A4 TEXT PRINT / PDF
+   Keeps real HTML text selectable/searchable in PDF.
    ============================================================ */
 
 @media print {
   @page {
     size: A4 portrait;
-    margin: 7mm;
+    margin: 8mm;
   }
 
   html,
   body {
-    width: 100%;
-    height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: visible !important;
     background: #ffffff !important;
+    overflow: visible !important;
   }
 
-  body > * {
-    display: none !important;
-  }
-
-  body > main {
-    display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  body > main > * {
-    display: none !important;
-  }
-
-  #profile {
-    display: block !important;
-    position: static !important;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
+  /*
+   * Do not use body > * display:none here.
+   * #profile is nested inside the page layout, so that rule can hide
+   * its parent and create a blank print preview.
+   */
+  body * {
+    visibility: hidden !important;
   }
 
   #profile,
@@ -1013,40 +997,64 @@ main {
     visibility: visible !important;
   }
 
+  #profile {
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   .memberProfileCard {
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
+    border: 1px solid #d7dee8 !important;
     box-shadow: none !important;
-    break-inside: avoid !important;
+    break-inside: avoid-page !important;
     page-break-inside: avoid !important;
+  }
+
+  .memberProfileHead {
+    padding: 9px 14px !important;
   }
 
   .memberProfileBody {
-    padding: 10px 12px !important;
+    padding: 9px 11px !important;
   }
 
   .memberIdentity {
+    gap: 10px !important;
     margin: 0 !important;
-    gap: 12px !important;
+  }
+
+  .memberIdentityPhoto {
+    width: 105px !important;
+    height: 124px !important;
   }
 
   .memberDetailGrid {
-    margin-top: 8px !important;
-    gap: 6px 8px !important;
+    margin-top: 7px !important;
+    gap: 5px 7px !important;
   }
 
   .memberDetailItem {
-    padding: 6px 8px !important;
+    padding: 5px 7px !important;
+    min-height: 0 !important;
     break-inside: avoid !important;
-    page-break-inside: avoid !important;
   }
 
   .memberHistory {
-    margin-top: 8px !important;
-    padding: 8px 10px !important;
+    margin-top: 7px !important;
+    padding: 7px 9px !important;
     break-inside: avoid !important;
-    page-break-inside: avoid !important;
+  }
+
+  .memberHistory > div {
+    padding: 4px 0 !important;
   }
 
   .memberProfileActions {
@@ -1055,7 +1063,7 @@ main {
 
   .printOnly {
     display: block !important;
-    margin-top: 10px !important;
+    margin-top: 8px !important;
   }
 }
 
@@ -1447,7 +1455,14 @@ function renderProfile(m,designations=[]) {
   p.style.display='block';
 }
 function printMemberProfile(){window.print();}
-function downloadMemberPdf(){window.print();}
+function downloadMemberPdf() {
+  /*
+   * Native browser print keeps the profile as real HTML/text.
+   * Choose "Save as PDF" in the print destination.
+   * No canvas/image conversion is used.
+   */
+  window.print();
+}
 
 function openAdmin() {
   document.getElementById('adminModal').classList.add('on');
