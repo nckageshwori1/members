@@ -1718,42 +1718,50 @@ function buildMemberDocumentHtml() {
 }
 </style>
 
-<style id="representationUniqueDesign">
-.representationGroup{--rep-main:#123f72;--rep-light:#edf5ff;margin:13px 0 17px;overflow:hidden;border:1px solid #dce5ef;border-radius:15px;background:linear-gradient(180deg,var(--rep-light),#fff 42%);box-shadow:0 5px 18px rgba(28,55,84,.07)}
-.representationGroupHead{min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:7px 13px 7px 7px;color:#fff;background:linear-gradient(100deg,var(--rep-main),color-mix(in srgb,var(--rep-main) 64%,white))}
-.representationHeadLeft{min-width:0;display:flex;align-items:center;gap:10px}
-.representationHeadIcon{width:43px;height:38px;flex:0 0 43px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.16);font-size:21px}
-.representationHeadText{font-size:19px;line-height:1.2;font-weight:900}
-.representationCount{flex:0 0 auto;min-width:108px;padding:6px 12px;border:1px solid rgba(255,255,255,.65);border-radius:999px;background:rgba(255,255,255,.92);color:var(--rep-main);text-align:center;font-size:12px;font-weight:900}
-.representationCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:10px}
-.representationPerson{min-width:0;display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:13px;padding:10px 13px;border:1px solid #dce5ef;border-radius:13px;background:rgba(255,255,255,.96);box-shadow:0 3px 10px rgba(25,52,78,.055)}
-.representationPhoto{width:88px;height:88px;display:block;object-fit:cover;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2px color-mix(in srgb,var(--rep-main) 24%,white)}
-.representationPhotoEmpty{display:grid;place-items:center;background:#eef3f7;color:#8ca0b4;font-size:28px}
-.representationPersonInfo{min-width:0}
-.representationPersonInfo h4{margin:0 0 3px;color:#123a67;font-size:18px;line-height:1.25;font-weight:900}
-.representationPost{color:#e02431;font-size:15px;line-height:1.25;font-weight:900}
-.representationTerm{margin-top:4px;color:#6a7d90;font-size:12px;font-weight:700}
-.representationPhone{width:fit-content;display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:5px 10px;border:1px solid #bfe6cf;border-radius:999px;background:#edfaf2;color:#07853f;font-size:13px;font-weight:900;text-decoration:none}
-.repLevelCentral{--rep-main:#d91f2d;--rep-light:#fff1f2}
-.repLevelProvince{--rep-main:#168448;--rep-light:#eefaf3}
-.repLevelDistrict{--rep-main:#6736a6;--rep-light:#f6f0fd}
-.repLevelArea{--rep-main:#d27a00;--rep-light:#fff7e9}
-.repLevelAssembly{--rep-main:#0791a6;--rep-light:#ebfbfd}
-.repLevelMunicipal{--rep-main:#0878c9;--rep-light:#edf7ff}
-.repLevelDefault{--rep-main:#345b82;--rep-light:#f0f5fa}
+<style id="representationReferenceDesign">
+.repSection{--rep-a:#13569c;--rep-b:#4aa9df;--rep-soft:#f2f9ff;margin:12px 0;overflow:hidden;border:1px solid #d7e3ee;border-radius:14px;background:var(--rep-soft);box-shadow:0 4px 13px rgba(25,55,82,.08)}
+.repSectionHeader{position:relative;min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:6px 12px 6px 7px;color:#fff;background:linear-gradient(100deg,var(--rep-a) 0%,var(--rep-a) 43%,var(--rep-b) 100%)}
+.repSectionHeader::after{content:"❯";position:absolute;right:174px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.27);font-size:31px;font-weight:900}
+.repSectionTitleWrap{min-width:0;display:flex;align-items:center;gap:10px}
+.repSectionIcon{width:48px;height:40px;flex:0 0 48px;display:grid;place-items:center;border-radius:9px;background:rgba(255,255,255,.13);border-right:2px solid rgba(255,255,255,.85);color:#fff;font-size:23px;font-weight:900}
+.repSectionTitle{color:#fff;font-size:20px;line-height:1.2;font-weight:900;text-shadow:0 1px 1px rgba(0,0,0,.08)}
+.repSectionCount{position:relative;z-index:1;flex:0 0 auto;min-width:132px;padding:6px 12px;border:1px solid rgba(17,58,96,.45);border-radius:999px;background:rgba(255,255,255,.9);color:#173d64;text-align:center;font-size:12px;line-height:1.2;font-weight:900}
+.repMemberGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:10px}
+.repMemberCard{min-width:0;display:grid;grid-template-columns:112px minmax(0,1fr);align-items:center;gap:15px;min-height:130px;padding:10px 15px;border:1px solid #d5e0ea;border-radius:13px;background:#fff;box-shadow:0 2px 8px rgba(30,56,79,.055)}
+.repPhotoWrap{display:flex;align-items:center;justify-content:center}
+.repMemberPhoto{width:102px!important;height:102px!important;max-width:102px!important;max-height:102px!important;display:block!important;object-fit:cover!important;border:4px solid #fff;border-radius:50%!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--rep-a) 24%,white),0 4px 10px rgba(18,50,77,.12)}
+.repNoPhoto{display:grid!important;place-items:center;background:#edf2f6;color:#879bae;font-size:29px}
+.repMemberInfo{min-width:0}
+.repMemberName{margin:0 0 3px;color:#113b6a;font-size:20px;line-height:1.2;font-weight:900}
+.repMemberPost{color:#ed1c2b;font-size:16px;line-height:1.25;font-weight:900}
+.repMemberTerm{display:flex;align-items:center;gap:5px;margin-top:5px;color:#61788d;font-size:13px;font-weight:700}
+.repMemberPhone{width:fit-content;display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:5px 11px;border:1px solid #b9e5ca;border-radius:999px;background:#ecfaf2;color:#008a40;font-size:14px;line-height:1;font-weight:900;text-decoration:none}
+.repCentral{--rep-a:#d71829;--rep-b:#f5a2aa;--rep-soft:#fff6f6}
+.repProvince{--rep-a:#087e38;--rep-b:#7fc69b;--rep-soft:#f2fbf5}
+.repDistrict{--rep-a:#6331a0;--rep-b:#ad8bd2;--rep-soft:#f8f4fd}
+.repArea{--rep-a:#d27400;--rep-b:#edbb78;--rep-soft:#fff9ef}
+.repAssembly{--rep-a:#00899f;--rep-b:#76ceda;--rep-soft:#f0fbfd}
+.repMunicipal{--rep-a:#0568b5;--rep-b:#69b7e9;--rep-soft:#f2f9ff}
+.repDefault{--rep-a:#274f78;--rep-b:#86aacb;--rep-soft:#f4f8fb}
 @media(max-width:760px){
-.representationGroup{margin:10px 0 14px;border-radius:12px}
-.representationGroupHead{min-height:47px;padding:6px 8px}
-.representationHeadIcon{width:36px;height:34px;flex-basis:36px;font-size:18px}
-.representationHeadText{font-size:15px}
-.representationCount{min-width:auto;padding:5px 8px;font-size:10px}
-.representationCards{grid-template-columns:1fr;gap:8px;padding:8px}
-.representationPerson{grid-template-columns:72px minmax(0,1fr);gap:10px;padding:9px 10px}
-.representationPhoto{width:70px;height:70px}
-.representationPersonInfo h4{font-size:16px}
-.representationPost{font-size:14px}
+.repSection{margin:9px 0 12px;border-radius:11px}
+.repSectionHeader{min-height:47px;padding:5px 8px 5px 6px}
+.repSectionHeader::after{display:none}
+.repSectionIcon{width:38px;height:34px;flex-basis:38px;font-size:18px}
+.repSectionTitle{font-size:15px}
+.repSectionCount{min-width:auto;padding:5px 8px;font-size:10px}
+.repMemberGrid{grid-template-columns:1fr;gap:8px;padding:8px}
+.repMemberCard{grid-template-columns:82px minmax(0,1fr);gap:11px;min-height:100px;padding:9px 10px}
+.repMemberPhoto{width:76px!important;height:76px!important;max-width:76px!important;max-height:76px!important}
+.repMemberName{font-size:17px}
+.repMemberPost{font-size:14px}
+.repMemberTerm{font-size:12px}
 }
-@media(max-width:440px){.representationCount{white-space:nowrap}.representationHeadText{font-size:14px}}
+@media(max-width:430px){
+.repSectionTitleWrap{gap:6px}
+.repSectionTitle{font-size:13px}
+.repSectionCount{white-space:nowrap;font-size:9px}
+}
 </style>
 </head>
 <body>
@@ -1913,7 +1921,7 @@ function escapeHtml(v) {
         return;
       }
 
-      // Active data भएको तह मात्र render हुन्छ; खाली तहको heading देखिँदैन ।
+      // Data भएको तह मात्र heading सहित देखाइन्छ ।
       const grouped=[];
       rows.forEach(r=>{
         let group=grouped.find(g=>g.level===r.Level);
@@ -1924,40 +1932,44 @@ function escapeHtml(v) {
         group.rows.push(r);
       });
 
-      const levelMeta={
-        'केन्द्रीय महाधिवेशन प्रतिनिधि':{icon:'🏛️',cls:'repLevelCentral',short:'केन्द्रीय महाधिवेशन प्रतिनिधि'},
-        'बागमती प्रदेश कार्यसमिति':{icon:'👥',cls:'repLevelProvince',short:'बागमती प्रदेश कार्यसमिति'},
-        'काठमाडौं जिल्ला कार्यसमिति':{icon:'👥',cls:'repLevelDistrict',short:'काठमाडौं जिल्ला कार्यसमिति'},
-        'क्षेत्रीय कार्यसमिति':{icon:'👥',cls:'repLevelArea',short:'काठमाडौं क्षेत्र नं. ३ क्षेत्रीय कार्यसमिति'},
-        'प्रदेश सभा (२) कार्यसमिति':{icon:'👥',cls:'repLevelAssembly',short:'प्रदेश सभा (२) कार्यसमिति'},
-        'नगर कार्यसमिति':{icon:'🏢',cls:'repLevelMunicipal',short:'कागेश्वरी मनोहरा नगर कार्यसमिति'}
+      const levelDesign={
+        'केन्द्रीय महाधिवेशन प्रतिनिधि':{cls:'repCentral',icon:'◈',title:'केन्द्रीय महाधिवेशन प्रतिनिधि'},
+        'बागमती प्रदेश कार्यसमिति':{cls:'repProvince',icon:'♟',title:'बागमती प्रदेश कार्यसमिति'},
+        'काठमाडौं जिल्ला कार्यसमिति':{cls:'repDistrict',icon:'♟',title:'काठमाडौं जिल्ला कार्यसमिति'},
+        'क्षेत्रीय कार्यसमिति':{cls:'repArea',icon:'♟',title:'काठमाडौं क्षेत्र नं. ३ क्षेत्रीय कार्यसमिति'},
+        'प्रदेश सभा (२) कार्यसमिति':{cls:'repAssembly',icon:'♟',title:'प्रदेश सभा (२) कार्यसमिति'},
+        'नगर कार्यसमिति':{cls:'repMunicipal',icon:'▦',title:'कागेश्वरी मनोहरा नगर कार्यसमिति'}
       };
 
       box.innerHTML=grouped.map(group=>{
-        const meta=levelMeta[group.level]||{icon:'👥',cls:'repLevelDefault',short:group.level};
+        const meta=levelDesign[group.level]||{cls:'repDefault',icon:'●',title:group.level};
+
         return `
-          <section class="representationGroup ${meta.cls}">
-            <div class="representationGroupHead">
-              <div class="representationHeadLeft">
-                <span class="representationHeadIcon">${meta.icon}</span>
-                <span class="representationHeadText">${escapeHtml(meta.short||'')}</span>
+          <section class="repSection ${meta.cls}">
+            <div class="repSectionHeader">
+              <div class="repSectionTitleWrap">
+                <span class="repSectionIcon">${meta.icon}</span>
+                <span class="repSectionTitle">${escapeHtml(meta.title||'')}</span>
               </div>
-              <span class="representationCount">सदस्य संख्या: ${nepaliNum(group.rows.length)}</span>
+              <div class="repSectionCount">सदस्य संख्या: ${nepaliNum(group.rows.length)}</div>
             </div>
-            <div class="representationCards">
+
+            <div class="repMemberGrid">
               ${group.rows.map(r=>`
-                <article class="representationPerson">
-                  ${r.PhotoURL
-                    ? `<img class="representationPhoto" src="${escapeAttr(r.PhotoURL)}" alt="${escapeAttr(r.Name||'')}">`
-                    : `<div class="representationPhoto representationPhotoEmpty">👤</div>`}
-                  <div class="representationPersonInfo">
-                    <h4>${escapeHtml(r.Name||'')}</h4>
-                    <div class="representationPost">${escapeHtml(r.Designation||'')}</div>
+                <article class="repMemberCard">
+                  <div class="repPhotoWrap">
+                    ${r.PhotoURL
+                      ? `<img class="repMemberPhoto" src="${escapeAttr(r.PhotoURL)}" alt="${escapeAttr(r.Name||'')}">`
+                      : `<div class="repMemberPhoto repNoPhoto">👤</div>`}
+                  </div>
+                  <div class="repMemberInfo">
+                    <div class="repMemberName">${escapeHtml(r.Name||'')}</div>
+                    <div class="repMemberPost">${escapeHtml(r.Designation||'')}</div>
                     ${r.From||r.To
-                      ? `<div class="representationTerm">▣ ${escapeHtml(r.From||'')}${r.To?' - '+escapeHtml(r.To):''}</div>`
+                      ? `<div class="repMemberTerm"><span>▣</span> ${escapeHtml(r.From||'')}${r.To?' - '+escapeHtml(r.To):''}</div>`
                       : ''}
                     ${r.Mobile
-                      ? `<a class="representationPhone" href="tel:${escapeAttr(String(r.Mobile).replace(/\s+/g,''))}"><span>☎</span><span>${escapeHtml(r.Mobile)}</span></a>`
+                      ? `<a class="repMemberPhone" href="tel:${escapeAttr(String(r.Mobile).replace(/\s+/g,''))}"><span class="repPhoneIcon">☎</span><span>${escapeHtml(r.Mobile)}</span></a>`
                       : ''}
                   </div>
                 </article>
@@ -1966,6 +1978,7 @@ function escapeHtml(v) {
           </section>
         `;
       }).join('');
+
       return;
     }
     if(mode==='representatives'){
