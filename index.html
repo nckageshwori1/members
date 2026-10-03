@@ -889,92 +889,14 @@ main {
 .protocolPublic{margin-top:14px}.protocolTabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px;justify-content:flex-start}.protocolTabs button{border:1px solid var(--line);background:#fff;color:var(--navy);padding:10px 14px;border-radius:10px;font-weight:800}.protocolTabs button.on{background:var(--red);color:#fff;border-color:var(--red)}.committeeGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.committeeCard{position:relative;border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px;text-align:center;box-shadow:0 6px 18px #0d315d0d}.committeeOrder{display:none}.committeePhone{display:inline-flex;align-items:center;justify-content:center;gap:7px;margin-top:9px;padding:7px 11px;border:1px solid #cfe9dc;border-radius:999px;background:#f0faf5;color:var(--green);font-weight:900;text-decoration:none;font-size:13px}.committeePhone:hover{background:#e3f6ec}.committeePhone .callIcon{font-size:15px;line-height:1}.formerItem .committeePhone{margin-top:6px;padding:6px 10px;font-size:12px}.committeePhoto{width:88px;height:88px;border-radius:50%;object-fit:cover;background:#e8eef5;margin:3px auto 9px}.committeeCard h4{margin:4px 0;color:var(--navy);font-size:16px}.committeeCard .post{color:var(--red);font-weight:900}.committeeCard small{display:block;color:var(--muted);margin-top:5px}.formerList{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.formerItem{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}.formerItem .committeePhoto{width:58px;height:58px;margin:0}.formerItem h4{margin:0;color:var(--navy)}
 @media(max-width:900px){.committeeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.formerList{grid-template-columns:1fr 1fr}}@media(max-width:600px){.committeeGrid,.formerList{grid-template-columns:1fr}.committeeCard{display:grid;grid-template-columns:76px 1fr;text-align:left;align-items:center;gap:10px}.committeePhoto{width:68px;height:68px;margin:0}.committeeOrder{display:none}.protocolTabs button{flex:0 0 auto}}
 
-/* ============================================================
-   v2.20.4 NOTICE PREVIEW + ALL NOTICES POPUP
-   ============================================================ */
-.noticeMoreWrap {
-  display:flex;
-  justify-content:center;
-  margin-top:14px;
-}
-.noticeMoreBtn {
-  border:1px solid #cfdceb;
-  background:#fff;
-  color:var(--navy);
-  border-radius:11px;
-  padding:10px 16px;
-  font-weight:900;
-}
-.noticeMoreBtn:hover {
-  background:#f4f8fc;
-}
-.noticeAllModal {
-  position:fixed;
-  inset:0;
-  z-index:6000;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  background:rgba(7,28,54,.68);
-  backdrop-filter:blur(3px);
-}
-.noticeAllModal.on {
-  display:flex;
-}
-.noticeAllBox {
-  width:min(1080px,100%);
-  max-height:90vh;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-  background:#fff;
-  border-radius:18px;
-  box-shadow:0 24px 70px rgba(0,0,0,.28);
-}
-.noticeAllHead {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:15px 17px;
-  border-bottom:1px solid var(--line);
-  background:#f8fbff;
-}
-.noticeAllHead h3 {
-  margin:0;
-  color:var(--navy);
-}
-.noticeAllClose {
-  width:38px;
-  height:38px;
-  flex:0 0 38px;
-  border:0;
-  border-radius:50%;
-  background:#e9f0f7;
-  font-size:20px;
-}
-.noticeAllBody {
-  overflow-y:auto;
-  padding:14px;
-}
-.noticeAllBody .noticeList {
-  gap:12px;
-}
-@media(max-width:700px) {
-  .noticeAllModal {
-    padding:0;
-    align-items:flex-end;
-  }
-  .noticeAllBox {
-    width:100%;
-    max-height:94dvh;
-    border-radius:20px 20px 0 0;
-  }
-  .noticeAllBody {
-    padding:10px;
-  }
-}
+.noticeStatus.eventStatus{cursor:default;border:0;min-width:155px;padding:9px 13px;border-radius:14px;line-height:1.2;box-shadow:0 7px 18px rgba(0,0,0,.08)}
+.eventStatus .statusTop{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:900}
+.eventStatus .statusMain{display:block;margin-top:3px;font-size:14px;font-weight:900}
+.eventStatus.upcoming{background:#fff4df;color:#a85b00}.eventStatus.soon{background:#fff0d8;color:#a84f00;border:1px solid #ffd39b}
+.eventStatus.live{background:#fff0f1;color:#b11226;border:1px solid #ffc7cf}.eventStatus.done{background:#edf8f1;color:#18753b;border:1px solid #c7ead3}
+.liveDot{width:8px;height:8px;border-radius:50%;background:#d71920;display:inline-block;box-shadow:0 0 0 0 rgba(215,25,32,.55);animation:livePulse 1.5s infinite}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(215,25,32,.5)}70%{box-shadow:0 0 0 7px rgba(215,25,32,0)}100%{box-shadow:0 0 0 0 rgba(215,25,32,0)}}
+@media(max-width:700px){.noticeStatus.eventStatus{width:100%;min-width:0}}
 
 </style>
   </head>
@@ -1126,7 +1048,7 @@ main {
           <h3>फोटो ग्यालरी</h3>
         </div>
         <div id="galleryContent" class="albums">
-          <div class="albumname">Gallery लोड हुँदैछ...</div>
+          <div class="albumname">Gallery हेर्न माथिको फोटो ग्यालरी button थिच्नुहोस् ।</div>
         </div>
       </section>
       <div id="contactStrip" class="contactstrip">
@@ -1172,19 +1094,6 @@ main {
       <button class="listClose" type="button" onclick="closeStatList()" aria-label="बन्द गर्नुहोस्">×</button>
     </div>
     <div id="statListBody" class="listModalBody">लोड हुँदैछ...</div>
-  </div>
-</div>
-
-
-<div id="allNoticesModal" class="noticeAllModal" onclick="closeAllNotices(event)">
-  <div class="noticeAllBox" role="dialog" aria-modal="true" aria-labelledby="allNoticesTitle">
-    <div class="noticeAllHead">
-      <h3 id="allNoticesTitle">📋 सबै सूचना</h3>
-      <button class="noticeAllClose" type="button" onclick="closeAllNotices()" aria-label="बन्द गर्नुहोस्">×</button>
-    </div>
-    <div id="allNoticesBody" class="noticeAllBody">
-      <div class="noticeItem">सूचना लोड हुँदैछ...</div>
-    </div>
   </div>
 </div>
 
@@ -1489,107 +1398,74 @@ function escapeHtml(v) {
     return null;
   }
 
-  function noticeStatus(dateText) {
-    const eventDate = noticeEventDate(dateText);
-    if (!eventDate) return { text:'', cls:'' };
-
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-    const diff = Math.round((eventDay - today) / 86400000);
-
-    if (diff > 1) return { text:`कार्यक्रम हुन ${diff} दिन बाँकी`, cls:'' };
-    if (diff === 1) return { text:'कार्यक्रम हुन १ दिन बाँकी', cls:'' };
-    if (diff === 0) return { text:'आज कार्यक्रम', cls:'today' };
-    return { text:'कार्यक्रम सम्पन्न भइसकेको छ', cls:'done' };
+  function parseClockMinutes(value){
+    const raw=String(value||'').trim();
+    if(!raw)return null;
+    const ascii=raw.replace(/[०-९]/g,d=>'०१२३४५६७८९'.indexOf(d)).replace(/\s+/g,' ');
+    const m=ascii.match(/(\d{1,2})\s*[:.]\s*(\d{1,2})/);
+    if(!m)return null;
+    let h=Number(m[1]),min=Number(m[2]),lower=ascii.toLowerCase();
+    if(/बेलुका|साँझ|रात|pm/.test(lower)&&h<12)h+=12;
+    if(/बिहान|am/.test(lower)&&h===12)h=0;
+    return h<=23&&min<=59?h*60+min:null;
   }
-
-  let publicNoticesData = [];
-
-  function renderNoticeCard(n) {
-    const status = noticeStatus(n['मिति']);
-    return `<div class="noticeItem noticeRich">
-      ${n.ImageURL ? `<div class="noticeVisual"><img class="noticeImage" src="${escapeAttr(n.ImageURL)}" alt="सूचना Image" loading="lazy"></div>` : ''}
-      <div class="noticeDetails">
-        <div class="noticeTitleRow">
-          <h4>${escapeHtml(n['शीर्षक'] || 'सूचना')}</h4>
-          ${status.text ? `<button type="button" class="noticeStatus ${status.cls}">${escapeHtml(status.text)}</button>` : ''}
-        </div>
-        <div class="programLabel">कार्यक्रम विवरण</div>
-        <div class="noticeProgramInfo">
-          ${n['मिति'] ? `<div><b>📅 मिति:</b> ${escapeHtml(n['मिति'])}</div>` : ''}
-          ${n['समय'] ? `<div><b>🕒 समय:</b> ${escapeHtml(n['समय'])}</div>` : ''}
-          ${n['स्थान'] ? `<div><b>📍 स्थान:</b> ${escapeHtml(n['स्थान'])}</div>` : ''}
-        </div>
-        ${n['विवरण'] ? `<div class="noticeBodyText">${escapeHtml(n['विवरण'])}</div>` : ''}
-      </div>
-    </div>`;
+  function remainingText(v){
+    v=Math.max(0,Math.ceil(v));const h=Math.floor(v/60),m=v%60;
+    if(h&&m)return `${nepaliNum(h)} घण्टा ${nepaliNum(m)} मिनेट`;
+    if(h)return `${nepaliNum(h)} घण्टा`;return `${nepaliNum(m)} मिनेट`;
+  }
+  function noticeStatus(n){
+    const eventDate=noticeEventDate(n&&n['मिति']);
+    if(!eventDate)return{text:'',cls:'',html:''};
+    const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    const day=new Date(eventDate.getFullYear(),eventDate.getMonth(),eventDate.getDate());
+    const diff=Math.round((day-today)/86400000);
+    if(diff>0)return{text:`${diff} दिन बाँकी`,cls:'upcoming',html:`<span class="statusTop">📅 आगामी कार्यक्रम</span><span class="statusMain">${nepaliNum(diff)} दिन बाँकी</span>`};
+    if(diff<0)return{text:'कार्यक्रम सम्पन्न',cls:'done',html:'<span class="statusTop">✓ सम्पन्न</span><span class="statusMain">कार्यक्रम सम्पन्न</span>'};
+    if(String(n['दिनभरि']||'').toLowerCase()==='true')return{text:'आज कार्यक्रम',cls:'soon',html:'<span class="statusTop">📅 आज</span><span class="statusMain">दिनभरि कार्यक्रम</span>'};
+    const start=parseClockMinutes(n['सुरु समय']),end=parseClockMinutes(n['समाप्ति समय']);
+    const cur=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+    if(start===null&&end===null)return{text:'आज कार्यक्रम',cls:'soon',html:'<span class="statusTop">📅 आज</span><span class="statusMain">आज कार्यक्रम</span>'};
+    if(start!==null&&cur<start){const x=remainingText(start-cur);return{text:`सुरु हुन ${x} बाँकी`,cls:'soon',html:`<span class="statusTop">🕘 आज कार्यक्रम</span><span class="statusMain">सुरु हुन ${x} बाँकी</span>`};}
+    if(end!==null&&cur>=end)return{text:'कार्यक्रम सम्पन्न',cls:'done',html:'<span class="statusTop">✓ सम्पन्न</span><span class="statusMain">कार्यक्रम सम्पन्न</span>'};
+    const x=end!==null?remainingText(end-cur):'';
+    return{text:'कार्यक्रम सञ्चालनमा',cls:'live',html:`<span class="statusTop"><span class="liveDot"></span> LIVE</span><span class="statusMain">कार्यक्रम सञ्चालनमा${x?' • '+x+' बाँकी':''}</span>`};
   }
 
   async function loadPublicHome() {
     try {
       const r = await api('publicHome');
       if (!r.ok) return;
-
-      publicNoticesData = Array.isArray(r.notices) ? r.notices : [];
-      const box = document.getElementById('publicNotices');
-
-      if (!publicNoticesData.length) {
-        box.innerHTML = '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
-      } else {
-        // Homepage मा सबैभन्दा पछिल्लो सूचना मात्र सधैं पूरा देखिन्छ ।
-        box.innerHTML = renderNoticeCard(publicNoticesData[0]);
-
-        // बाँकी/सबै सूचना popup मा हेर्न मिल्छ ।
-        if (publicNoticesData.length > 1) {
-          box.insertAdjacentHTML(
-            'beforeend',
-            `<div class="noticeMoreWrap">
-              <button class="noticeMoreBtn" type="button" onclick="openAllNotices()">
-                📋 सबै सूचना हेर्नुहोस् (${nepaliNum(publicNoticesData.length)})
-              </button>
-            </div>`
-          );
-        }
-      }
-
+      const ns = r.notices || [];
+      document.getElementById('publicNotices').innerHTML = ns.length ? ns.map(n => {
+        const status = noticeStatus(n);
+        return `<div class="noticeItem noticeRich">
+          ${n.ImageURL ? `<div class="noticeVisual"><img class="noticeImage" src="${escapeAttr(n.ImageURL)}" alt="सूचना Image" loading="lazy"></div>` : ''}
+          <div class="noticeDetails">
+            <div class="noticeTitleRow">
+              <h4>${escapeHtml(n['शीर्षक'] || 'सूचना')}</h4>
+              ${status.text ? `<div class="noticeStatus eventStatus ${status.cls}" aria-label="${escapeAttr(status.text)}">${status.html}</div>` : ''}
+            </div>
+            <div class="programLabel">कार्यक्रम विवरण</div>
+            <div class="noticeProgramInfo">
+              ${n['मिति'] ? `<div><b>📅 मिति:</b> ${escapeHtml(n['मिति'])}</div>` : ''}
+              ${n['समय'] ? `<div><b>🕒 समय:</b> ${escapeHtml(n['समय'])}</div>` : ''}
+              ${n['स्थान'] ? `<div><b>📍 स्थान:</b> ${escapeHtml(n['स्थान'])}</div>` : ''}
+            </div>
+            ${n['विवरण'] ? `<div class="noticeBodyText">${escapeHtml(n['विवरण'])}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('') : '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
       renderContacts(r.settings || {});
     } catch (e) {}
   }
-
-  function openAllNotices() {
-    const modal = document.getElementById('allNoticesModal');
-    const body = document.getElementById('allNoticesBody');
-    if (!modal || !body) return;
-
-    body.innerHTML = publicNoticesData.length
-      ? `<div class="noticeList">${publicNoticesData.map(renderNoticeCard).join('')}</div>`
-      : '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
-
-    modal.classList.add('on');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeAllNotices(event) {
-    const modal = document.getElementById('allNoticesModal');
-    if (!modal) return;
-    if (event && event.target !== modal) return;
-    modal.classList.remove('on');
-    document.body.style.overflow = '';
-  }
-
   function renderContacts(s){const items=[];if(s.Email)items.push(`<a class="contactitem" href="mailto:${escapeAttr(s.Email)}"><span class="ci">✉</span><span>${escapeHtml(s.Email)}</span></a>`);if(s.Phone)items.push(`<a class="contactitem" href="tel:${escapeAttr(s.Phone)}"><span class="ci">☎</span><span>${escapeHtml(s.Phone)}</span></a>`);if(s.Location)items.push(`<a class="contactitem" ${s.MapURL?'href="'+escapeAttr(s.MapURL)+'" target="_blank"':''}><span class="ci">📍</span><span>${escapeHtml(s.Location)}</span></a>`);if(s.FacebookURL)items.push(`<a class="contactitem" href="${escapeAttr(s.FacebookURL)}" target="_blank"><span class="ci" style="font-family:Arial;font-weight:900">f</span><span>Facebook</span></a>`);document.getElementById('contactStrip').innerHTML=items.join('');}
-  async function loadGallery(shouldScroll=true){if(shouldScroll)scrollToId('gallerySection');const c=document.getElementById('galleryContent');c.innerHTML='<div class="albumname">Gallery लोड हुँदैछ...</div>';try{const r=await api('gallery');if(!r.ok)throw new Error(r.message);const a=r.albums||[];c.className='albums';c.innerHTML=a.length?a.map((x,i)=>`<div class="album" onclick="openAlbum(${i})"><div class="albumcover">${x.photos&&x.photos[0]?'<img src="'+escapeAttr(x.photos[0].url)+'">':'🖼️'}</div><div class="albumname">${escapeHtml(x.name)} <small>(${(x.photos||[]).length})</small></div></div>`).join(''):'<div class="albumname">Photo Gallery folder भित्र Album folder थपिएको छैन ।</div>';window._albums=a;}catch(e){c.innerHTML='<div class="albumname">'+escapeHtml(e.message)+'</div>'}}
+  async function loadGallery(){scrollToId('gallerySection');const c=document.getElementById('galleryContent');c.innerHTML='<div class="albumname">Gallery लोड हुँदैछ...</div>';try{const r=await api('gallery');if(!r.ok)throw new Error(r.message);const a=r.albums||[];c.className='albums';c.innerHTML=a.length?a.map((x,i)=>`<div class="album" onclick="openAlbum(${i})"><div class="albumcover">${x.photos&&x.photos[0]?'<img src="'+escapeAttr(x.photos[0].url)+'">':'🖼️'}</div><div class="albumname">${escapeHtml(x.name)} <small>(${(x.photos||[]).length})</small></div></div>`).join(''):'<div class="albumname">Photo Gallery folder भित्र Album folder थपिएको छैन ।</div>';window._albums=a;}catch(e){c.innerHTML='<div class="albumname">'+escapeHtml(e.message)+'</div>'}}
   function openAlbum(i){const a=(window._albums||[])[i];if(!a)return;const c=document.getElementById('galleryContent');c.className='';c.innerHTML=`<button class="secondary" onclick="loadGallery()">← Album</button><h3>${escapeHtml(a.name)}</h3><div class="photos">${(a.photos||[]).map(p=>`<a href="${escapeAttr(p.url)}" target="_blank"><img src="${escapeAttr(p.url)}" alt="${escapeAttr(p.name)}"></a>`).join('')}</div>`;}
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') closeAllNotices();
-  });
-
   loadPublicHome();
   loadPublicProtocol();
   loadPublicRepresentatives();
   loadDashboard();
-  loadGallery(false);
 </script>
     </body>
   </html>
