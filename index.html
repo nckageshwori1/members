@@ -961,7 +961,106 @@ main {
 }
 
 </style>
-  </head>
+  
+<style>
+
+/* ============================================================
+   MEMBER PROFILE PRINT — SINGLE PAGE FIX
+   Removes hidden website layout from print pagination.
+   ============================================================ */
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 7mm;
+  }
+
+  html,
+  body {
+    width: 100%;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  body > * {
+    display: none !important;
+  }
+
+  body > main {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body > main > * {
+    display: none !important;
+  }
+
+  #profile {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #profile,
+  #profile * {
+    visibility: visible !important;
+  }
+
+  .memberProfileCard {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .memberProfileBody {
+    padding: 10px 12px !important;
+  }
+
+  .memberIdentity {
+    margin: 0 !important;
+    gap: 12px !important;
+  }
+
+  .memberDetailGrid {
+    margin-top: 8px !important;
+    gap: 6px 8px !important;
+  }
+
+  .memberDetailItem {
+    padding: 6px 8px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .memberHistory {
+    margin-top: 8px !important;
+    padding: 8px 10px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .memberProfileActions {
+    display: none !important;
+  }
+
+  .printOnly {
+    display: block !important;
+    margin-top: 10px !important;
+  }
+}
+
+</style>
+</head>
   <body>
     <div class="topbar">
       <div class="topin">
