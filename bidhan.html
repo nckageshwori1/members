@@ -84,6 +84,8 @@
             box-shadow: 0 4px 16px #153e6610;
         }
 
+        select { width:100%;padding:13px;border:1px solid #c5d2df;border-radius:10px;background:#fff;font:inherit;margin-top:9px; }
+
         form {
             display: flex;
             gap: 8px;
@@ -173,7 +175,7 @@
     <header>
         <div>
             <h1>📖 नेपाली कांग्रेस — पार्टीको विधान</h1>
-            <div>मूल PDF अध्ययन तथा विधान पाठ खोज</div>
+            <div>Google Sheet मा सुरक्षित विधानका धारा तथा पूर्ण व्याख्या</div>
         </div>
     </header>
 
@@ -194,6 +196,8 @@
 
         <section class="panel">
             <h2>🔎 विधान खोज तथा सहायता</h2>
+            <label for="topicSelect">धारा / विषय छान्नुहोस्</label>
+            <select id="topicSelect" aria-label="विधानको धारा छान्नुहोस्"><option value="">— धारा / विषय छान्नुहोस् —</option></select>
 
             <form id="searchForm">
                 <input
@@ -208,7 +212,7 @@
             </form>
 
             <div id="status" class="muted summary" aria-live="polite">
-                विधान खोज डाटाबेस लोड हुँदैछ...
+                Bidhan_Data Sheet बाट विवरण लोड हुँदैछ...
             </div>
 
             <div id="results" aria-live="polite"></div>
@@ -218,220 +222,157 @@
     <script>
         'use strict';
 
-        /* ============================================================
-           09. CONFIGURATION AND APPLICATION STATE
-           ============================================================ */
-        // Search runs in the browser. No Gemini or external AI service.
-        const INDEX_FILE = 'bidhan-index.json';
+        // ============================================================
+        // 01. CONFIGURATION
+        // ============================================================
+        const API_URL =
+            'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
+
         const $ = id => document.getElementById(id);
-        let db = null;
 
-        const STOP = new Set([
-            'को', 'का', 'की', 'मा', 'र', 'वा', 'के', 'छ', 'छन्',
-            'हो', 'हुन्छ', 'केके', 'कस्तो', 'कसरी', 'कति', 'बारे',
-            'सम्बन्धी', 'गर्न', 'भएको', 'भन्ने', 'व्यवस्था',
-            'होला', 'लाई', 'बाट', 'एक', 'पनि'
-        ]);
+        // ============================================================
+        // 02. API REQUEST
+        // ============================================================
+        async function request(action, data = {}) {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action, ...data })
+            });
 
-        /* ============================================================
-           10. DOM HELPER
-           ============================================================ */
-        function el(tag, cls, text) {
-            const node = document.createElement(tag);
-
-            if (cls) {
-                node.className = cls;
+            if (!response.ok) {
+                throw new Error('सर्भरसँग सम्पर्क हुन सकेन ।');
             }
 
-            if (text !== undefined) {
-                node.textContent = text;
+            const result = await response.json();
+
+            if (!result.ok) {
+                throw new Error(result.message || 'विधान विवरण उपलब्ध छैन ।');
             }
 
-            return node;
+            return result;
         }
 
-        /* ============================================================
-           11. NEPALI TEXT NORMALIZATION AND TOKENIZATION
-           ============================================================ */
-        function normalize(value) {
-            return String(value || '')
-                .normalize('NFC')
-                .toLowerCase()
-                .replace(/[।,!?;:()\[\]{}"'’“”–—\-]/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
+        // ============================================================
+        // 03. SAFE ELEMENT HELPER
+        // ============================================================
+        function makeElement(tag, className, value) {
+            const element = document.createElement(tag);
+            element.className = className || '';
+            element.textContent = value || '';
+            return element;
         }
 
-        function tokens(value) {
-            return [...new Set(
-                normalize(value)
-                    .split(' ')
-                    .filter(token => token.length > 1 && !STOP.has(token))
-            )];
-        }
-
-        /* ============================================================
-           12. SEARCH RANKING
-           ============================================================ */
-        function rank(query, row) {
-            const normalizedQuery = normalize(query);
-            const text = normalize(row.text);
-            const terms = tokens(query);
-
-            if (!terms.length) {
-                return 0;
-            }
-
-            let score = 0;
-
-            for (const term of terms) {
-                if (text.includes(term)) {
-                    score += term.length > 3 ? 4 : 2;
-                } else if (
-                    term.length > 4 &&
-                    text.includes(term.slice(0, term.length - 1))
-                ) {
-                    score += 1;
-                }
-            }
-
-            if (text.includes(normalizedQuery)) {
-                score += 15;
-            }
-
-            return score;
-        }
-
-        /* ============================================================
-           13. LOAD LOCAL SEARCH DATABASE
-           ============================================================ */
-        async function load() {
+        // ============================================================
+        // 04. LOAD ALL TOPICS FROM BIDHAN_DATA
+        // ============================================================
+        async function loadTopics() {
             try {
-                const response = await fetch(
-                    INDEX_FILE + '?v=20261008',
-                    { cache: 'no-cache' }
-                );
+                const result = await request('bidhanList');
+                const dropdown = $('topicSelect');
 
-                if (!response.ok) {
-                    throw Error('HTTP ' + response.status);
+                for (const topic of result.topics || []) {
+                    const option = document.createElement('option');
+                    option.value = String(topic.row);
+                    option.textContent = topic.title;
+                    dropdown.append(option);
                 }
-
-                const data = await response.json();
-
-                if (!data.meta || !Array.isArray(data.records)) {
-                    throw Error('Invalid index');
-                }
-
-                db = data;
 
                 $('status').textContent =
-                    `${data.meta.pages} पृष्ठको खोज डाटाबेस तयार छ । ` +
-                    'प्रश्न लेखेर खोज्नुहोस् ।';
+                    result.count + ' वटा धारा / विषय उपलब्ध छन् ।';
             } catch (error) {
-                $('status').textContent =
-                    'खोज डाटाबेस उपलब्ध छैन । ' +
-                    'bidhan-index.json फाइल GitHub मा Upload भएको छ कि जाँच गर्नुहोस् ।';
+                $('status').textContent = error.message;
             }
         }
 
-        /* ============================================================
-           14. SEARCH AND DISPLAY RESULTS
-           ============================================================ */
-        function handleSearch(event) {
-            event.preventDefault();
+        // ============================================================
+        // 05. SHOW FULL SHEET TEXT, NEVER SHORTEN
+        // ============================================================
+        function showResults(records) {
+            const container = $('results');
+            container.replaceChildren();
 
-            const root = $('results');
-            root.replaceChildren();
-
-            if (!db) {
-                root.append(el('p', 'notice', 'खोज डाटाबेस लोड भएको छैन ।'));
+            if (!records.length) {
+                container.append(makeElement(
+                    'div', 'notice', 'सम्बन्धित विधानको विवरण भेटिएन ।'
+                ));
                 return;
             }
 
+            for (const record of records) {
+                const article = makeElement('article', 'answer');
+
+                article.append(makeElement(
+                    'div', 'source', record.title
+                ));
+
+                article.append(makeElement(
+                    'div', '', record.text
+                ));
+
+                container.append(article);
+            }
+        }
+
+        // ============================================================
+        // 06. SEARCH OR SELECT EXACT TOPIC
+        // ============================================================
+        async function searchBidhan(event) {
+            if (event) event.preventDefault();
+
+            const button = $('submit');
             const query = $('question').value.trim();
+            const selectedRow = $('topicSelect').value;
 
-            const ranked = db.records
-                .map(record => ({
-                    ...record,
-                    score: rank(query, record)
-                }))
-                .filter(record => record.score > 0)
-                .sort((a, b) => b.score - a.score || a.page - b.page);
+            button.disabled = true;
+            $('status').textContent = 'विधान विवरण खोजिँदैछ...';
 
-            const chosen = [];
-            const seen = new Set();
+            try {
+                const result = await request('bidhanSearch', {
+                    query: query
+                });
 
-            for (const record of ranked) {
-                const key = record.page + ':' + record.line;
+                let rows = result.rows || [];
 
-                if (seen.has(key)) {
-                    continue;
+                if (selectedRow && !query) {
+                    rows = rows.filter(row =>
+                        String(row.row) === selectedRow
+                    );
                 }
 
-                chosen.push(record);
-                seen.add(key);
-
-                if (chosen.length === 12) {
-                    break;
-                }
-            }
-
-            if (!chosen.length) {
-                root.append(el(
-                    'p',
-                    'notice',
-                    'यस प्रश्नसँग सम्बन्धित पाठ उपलब्ध विधान PDF को ' +
-                    'खोज डाटाबेसमा फेला परेन ।'
-                ));
-                return;
-            }
-
-            root.append(el(
-                'div',
-                'notice',
-                'यी अंश PDF बाट स्वचालित रूपमा रूपान्तरित भएका हुन् । ' +
-                'Preeti तथा अन्य पुराना Font को Unicode शुद्धता मानवद्वारा ' +
-                'प्रमाणित गरिएको छैन । मूल PDF सँग मिलाएर मात्र आधिकारिक प्रयोग गर्नुहोस् ।'
-            ));
-
-            root.append(el(
-                'p',
-                'muted',
-                `${ranked.length} मिल्दाजुल्दा पाठ भेटिए । ` +
-                'सबैभन्दा सम्बन्धित १२ अंश देखाइएको छ ।'
-            ));
-
-            for (const record of chosen) {
-                const card = el('article', 'answer');
-
-                card.append(el(
-                    'div',
-                    'source',
-                    `PDF पृष्ठ ${record.page} · पाठ ${record.line}`
-                ));
-
-                card.append(el('div', '', record.text));
-
-                const link = el(
-                    'a',
-                    'result-link',
-                    'मूल PDF मा पृष्ठ खोल्नुहोस् ↗'
-                );
-
-                link.href = 'NC_bidhan_2082.pdf#page=' + record.page;
-                link.target = '_blank';
-                link.rel = 'noopener';
-
-                card.append(link);
-                root.append(card);
+                showResults(rows);
+                $('status').textContent =
+                    rows.length + ' वटा सम्बन्धित विषय भेटिए ।';
+            } catch (error) {
+                $('status').textContent = error.message;
+                $('results').replaceChildren();
+            } finally {
+                button.disabled = false;
             }
         }
 
-        /* ============================================================
-           15. INITIALIZATION
-           ============================================================ */
-        $('searchForm').addEventListener('submit', handleSearch);
-        load();
+        // ============================================================
+        // 07. DROPDOWN SELECTION
+        // ============================================================
+        $('topicSelect').addEventListener('change', async function () {
+            $('question').value = '';
+
+            if (this.value) {
+                await searchBidhan();
+            } else {
+                $('results').replaceChildren();
+            }
+        });
+
+        $('searchForm').addEventListener('submit', function (event) {
+            $('topicSelect').value = '';
+            searchBidhan(event);
+        });
+
+        // ============================================================
+        // 08. INITIALIZATION
+        // ============================================================
+        loadTopics();
     </script>
 </body>
 </html>
