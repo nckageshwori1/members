@@ -478,6 +478,7 @@ main {
             <button class="btn tab" data-tab="notice" onclick="showTab('notice',this)">📢 सूचना</button>
             <button class="btn tab" data-tab="contact" onclick="showTab('contact',this)">☎ सम्पर्क / Social</button>
             <button class="btn tab" data-tab="gallery" onclick="showTab('gallery',this)">🖼️ Photo Gallery</button>
+            <button class="btn tab" data-tab="bidhan" onclick="showTab('bidhan',this)">📖 विधान PDF व्यवस्थापन</button>
           </div>
           <section id="pane-data" class="card pane on">
             <h3>सदस्य Data तथा Summary</h3>
@@ -739,6 +740,25 @@ main {
               <button class="btn primary" onclick="saveSettings()">सम्पर्क विवरण सुरक्षित गर्नुहोस्</button>
             </div>
           </section>
+          <!-- Bidhan PDF management: isolated additive admin tab -->
+          <section id="pane-bidhan" class="card pane">
+            <h3>📖 विधान PDF व्यवस्थापन</h3>
+            <div class="hint">
+              Google Drive को <b>NC Bidhan</b> Folder मा विधान PDF सुरक्षित हुन्छ ।
+              नयाँ PDF Upload गर्दा त्यो Active हुन्छ र पुरानो PDF सुरक्षित रहन्छ ।
+            </div>
+            <div id="bidhanPdfStatus" class="hint">स्थिति हेर्न यो Tab खोल्नुहोस् ।</div>
+            <div class="field">
+              <label for="bidhanPdfInput">नयाँ विधान PDF छान्नुहोस् (अधिकतम 15 MB)</label>
+              <input id="bidhanPdfInput" type="file" accept=".pdf,application/pdf">
+            </div>
+            <div class="actions" style="flex-wrap:wrap">
+              <button id="bidhanUploadBtn" class="btn primary" onclick="uploadBidhanPdf()">⬆ Upload / Change PDF</button>
+              <button class="btn secondary" onclick="loadBidhanPdfStatus()">↻ Refresh</button>
+              <button id="bidhanDeleteBtn" class="btn danger" onclick="deleteBidhanPdf()">Active PDF हटाउनुहोस्</button>
+            </div>
+            <div id="bidhanPdfMessage" class="msg" role="status" aria-live="polite"></div>
+          </section>
           <section id="pane-gallery" class="card pane">
             <h3>Google Drive Photo Gallery</h3>
             <div class="hint">Drive को <b>Photo Gallery</b> मुख्य folder भित्र जति sub-folder बनाइन्छ, Public Gallery मा त्यही folder name अनुसार Album देखिन्छ । फोटोहरू सम्बन्धित sub-folder भित्र Upload गर्नुहोस् ।</div>
@@ -850,6 +870,7 @@ function showTab(n,b) {
   document.getElementById('pane-'+n).classList.add('on');
   b.classList.add('on');
   if(n==='gallery') loadGalleryInfo();
+  if(n==='bidhan') loadBidhanPdfStatus();
   if(n==='protocol') loadProtocol();
   if(n==='representation') loadRepresentation();
   if(n==='representative') renderRepresentativeManagement();
@@ -1641,6 +1662,112 @@ async function deleteProtocol(id){
 function esc(v) {
   return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}function attr(v){return esc(v)}
 if(token)openApp().catch(e=>msg(e.message));adminPass.addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin()});
+
+// ============================================================
+// BIDHAN PDF MANAGEMENT — additive admin-only UI
+// ============================================================
+function bidhanPdfMessage_(message, isError) {
+  const box = document.getElementById('bidhanPdfMessage');
+  box.style.display = 'block';
+  box.textContent = message;
+  box.style.background = isError ? '#fff0f1' : '#eef8f3';
+}
+
+async function loadBidhanPdfStatus() {
+  const box = document.getElementById('bidhanPdfStatus');
+  box.textContent = 'PDF को स्थिति जाँच हुँदैछ...';
+
+  try {
+    const result = await api('adminBidhanPdfStatus', { token });
+    if (!result.ok) throw new Error(result.message || 'स्थिति प्राप्त भएन ।');
+
+    const pdf = result.pdf || {};
+    box.replaceChildren();
+    if (!pdf.available) {
+      box.textContent = 'हाल कुनै Active विधान PDF छैन । नयाँ PDF Upload गर्नुहोस् ।';
+      return;
+    }
+
+    const title = document.createElement('strong');
+    title.textContent = 'Active PDF: ' + (pdf.name || 'विधान PDF');
+    const link = document.createElement('a');
+    link.href = pdf.url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = '📄 PDF नयाँ Tab मा खोल्नुहोस्';
+    link.style.display = 'block';
+    link.style.marginTop = '8px';
+    box.append(title, link);
+  } catch (error) {
+    box.textContent = error.message || 'PDF स्थिति लोड गर्न सकिएन ।';
+  }
+}
+
+function bidhanReadPdf_(file) {
+  return new Promise(function(resolve, reject) {
+    const reader = new FileReader();
+    reader.onload = function() { resolve(String(reader.result || '')); };
+    reader.onerror = function() { reject(new Error('PDF पढ्न सकिएन ।')); };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadBidhanPdf() {
+  const input = document.getElementById('bidhanPdfInput');
+  const file = input.files && input.files[0];
+  if (!file) {
+    bidhanPdfMessage_('पहिले PDF छान्नुहोस् ।', true);
+    return;
+  }
+  if (!/\.pdf$/i.test(file.name) || (file.type && file.type !== 'application/pdf')) {
+    bidhanPdfMessage_('PDF फाइल मात्र छान्नुहोस् ।', true);
+    return;
+  }
+  if (file.size > 15 * 1024 * 1024) {
+    bidhanPdfMessage_('15 MB भन्दा सानो PDF छान्नुहोस् ।', true);
+    return;
+  }
+
+  const button = document.getElementById('bidhanUploadBtn');
+  button.disabled = true;
+  button.textContent = 'Upload हुँदैछ...';
+  try {
+    const dataUrl = await bidhanReadPdf_(file);
+    const result = await api('adminUploadBidhanPdf', {
+      token: token,
+      dataUrl: dataUrl,
+      fileName: file.name
+    });
+    if (!result.ok) throw new Error(result.message || 'Upload असफल भयो ।');
+    input.value = '';
+    bidhanPdfMessage_(result.message, false);
+    await loadBidhanPdfStatus();
+  } catch (error) {
+    bidhanPdfMessage_(error.message || 'Upload असफल भयो ।', true);
+  } finally {
+    button.disabled = false;
+    button.textContent = '⬆ Upload / Change PDF';
+  }
+}
+
+async function deleteBidhanPdf() {
+  if (!confirm('Active विधान PDF हटाउने हो ? पुरानो फाइल Drive मा सुरक्षित रहनेछ ।')) {
+    return;
+  }
+
+  const button = document.getElementById('bidhanDeleteBtn');
+  button.disabled = true;
+  try {
+    const result = await api('adminDeleteBidhanPdf', { token: token });
+    if (!result.ok) throw new Error(result.message || 'PDF हटाउन सकिएन ।');
+    bidhanPdfMessage_(result.message, false);
+    await loadBidhanPdfStatus();
+  } catch (error) {
+    bidhanPdfMessage_(error.message || 'PDF हटाउन सकिएन ।', true);
+  } finally {
+    button.disabled = false;
+  }
+}
 </script><div id="adminClickToast" class="admin-click-toast">प्रक्रिया सुरु भयो...</div><script>document.addEventListener("click",function(e){const b=e.target.closest("button.btn");if(!b||b.disabled)return;const t=document.getElementById("adminClickToast");if(!t)return;t.textContent="प्रक्रिया सुरु भयो...";t.style.display="block";clearTimeout(window.__adminToastTimer);window.__adminToastTimer=setTimeout(()=>t.style.display="none",900);},true);</script>
 </body>
     </html>
