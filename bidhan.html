@@ -1,36 +1,437 @@
 <!DOCTYPE html>
 <html lang="ne">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>नेपाली कांग्रेस — पार्टीको विधान</title>
-<style>
-:root{font-family:system-ui,"Noto Sans Devanagari",sans-serif;color:#183453;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(115deg,#123c70,#245d95);color:white;padding:25px 16px}header>div,main{max-width:1050px;margin:auto}h1{margin:0 0 8px;font-size:clamp(23px,4vw,31px)}main{padding:20px 14px}nav{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:15px}.btn{background:#19569c;color:white;border:0;border-radius:10px;padding:12px 18px;text-decoration:none;font:600 15px system-ui;cursor:pointer}.btn:disabled{opacity:.55;cursor:wait}.panel{background:white;border:1px solid #dae5f0;border-radius:16px;padding:22px;box-shadow:0 4px 16px #153e6610}form{display:flex;gap:8px;margin-top:15px}input{flex:1;min-width:0;padding:13px;border:1px solid #c5d2df;border-radius:10px;font:inherit}.muted{color:#63778c;font-size:13px;line-height:1.65}.answer{margin-top:12px;border:1px solid #dce6f0;border-radius:12px;padding:15px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}.source{font-weight:700;color:#12538c;margin-bottom:6px}.notice{background:#fff7e8;border-left:4px solid #d28a15;padding:12px;border-radius:8px;margin-top:14px;line-height:1.6}.result-link{font-size:13px;color:#17549a}.summary{margin-top:14px}.empty{color:#6b788a;margin-top:14px}@media(max-width:600px){.panel{padding:15px}form{flex-direction:column}.btn{width:100%;text-align:center}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>नेपाली कांग्रेस — पार्टीको विधान</title>
+
+    <style>
+        /* ============================================================
+           01. ROOT THEME AND GLOBAL STYLES
+           ============================================================ */
+        :root {
+            font-family: system-ui, "Noto Sans Devanagari", sans-serif;
+            color: #183453;
+            background: #f3f6fa;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        /* ============================================================
+           02. PAGE HEADER AND MAIN LAYOUT
+           ============================================================ */
+        header {
+            background: linear-gradient(115deg, #123c70, #245d95);
+            color: white;
+            padding: 25px 16px;
+        }
+
+        header > div,
+        main {
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: clamp(23px, 4vw, 31px);
+        }
+
+        main {
+            padding: 20px 14px;
+        }
+
+        /* ============================================================
+           03. NAVIGATION AND BUTTONS
+           ============================================================ */
+        nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background: #19569c;
+            color: white;
+            border: 0;
+            border-radius: 10px;
+            padding: 12px 18px;
+            text-decoration: none;
+            font: 600 15px system-ui;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: wait;
+        }
+
+        /* ============================================================
+           04. SEARCH PANEL AND FORM
+           ============================================================ */
+        .panel {
+            background: white;
+            border: 1px solid #dae5f0;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 4px 16px #153e6610;
+        }
+
+        form {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 13px;
+            border: 1px solid #c5d2df;
+            border-radius: 10px;
+            font: inherit;
+        }
+
+        /* ============================================================
+           05. SEARCH RESULTS AND MESSAGES
+           ============================================================ */
+        .muted {
+            color: #63778c;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .answer {
+            margin-top: 12px;
+            border: 1px solid #dce6f0;
+            border-radius: 12px;
+            padding: 15px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .source {
+            font-weight: 700;
+            color: #12538c;
+            margin-bottom: 6px;
+        }
+
+        .notice {
+            background: #fff7e8;
+            border-left: 4px solid #d28a15;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 14px;
+            line-height: 1.6;
+        }
+
+        .result-link {
+            font-size: 13px;
+            color: #17549a;
+        }
+
+        .summary {
+            margin-top: 14px;
+        }
+
+        .empty {
+            color: #6b788a;
+            margin-top: 14px;
+        }
+
+        /* ============================================================
+           06. MOBILE RESPONSIVE STYLES
+           ============================================================ */
+        @media (max-width: 600px) {
+            .panel {
+                padding: 15px;
+            }
+
+            form {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
-<header><div><h1>📖 नेपाली कांग्रेस — पार्टीको विधान</h1><div>मूल PDF अध्ययन तथा विधान पाठ खोज</div></div></header>
-<main>
-<nav><a class="btn" href="index.html">← गृहपृष्ठ</a><a class="btn" id="pdfLink" href="NC_bidhan_2082.pdf" target="_blank" rel="noopener">📄 PDF मा पढ्नुहोस् ↗</a></nav>
-<section class="panel"><h2>🔎 विधान खोज तथा सहायता</h2>
-<form id="searchForm"><input id="question" maxlength="300" minlength="2" required placeholder="उदाहरण: क्रियाशील सदस्यता" aria-label="विधानको पाठ खोज्नुहोस्"><button id="submit" class="btn" type="submit">खोज्नुहोस्</button></form>
-<div id="status" class="muted summary" aria-live="polite">विधान खोज डाटाबेस लोड हुँदैछ...</div><div id="results" aria-live="polite"></div>
-</section></main>
-<script>
-'use strict';
-// All search logic is local; no Gemini, external AI, or external script.
-const INDEX_FILE='bidhan-index.json';
-const $=id=>document.getElementById(id);
-let db=null;
-function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
-function normalize(s){return String(s||'').normalize('NFC').toLowerCase().replace(/[।,!?;:()\[\]{}"'’“”–—\-]/g,' ').replace(/\s+/g,' ').trim();}
-const STOP=new Set(['को','का','की','मा','र','वा','के','छ','छन्','हो','हुन्छ','केके','कस्तो','कसरी','कति','बारे','सम्बन्धी','गर्न','भएको','भन्ने','व्यवस्था','के','होला','लाई','बाट','एक','पनि']);
-function tokens(s){return [...new Set(normalize(s).split(' ').filter(x=>x.length>1&&!STOP.has(x)))];}
-function rank(query,row){const q=normalize(query),t=normalize(row.text),terms=tokens(query);if(!terms.length)return 0;let score=0;for(const term of terms){if(t.includes(term))score+=term.length>3?4:2;else if(term.length>4&&t.includes(term.slice(0,term.length-1)))score+=1;}if(t.includes(q))score+=15;return score;}
-async function load(){try{const r=await fetch(INDEX_FILE+'?v=20261008',{cache:'no-cache'});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json();if(!data.meta||!Array.isArray(data.records))throw Error('Invalid index');db=data;$('status').textContent=`${data.meta.pages} पृष्ठको खोज डाटाबेस तयार छ । प्रश्न लेखेर खोज्नुहोस् ।`; }catch(e){$('status').textContent='खोज डाटाबेस उपलब्ध छैन । bidhan-index.json फाइल GitHub मा Upload भएको छ कि जाँच गर्नुहोस् ।';}}
-$('searchForm').addEventListener('submit',e=>{e.preventDefault();const root=$('results');root.replaceChildren();if(!db){root.append(el('p','notice','खोज डाटाबेस लोड भएको छैन ।'));return;}const q=$('question').value.trim();const ranked=db.records.map(r=>({...r,score:rank(q,r)})).filter(r=>r.score>0).sort((a,b)=>b.score-a.score||a.page-b.page);const chosen=[];const seen=new Set();for(const r of ranked){const key=r.page+':'+r.line;if(seen.has(key))continue;chosen.push(r);seen.add(key);if(chosen.length===12)break;}
-if(!chosen.length){root.append(el('p','notice','यस प्रश्नसँग सम्बन्धित पाठ उपलब्ध विधान PDF को खोज डाटाबेसमा फेला परेन ।'));return;}
-const notice=el('div','notice','यी अंश PDF बाट स्वचालित रूपमा रूपान्तरित भएका हुन् । Preeti तथा अन्य पुराना Font को Unicode शुद्धता मानवद्वारा प्रमाणित गरिएको छैन । मूल PDF सँग मिलाएर मात्र आधिकारिक प्रयोग गर्नुहोस् ।');root.append(notice);
-root.append(el('p','muted',`${ranked.length} मिल्दाजुल्दा पाठ भेटिए । सबैभन्दा सम्बन्धित १२ अंश देखाइएको छ ।`));
-for(const r of chosen){const card=el('article','answer');card.append(el('div','source',`PDF पृष्ठ ${r.page} · पाठ ${r.line}`));card.append(el('div','',r.text));const a=el('a','result-link','मूल PDF मा पृष्ठ खोल्नुहोस् ↗');a.href='NC_bidhan_2082.pdf#page='+r.page;a.target='_blank';a.rel='noopener';card.append(a);root.append(card);}
-});load();
-</script></body></html>
+    <!-- ============================================================
+         07. HEADER
+         ============================================================ -->
+    <header>
+        <div>
+            <h1>📖 नेपाली कांग्रेस — पार्टीको विधान</h1>
+            <div>मूल PDF अध्ययन तथा विधान पाठ खोज</div>
+        </div>
+    </header>
+
+    <!-- ============================================================
+         08. MAIN CONTENT
+         ============================================================ -->
+    <main>
+        <nav>
+            <a class="btn" href="index.html">← गृहपृष्ठ</a>
+            <a
+                class="btn"
+                id="pdfLink"
+                href="NC_bidhan_2082.pdf"
+                target="_blank"
+                rel="noopener"
+            >📄 PDF मा पढ्नुहोस् ↗</a>
+        </nav>
+
+        <section class="panel">
+            <h2>🔎 विधान खोज तथा सहायता</h2>
+
+            <form id="searchForm">
+                <input
+                    id="question"
+                    maxlength="300"
+                    minlength="2"
+                    required
+                    placeholder="उदाहरण: क्रियाशील सदस्यता"
+                    aria-label="विधानको पाठ खोज्नुहोस्"
+                >
+                <button id="submit" class="btn" type="submit">खोज्नुहोस्</button>
+            </form>
+
+            <div id="status" class="muted summary" aria-live="polite">
+                विधान खोज डाटाबेस लोड हुँदैछ...
+            </div>
+
+            <div id="results" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <script>
+        'use strict';
+
+        /* ============================================================
+           09. CONFIGURATION AND APPLICATION STATE
+           ============================================================ */
+        // Search runs in the browser. No Gemini or external AI service.
+        const INDEX_FILE = 'bidhan-index.json';
+        const $ = id => document.getElementById(id);
+        let db = null;
+
+        const STOP = new Set([
+            'को', 'का', 'की', 'मा', 'र', 'वा', 'के', 'छ', 'छन्',
+            'हो', 'हुन्छ', 'केके', 'कस्तो', 'कसरी', 'कति', 'बारे',
+            'सम्बन्धी', 'गर्न', 'भएको', 'भन्ने', 'व्यवस्था',
+            'होला', 'लाई', 'बाट', 'एक', 'पनि'
+        ]);
+
+        /* ============================================================
+           10. DOM HELPER
+           ============================================================ */
+        function el(tag, cls, text) {
+            const node = document.createElement(tag);
+
+            if (cls) {
+                node.className = cls;
+            }
+
+            if (text !== undefined) {
+                node.textContent = text;
+            }
+
+            return node;
+        }
+
+        /* ============================================================
+           11. NEPALI TEXT NORMALIZATION AND TOKENIZATION
+           ============================================================ */
+        function normalize(value) {
+            return String(value || '')
+                .normalize('NFC')
+                .toLowerCase()
+                .replace(/[।,!?;:()\[\]{}"'’“”–—\-]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function tokens(value) {
+            return [...new Set(
+                normalize(value)
+                    .split(' ')
+                    .filter(token => token.length > 1 && !STOP.has(token))
+            )];
+        }
+
+        /* ============================================================
+           12. SEARCH RANKING
+           ============================================================ */
+        function rank(query, row) {
+            const normalizedQuery = normalize(query);
+            const text = normalize(row.text);
+            const terms = tokens(query);
+
+            if (!terms.length) {
+                return 0;
+            }
+
+            let score = 0;
+
+            for (const term of terms) {
+                if (text.includes(term)) {
+                    score += term.length > 3 ? 4 : 2;
+                } else if (
+                    term.length > 4 &&
+                    text.includes(term.slice(0, term.length - 1))
+                ) {
+                    score += 1;
+                }
+            }
+
+            if (text.includes(normalizedQuery)) {
+                score += 15;
+            }
+
+            return score;
+        }
+
+        /* ============================================================
+           13. LOAD LOCAL SEARCH DATABASE
+           ============================================================ */
+        async function load() {
+            try {
+                const response = await fetch(
+                    INDEX_FILE + '?v=20261008',
+                    { cache: 'no-cache' }
+                );
+
+                if (!response.ok) {
+                    throw Error('HTTP ' + response.status);
+                }
+
+                const data = await response.json();
+
+                if (!data.meta || !Array.isArray(data.records)) {
+                    throw Error('Invalid index');
+                }
+
+                db = data;
+
+                $('status').textContent =
+                    `${data.meta.pages} पृष्ठको खोज डाटाबेस तयार छ । ` +
+                    'प्रश्न लेखेर खोज्नुहोस् ।';
+            } catch (error) {
+                $('status').textContent =
+                    'खोज डाटाबेस उपलब्ध छैन । ' +
+                    'bidhan-index.json फाइल GitHub मा Upload भएको छ कि जाँच गर्नुहोस् ।';
+            }
+        }
+
+        /* ============================================================
+           14. SEARCH AND DISPLAY RESULTS
+           ============================================================ */
+        function handleSearch(event) {
+            event.preventDefault();
+
+            const root = $('results');
+            root.replaceChildren();
+
+            if (!db) {
+                root.append(el('p', 'notice', 'खोज डाटाबेस लोड भएको छैन ।'));
+                return;
+            }
+
+            const query = $('question').value.trim();
+
+            const ranked = db.records
+                .map(record => ({
+                    ...record,
+                    score: rank(query, record)
+                }))
+                .filter(record => record.score > 0)
+                .sort((a, b) => b.score - a.score || a.page - b.page);
+
+            const chosen = [];
+            const seen = new Set();
+
+            for (const record of ranked) {
+                const key = record.page + ':' + record.line;
+
+                if (seen.has(key)) {
+                    continue;
+                }
+
+                chosen.push(record);
+                seen.add(key);
+
+                if (chosen.length === 12) {
+                    break;
+                }
+            }
+
+            if (!chosen.length) {
+                root.append(el(
+                    'p',
+                    'notice',
+                    'यस प्रश्नसँग सम्बन्धित पाठ उपलब्ध विधान PDF को ' +
+                    'खोज डाटाबेसमा फेला परेन ।'
+                ));
+                return;
+            }
+
+            root.append(el(
+                'div',
+                'notice',
+                'यी अंश PDF बाट स्वचालित रूपमा रूपान्तरित भएका हुन् । ' +
+                'Preeti तथा अन्य पुराना Font को Unicode शुद्धता मानवद्वारा ' +
+                'प्रमाणित गरिएको छैन । मूल PDF सँग मिलाएर मात्र आधिकारिक प्रयोग गर्नुहोस् ।'
+            ));
+
+            root.append(el(
+                'p',
+                'muted',
+                `${ranked.length} मिल्दाजुल्दा पाठ भेटिए । ` +
+                'सबैभन्दा सम्बन्धित १२ अंश देखाइएको छ ।'
+            ));
+
+            for (const record of chosen) {
+                const card = el('article', 'answer');
+
+                card.append(el(
+                    'div',
+                    'source',
+                    `PDF पृष्ठ ${record.page} · पाठ ${record.line}`
+                ));
+
+                card.append(el('div', '', record.text));
+
+                const link = el(
+                    'a',
+                    'result-link',
+                    'मूल PDF मा पृष्ठ खोल्नुहोस् ↗'
+                );
+
+                link.href = 'NC_bidhan_2082.pdf#page=' + record.page;
+                link.target = '_blank';
+                link.rel = 'noopener';
+
+                card.append(link);
+                root.append(card);
+            }
+        }
+
+        /* ============================================================
+           15. INITIALIZATION
+           ============================================================ */
+        $('searchForm').addEventListener('submit', handleSearch);
+        load();
+    </script>
+</body>
+</html>
