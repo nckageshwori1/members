@@ -1,72 +1,36 @@
 <!DOCTYPE html>
 <html lang="ne">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>पार्टीको विधान | अध्ययन तथा खोज</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>नेपाली कांग्रेस — पार्टीको विधान</title>
 <style>
-:root{font-family:system-ui,'Noto Sans Devanagari',sans-serif;color:#19304b;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(120deg,#123c70,#215c95);color:white;padding:24px 16px}header .wrap{max-width:1050px;margin:auto}h1{font-size:clamp(22px,4vw,31px);margin:0 0 8px}p{line-height:1.65}main{max-width:1050px;margin:22px auto;padding:0 14px}.panel{background:white;border:1px solid #dde5ef;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 4px 16px #153e6610}.muted{color:#586b7e;font-size:14px}.btn{border:0;background:#17559b;color:white;padding:12px 18px;border-radius:10px;font-weight:650;cursor:pointer;text-decoration:none;display:inline-block}.btn:hover{background:#0c3d75}form{display:flex;gap:8px;margin-top:16px}input{flex:1;min-width:0;padding:13px;border:1px solid #c5d2df;border-radius:10px;font:inherit}.answer{margin-top:14px;border:1px solid #d8e3ef;border-radius:12px;padding:15px;white-space:pre-wrap;overflow-wrap:anywhere}.source{color:#12538c;font-weight:650;margin-bottom:8px}.warn{background:#fff8e9;border-left:4px solid #cf9224;padding:12px;border-radius:7px}@media(max-width:600px){.panel{padding:15px}form{flex-direction:column}.btn{width:100%;text-align:center}}
+:root{font-family:system-ui,"Noto Sans Devanagari",sans-serif;color:#183453;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(115deg,#123c70,#245d95);color:white;padding:25px 16px}header>div,main{max-width:1050px;margin:auto}h1{margin:0 0 8px;font-size:clamp(23px,4vw,31px)}main{padding:20px 14px}nav{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:15px}.btn{background:#19569c;color:white;border:0;border-radius:10px;padding:12px 18px;text-decoration:none;font:600 15px system-ui;cursor:pointer}.btn:disabled{opacity:.55;cursor:wait}.panel{background:white;border:1px solid #dae5f0;border-radius:16px;padding:22px;box-shadow:0 4px 16px #153e6610}form{display:flex;gap:8px;margin-top:15px}input{flex:1;min-width:0;padding:13px;border:1px solid #c5d2df;border-radius:10px;font:inherit}.muted{color:#63778c;font-size:13px;line-height:1.65}.answer{margin-top:12px;border:1px solid #dce6f0;border-radius:12px;padding:15px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}.source{font-weight:700;color:#12538c;margin-bottom:6px}.notice{background:#fff7e8;border-left:4px solid #d28a15;padding:12px;border-radius:8px;margin-top:14px;line-height:1.6}.result-link{font-size:13px;color:#17549a}.summary{margin-top:14px}.empty{color:#6b788a;margin-top:14px}@media(max-width:600px){.panel{padding:15px}form{flex-direction:column}.btn{width:100%;text-align:center}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><h1>📖 नेपाली कांग्रेस — पार्टीको विधान</h1><div>मूल PDF अध्ययन तथा प्रमाणित पाठ खोज</div></div></header>
+<header><div><h1>📖 नेपाली कांग्रेस — पार्टीको विधान</h1><div>मूल PDF अध्ययन तथा विधान पाठ खोज</div></div></header>
 <main>
-<nav style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px"><a class="btn" href="index.html">← गृहपृष्ठ</a><a class="btn" id="pdfOpenTop" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true" style="opacity:.65;pointer-events:none">📄 PDF मा पढ्नुहोस् ↗</a></nav>
-
-<section class="panel"><h2>💬 विधान AI सहायता</h2><p class="muted">Admin ले सक्रिय गरेको मूल विधान PDF लाई मात्र आधार मानेर नेपाली Unicode मा उत्तर तयार गरिन्छ ।</p><div class="warn">AI बाट पढिएको पाठमा त्रुटि हुन सक्छ । धारा र पृष्ठ नम्बर मूल PDF मा जाँच गर्नुहोस् । PDF मा आधार नभेटिए उत्तर दिइनेछैन ।</div><form id="askForm"><input id="question" maxlength="500" minlength="2" required placeholder="उदाहरण: क्रियाशील सदस्यताको व्यवस्था के छ ?" aria-label="विधानसम्बन्धी प्रश्न"><button class="btn" id="send" type="submit">प्रश्न सोध्नुहोस्</button></form><div id="results" aria-live="polite"></div></section>
-</main>
+<nav><a class="btn" href="index.html">← गृहपृष्ठ</a><a class="btn" id="pdfLink" href="NC_bidhan_2082.pdf" target="_blank" rel="noopener">📄 PDF मा पढ्नुहोस् ↗</a></nav>
+<section class="panel"><h2>🔎 विधान खोज तथा सहायता</h2>
+<form id="searchForm"><input id="question" maxlength="300" minlength="2" required placeholder="उदाहरण: क्रियाशील सदस्यता" aria-label="विधानको पाठ खोज्नुहोस्"><button id="submit" class="btn" type="submit">खोज्नुहोस्</button></form>
+<div id="status" class="muted summary" aria-live="polite">विधान खोज डाटाबेस लोड हुँदैछ...</div><div id="results" aria-live="polite"></div>
+</section></main>
 <script>
 'use strict';
-const API_URL='https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
-const form=document.getElementById('askForm');
-const results=document.getElementById('results');
-function node(tag,cls,value){const el=document.createElement(tag);if(cls)el.className=cls;if(value!==undefined)el.textContent=value;return el;}
-async function callApi(action,body={}){
-  const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...body})});
-  if(!res.ok)throw new Error('Server error');
-  return res.json();
-}
-async function loadActivePdf(){
-  const link=document.getElementById('pdfOpenTop');
-  try{
-    const r=await callApi('publicBidhanPdf');
-    if(!r.ok || !r.available || !r.url){
-      link.removeAttribute('href');
-      link.setAttribute('aria-disabled','true');
-      link.title='हाल Active विधान PDF उपलब्ध छैन ।';
-      return;
-    }
-    link.href=r.url;
-    link.style.opacity='1';
-    link.style.pointerEvents='auto';
-    link.removeAttribute('aria-disabled');
-    link.title=r.name || 'Active विधान PDF';
-  }catch(e){
-    link.removeAttribute('href');
-    link.setAttribute('aria-disabled','true');
-    link.title='PDF को जानकारी अहिले लोड गर्न सकिएन ।';
-  }
-}
-form.addEventListener('submit',async function(event){
-  event.preventDefault();
-  const query=document.getElementById('question').value.trim();if(query.length<2)return;
-  results.replaceChildren(node('p','muted','Active PDF बाट उत्तर खोजिँदैछ... केही समय लाग्न सक्छ ।'));
-  const btn=document.getElementById('send');btn.disabled=true;
-  try{
-    const data=await callApi('bidhanSearch',{query});results.replaceChildren();
-    if(!data.ok){results.append(node('p','warn',data.message||'उत्तर उपलब्ध छैन ।'));return;}
-    if(!data.found){results.append(node('p','warn',data.answer||'यस प्रश्नको उत्तर उपलब्ध विधान PDF मा फेला परेन ।'));return;}
-    const card=node('article','answer');
-    const citation=[data.article?'धारा '+data.article:'',data.page?'PDF पृष्ठ '+data.page:''].filter(Boolean).join(' · ');
-    if(citation)card.append(node('div','source',citation));
-    card.append(node('div','',data.answer));
-    if(data.quote)card.append(node('p','muted','PDF अंश: '+data.quote));
-    if(data.note)card.append(node('p','muted',data.note));
-
-    results.append(card);
-  }catch(e){results.replaceChildren(node('p','warn','AI सेवा अहिले उपलब्ध छैन । पुनः प्रयास गर्नुहोस् ।'));}
-  finally{btn.disabled=false;}
-});
-loadActivePdf();
-</script>
-</body></html>
+// All search logic is local; no Gemini, external AI, or external script.
+const INDEX_FILE='bidhan-index.json';
+const $=id=>document.getElementById(id);
+let db=null;
+function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
+function normalize(s){return String(s||'').normalize('NFC').toLowerCase().replace(/[।,!?;:()\[\]{}"'’“”–—\-]/g,' ').replace(/\s+/g,' ').trim();}
+const STOP=new Set(['को','का','की','मा','र','वा','के','छ','छन्','हो','हुन्छ','केके','कस्तो','कसरी','कति','बारे','सम्बन्धी','गर्न','भएको','भन्ने','व्यवस्था','के','होला','लाई','बाट','एक','पनि']);
+function tokens(s){return [...new Set(normalize(s).split(' ').filter(x=>x.length>1&&!STOP.has(x)))];}
+function rank(query,row){const q=normalize(query),t=normalize(row.text),terms=tokens(query);if(!terms.length)return 0;let score=0;for(const term of terms){if(t.includes(term))score+=term.length>3?4:2;else if(term.length>4&&t.includes(term.slice(0,term.length-1)))score+=1;}if(t.includes(q))score+=15;return score;}
+async function load(){try{const r=await fetch(INDEX_FILE+'?v=20261008',{cache:'no-cache'});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json();if(!data.meta||!Array.isArray(data.records))throw Error('Invalid index');db=data;$('status').textContent=`${data.meta.pages} पृष्ठको खोज डाटाबेस तयार छ । प्रश्न लेखेर खोज्नुहोस् ।`; }catch(e){$('status').textContent='खोज डाटाबेस उपलब्ध छैन । bidhan-index.json फाइल GitHub मा Upload भएको छ कि जाँच गर्नुहोस् ।';}}
+$('searchForm').addEventListener('submit',e=>{e.preventDefault();const root=$('results');root.replaceChildren();if(!db){root.append(el('p','notice','खोज डाटाबेस लोड भएको छैन ।'));return;}const q=$('question').value.trim();const ranked=db.records.map(r=>({...r,score:rank(q,r)})).filter(r=>r.score>0).sort((a,b)=>b.score-a.score||a.page-b.page);const chosen=[];const seen=new Set();for(const r of ranked){const key=r.page+':'+r.line;if(seen.has(key))continue;chosen.push(r);seen.add(key);if(chosen.length===12)break;}
+if(!chosen.length){root.append(el('p','notice','यस प्रश्नसँग सम्बन्धित पाठ उपलब्ध विधान PDF को खोज डाटाबेसमा फेला परेन ।'));return;}
+const notice=el('div','notice','यी अंश PDF बाट स्वचालित रूपमा रूपान्तरित भएका हुन् । Preeti तथा अन्य पुराना Font को Unicode शुद्धता मानवद्वारा प्रमाणित गरिएको छैन । मूल PDF सँग मिलाएर मात्र आधिकारिक प्रयोग गर्नुहोस् ।');root.append(notice);
+root.append(el('p','muted',`${ranked.length} मिल्दाजुल्दा पाठ भेटिए । सबैभन्दा सम्बन्धित १२ अंश देखाइएको छ ।`));
+for(const r of chosen){const card=el('article','answer');card.append(el('div','source',`PDF पृष्ठ ${r.page} · पाठ ${r.line}`));card.append(el('div','',r.text));const a=el('a','result-link','मूल PDF मा पृष्ठ खोल्नुहोस् ↗');a.href='NC_bidhan_2082.pdf#page='+r.page;a.target='_blank';a.rel='noopener';card.append(a);root.append(card);}
+});load();
+</script></body></html>
