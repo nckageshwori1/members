@@ -328,9 +328,9 @@
             $('status').textContent = 'विधान विवरण खोजिँदैछ...';
 
             try {
-                const result = await request('bidhanSearch', {
-                    query: query
-                });
+                const result = selectedRow && !query
+                    ? await request('bidhanGetRow', { row: selectedRow })
+                    : await request('bidhanSearch', { query: query });
 
                 let rows = result.rows || [];
 
