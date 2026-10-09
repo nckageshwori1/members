@@ -1,29 +1,314 @@
-<!doctype html>
-<html lang="ne"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>बैठक तथा उपस्थिति | वडा नं. १</title>
-<style>
-:root{font-family:"Noto Sans Devanagari","Nirmala UI",sans-serif;color:#17344d;background:#f3f7fb}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(110deg,#0d6d43,#12446d);color:white;padding:20px}header>div,main{max-width:1150px;margin:auto}h1{font-size:23px;margin:0 0 6px}main{padding:20px 12px}.panel{background:white;border:1px solid #dce5ec;border-radius:15px;padding:18px;margin:14px 0;box-shadow:0 5px 20px #1231}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.wide{grid-column:1/-1}label{display:block;font-weight:700;font-size:13px;margin-bottom:5px}input,textarea,select{width:100%;padding:10px;border:1px solid #c7d6e3;border-radius:8px;font:inherit}textarea{min-height:65px}button,.btn{background:#12588d;color:white;border:0;border-radius:9px;padding:10px 13px;cursor:pointer;text-decoration:none;font:600 14px inherit;display:inline-block;margin:3px}.danger{background:#b12f35}.success{background:#087a49}.muted{color:#61788a;font-size:13px}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:630px}td,th{border-bottom:1px solid #e1e7ef;padding:10px;text-align:left}th{background:#edf3f8}.tools{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.tools>*{flex:1 1 150px}.checklist{max-height:260px;overflow:auto;border:1px solid #dce5ee;padding:10px;border-radius:9px}.checklist label{display:flex;align-items:center;gap:8px;padding:5px}.checklist input{width:auto}.pill{background:#eaf3f9;padding:6px 9px;border-radius:7px}.hidden{display:none}@media(max-width:650px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}}@media print{header,.no-print,button,.tools{display:none!important}.panel{box-shadow:none;break-inside:avoid}body{background:white}}
-</style></head><body>
-<header><div><h1>नेपाली कांग्रेस — वडा नं. १</h1><div>बैठक व्यवस्थापन तथा उपस्थिति प्रतिवेदन</div></div></header>
-<main><div class="tools no-print"><a class="btn" href="admin.html">← Admin Panel</a><button onclick="init()">↻ Refresh</button><button onclick="window.print()">🖨 Print / PDF</button></div>
-<div id="notice" class="muted">Admin Login Session जाँच हुँदैछ...</div>
-<section class="panel no-print"><h2>१. बैठक दर्ता / सम्पादन</h2><div class="grid">
-<div><label>मिति (वि.सं. YYYY-MM-DD)</label><input id="date" placeholder="2083-06-23"></div><div><label>समय</label><input id="time" type="time"></div>
-<div><label>बैठक शीर्षक</label><input id="title"></div><div><label>स्थान</label><input id="venue"></div>
-<div class="wide"><label>एजेन्डा</label><textarea id="agenda"></textarea></div><div class="wide"><label>निर्णय / विवरण</label><textarea id="decisions"></textarea></div></div>
-<h3>आमन्त्रित सदस्य छनोट</h3><div class="tools"><button onclick="selectGroup('all')">सबै सक्रिय सदस्य</button><button onclick="selectGroup('committee')">वडा कार्यसमिति</button><button onclick="selectGroup('representative')">निर्वाचित प्रतिनिधि</button><button onclick="selectGroup('none')">सबै हटाउने</button></div>
-<input id="filter" placeholder="NCID वा नामबाट सदस्य खोज्नुहोस्" oninput="renderMembers()"><p id="selectedCount" class="muted"></p><div id="memberChecks" class="checklist"></div>
-<button class="success" onclick="saveMeeting()">बैठक सुरक्षित गर्नुहोस्</button><button onclick="clearMeeting()">नयाँ बैठक</button></section>
-<section class="panel no-print"><h2>२. बैठकहरू</h2><div id="meetingList"></div></section>
-<section id="attendancePanel" class="panel hidden"><h2 id="meetingTitle">३. उपस्थिति</h2><p class="muted">केवल आमन्त्रित सदस्यलाई Present वा Absent चिन्ह लगाउनुहोस् ।</p><div id="attendanceTable" class="tablewrap"></div><div class="tools no-print"><button onclick="markAll('Present')">सबै Present</button><button onclick="markAll('Absent')">सबै Absent</button><button class="success" onclick="saveAttendance()">उपस्थिति सुरक्षित गर्नुहोस्</button><button class="danger" onclick="finalizeMeeting()">बैठक Finalize</button></div></section>
-<section class="panel"><h2>४. आधिकारिक प्रतिवेदन (Finalized मात्र)</h2><div class="grid no-print"><div><label>मिति देखि (BS)</label><input id="from" placeholder="2083-01-01"></div><div><label>मिति सम्म (BS)</label><input id="to" placeholder="2083-12-30"></div><div><label>NCID (वैकल्पिक)</label><input id="reportNcid" placeholder="व्यक्तिगत इतिहास"></div><div><label>बैठक</label><select id="reportMeeting"><option value="">सबै बैठक</option></select></div></div><button class="no-print" onclick="loadReport()">प्रतिवेदन हेर्नुहोस्</button><div id="reportSummary"></div><div id="reportTable" class="tablewrap"></div></section>
-</main><script>
-'use strict';
+<!DOCTYPE html>
+<html lang="ne">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   बैठक तथा उपस्थिति | वडा नं. १
+  </title>
+  <style>
+   :root {
+    font-family:"Noto Sans Devanagari","Nirmala UI",sans-serif;
+    color:#17344d;
+    background:#f3f7fb}
+* {
+    box-sizing:border-box}
+body {
+    margin:0}
+header {
+    background:linear-gradient(110deg,#0d6d43,#12446d);
+    color:white;
+    padding:20px}
+header>div,main {
+    max-width:1150px;
+    margin:auto}
+h1 {
+    font-size:23px;
+    margin:0 0 6px}
+main {
+    padding:20px 12px}
+.panel {
+    background:white;
+    border:1px solid #dce5ec;
+    border-radius:15px;
+    padding:18px;
+    margin:14px 0;
+    box-shadow:0 5px 20px #1231}
+.grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px}
+.wide {
+    grid-column:1/-1}
+label {
+    display:block;
+    font-weight:700;
+    font-size:13px;
+    margin-bottom:5px}
+input,textarea,select {
+    width:100%;
+    padding:10px;
+    border:1px solid #c7d6e3;
+    border-radius:8px;
+    font:inherit}
+textarea {
+    min-height:65px}
+button,.btn {
+    background:#12588d;
+    color:white;
+    border:0;
+    border-radius:9px;
+    padding:10px 13px;
+    cursor:pointer;
+    text-decoration:none;
+    font:600 14px inherit;
+    display:inline-block;
+    margin:3px}
+.danger {
+    background:#b12f35}
+.success {
+    background:#087a49}
+.muted {
+    color:#61788a;
+    font-size:13px}
+.tablewrap {
+    overflow:auto}
+table {
+    border-collapse:collapse;
+    width:100%;
+    min-width:630px}
+td,th {
+    border-bottom:1px solid #e1e7ef;
+    padding:10px;
+    text-align:left}
+th {
+    background:#edf3f8}
+.tools {
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin:12px 0}
+.tools>* {
+    flex:1 1 150px}
+.checklist {
+    max-height:260px;
+    overflow:auto;
+    border:1px solid #dce5ee;
+    padding:10px;
+    border-radius:9px}
+.checklist label {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:5px}
+.checklist input {
+    width:auto}
+.pill {
+    background:#eaf3f9;
+    padding:6px 9px;
+    border-radius:7px}
+.hidden {
+    display:none}
+@media(max-width:650px) {
+    .grid {
+    grid-template-columns:1fr}
+.wide {
+    grid-column:auto}
+}
+@media print {
+    header,.no-print,button,.tools {
+    display:none!important}
+.panel {
+    box-shadow:none;
+    break-inside:avoid}
+body {
+    background:white}
+}
+  </style>
+ </head>
+ <body>
+  <header>
+   <div>
+    <h1>
+     नेपाली कांग्रेस — वडा नं. १
+    </h1>
+    <div>
+     बैठक व्यवस्थापन तथा उपस्थिति प्रतिवेदन
+    </div>
+   </div>
+  </header>
+  <main>
+   <div class="tools no-print">
+    <a class="btn" href="admin.html">
+     ← Admin Panel
+    </a>
+    <button onclick="init()">
+     ↻ Refresh
+    </button>
+    <button onclick="window.print()">
+     🖨 Print / PDF
+    </button>
+   </div>
+   <div class="muted" id="notice">
+    Admin Login Session जाँच हुँदैछ...
+   </div>
+   <section class="panel no-print">
+    <h2>
+     १. बैठक दर्ता / सम्पादन
+    </h2>
+    <div class="grid">
+     <div>
+      <label>
+       मिति (वि.सं. YYYY-MM-DD)
+      </label>
+      <input id="date" placeholder="2083-06-23"/>
+     </div>
+     <div>
+      <label>
+       समय
+      </label>
+      <input id="time" type="time"/>
+     </div>
+     <div>
+      <label>
+       बैठक शीर्षक
+      </label>
+      <input id="title"/>
+     </div>
+     <div>
+      <label>
+       स्थान
+      </label>
+      <input id="venue"/>
+     </div>
+     <div class="wide">
+      <label>
+       एजेन्डा
+      </label>
+      <textarea id="agenda"></textarea>
+     </div>
+     <div class="wide">
+      <label>
+       निर्णय / विवरण
+      </label>
+      <textarea id="decisions"></textarea>
+     </div>
+    </div>
+    <h3>
+     आमन्त्रित सदस्य छनोट
+    </h3>
+    <div class="tools">
+     <button onclick="selectGroup('all')">
+      सबै सक्रिय सदस्य
+     </button>
+     <button onclick="selectGroup('committee')">
+      वडा कार्यसमिति
+     </button>
+     <button onclick="selectGroup('representative')">
+      निर्वाचित प्रतिनिधि
+     </button>
+     <button onclick="selectGroup('none')">
+      सबै हटाउने
+     </button>
+    </div>
+    <input id="filter" oninput="renderMembers()" placeholder="NCID वा नामबाट सदस्य खोज्नुहोस्"/>
+    <p class="muted" id="selectedCount">
+    </p>
+    <div class="checklist" id="memberChecks">
+    </div>
+    <button class="success" onclick="saveMeeting()">
+     बैठक सुरक्षित गर्नुहोस्
+    </button>
+    <button onclick="clearMeeting()">
+     नयाँ बैठक
+    </button>
+   </section>
+   <section class="panel no-print">
+    <h2>
+     २. बैठकहरू
+    </h2>
+    <div id="meetingList">
+    </div>
+   </section>
+   <section class="panel hidden" id="attendancePanel">
+    <h2 id="meetingTitle">
+     ३. उपस्थिति
+    </h2>
+    <p class="muted">
+     केवल आमन्त्रित सदस्यलाई Present वा Absent चिन्ह लगाउनुहोस् ।
+    </p>
+    <div class="tablewrap" id="attendanceTable">
+    </div>
+    <div class="tools no-print">
+     <button onclick="markAll('Present')">
+      सबै Present
+     </button>
+     <button onclick="markAll('Absent')">
+      सबै Absent
+     </button>
+     <button class="success" onclick="saveAttendance()">
+      उपस्थिति सुरक्षित गर्नुहोस्
+     </button>
+     <button class="danger" onclick="finalizeMeeting()">
+      बैठक Finalize
+     </button>
+    </div>
+   </section>
+   <section class="panel">
+    <h2>
+     ४. आधिकारिक प्रतिवेदन (Finalized मात्र)
+    </h2>
+    <div class="grid no-print">
+     <div>
+      <label>
+       मिति देखि (BS)
+      </label>
+      <input id="from" placeholder="2083-01-01"/>
+     </div>
+     <div>
+      <label>
+       मिति सम्म (BS)
+      </label>
+      <input id="to" placeholder="2083-12-30"/>
+     </div>
+     <div>
+      <label>
+       NCID (वैकल्पिक)
+      </label>
+      <input id="reportNcid" placeholder="व्यक्तिगत इतिहास"/>
+     </div>
+     <div>
+      <label>
+       बैठक
+      </label>
+      <select id="reportMeeting">
+       <option value="">
+        सबै बैठक
+       </option>
+      </select>
+     </div>
+    </div>
+    <button class="no-print" onclick="loadReport()">
+     प्रतिवेदन हेर्नुहोस्
+    </button>
+    <div id="reportSummary">
+    </div>
+    <div class="tablewrap" id="reportTable">
+    </div>
+   </section>
+  </main>
+  <script>
+   'use strict';
 const API_URL='https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
 const token=sessionStorage.getItem('nc_admin_token')||'';
-const el=id=>document.getElementById(id);let members=[],meetings=[],currentId='',editingId='',attendees=[];const selected=new Set();
-function note(s){el('notice').textContent=s}
-function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const el=id=>document.getElementById(id);
+let members=[],meetings=[],currentId='',editingId='',attendees=[];
+const selected=new Set();
+function note(s){
+    el('notice').textContent=s
+}
+function safe(s){
+    return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function api(action,data={}){const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,token,...data})});if(!r.ok)throw Error('Network Error');const j=await r.json();if(!j.ok)throw Error(j.message||'Error');return j}
 async function init(){if(!token){note('पहिला Admin Panel मा Login गर्नुहोस् ।');return}try{await api('meetingSetup');const [m,list]=await Promise.all([api('meetingMembers'),api('meetingList')]);members=m.rows;meetings=list.rows;renderMembers();renderMeetings();note('डेटा तयार छ ।');await loadReport()}catch(e){note(e.message)}}
 function selectGroup(g){if(g==='none')selected.clear();else members.forEach(m=>{if((g==='all'&&m.active)||(g==='committee'&&m.committee)||(g==='representative'&&m.representative))selected.add(m.NCID)});renderMembers()}
@@ -38,4 +323,6 @@ async function saveAttendance(){try{const entries=attendees.map((a,i)=>({NCID:a.
 async function finalizeMeeting(){if(!confirm('सबै उपस्थिति जाँचिसक्नुभयो? Finalize पछि Edit हुँदैन ।'))return;try{await saveAttendance();const r=await api('meetingFinalize',{id:currentId});alert(r.message);await init();await openAttendance(currentId)}catch(e){alert(e.message)}}
 async function loadReport(){try{const r=await api('meetingReport',{id:el('reportMeeting').value,from:el('from').value,to:el('to').value,ncid:el('reportNcid').value.trim()});const s=r.summary;el('reportSummary').innerHTML=`<p class="pill">बैठक: ${s.meetings} | आमन्त्रित उपस्थिति अवसर: ${s.invited} | Present: ${s.present} | Absent: ${s.absent} | उपस्थिति: ${s.percentage}%</p>`;el('reportTable').innerHTML='<table><tr><th>मिति</th><th>बैठक</th><th>Eligible</th><th>Present</th><th>Absent</th><th>%</th></tr>'+r.meetings.map(x=>`<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${x.invited}</td><td>${x.present}</td><td>${x.absent}</td><td>${x.percentage}%</td></tr>`).join('')+'</table>'+(el('reportNcid').value?'<h3>व्यक्तिगत इतिहास</h3><table><tr><th>बैठक ID</th><th>सदस्य</th><th>स्थिति</th></tr>'+r.records.map(x=>`<tr><td>${safe(x.MeetingID)}</td><td>${safe(x.Name)}</td><td>${safe(x.Attendance)}</td></tr>`).join('')+'</table>':'')}catch(e){el('reportSummary').textContent=e.message}}
 init();
-</script></body></html>
+  </script>
+ </body>
+</html>
