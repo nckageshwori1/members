@@ -1644,5 +1644,46 @@ function esc(v) {
 if(token)openApp().catch(e=>msg(e.message));adminPass.addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin()});
 
 </script><div id="adminClickToast" class="admin-click-toast">प्रक्रिया सुरु भयो...</div><script>document.addEventListener("click",function(e){const b=e.target.closest("button.btn");if(!b||b.disabled)return;const t=document.getElementById("adminClickToast");if(!t)return;t.textContent="प्रक्रिया सुरु भयो...";t.style.display="block";clearTimeout(window.__adminToastTimer);window.__adminToastTimer=setTimeout(()=>t.style.display="none",900);},true);</script>
+
+<script id="wardProfileFieldEnhancement">
+// ============================================================
+// MEMBER PROFILE FIELDS — TARGETED, ADDITIVE ENHANCEMENT
+// Existing save and member-edit handlers remain unchanged.
+// ============================================================
+(function () {
+  'use strict';
+
+  const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+
+  function enhanceFields() {
+    document.querySelectorAll('input').forEach(function (input) {
+      const key = input.dataset.key || input.name || '';
+      if (key === 'जन्म मिति (AD)') {
+        input.placeholder = 'YYYY-MM-DD';
+        input.setAttribute('inputmode', 'numeric');
+      }
+      if (key === 'जन्म मिति (BS)') {
+        input.placeholder = 'YYYY-MM-DD (वि.सं.)';
+      }
+      if (key === 'Blood Group') {
+        input.setAttribute('list', 'wardBloodGroupOptions');
+      }
+    });
+  }
+
+  const list = document.createElement('datalist');
+  list.id = 'wardBloodGroupOptions';
+  bloodGroups.forEach(function (group) {
+    const option = document.createElement('option');
+    option.value = group;
+    list.appendChild(option);
+  });
+  document.body.appendChild(list);
+
+  const observer = new MutationObserver(enhanceFields);
+  observer.observe(document.body, { childList: true, subtree: true });
+  enhanceFields();
+})();
+</script>
 </body>
     </html>
