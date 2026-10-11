@@ -2480,6 +2480,8 @@ function escapeHtml(v) {
   let greetingSlideTimer = null;
   let greetingSlideIndex = 0;
   let greetingSlideCards = [];
+  let wardBirthdayCards = [];
+  let wardGreetingSettings = {};
 
   function showGreetingSlide(index) {
     if (!greetingSlideCards.length) return;
@@ -2489,10 +2491,18 @@ function escapeHtml(v) {
     const title = document.getElementById('greetingPublicTitle');
     const message = document.getElementById('greetingPublicMessage');
     const dots = document.getElementById('greetingDots');
-    if (!image || !title || !message) return;
+    if (!title || !message) return;
 
-    image.src = card.imageUrl;
-    image.alt = card.title || 'शुभकामना';
+    if (card.kind === 'birthday') {
+      slidesBirthdayCard(card);
+    } else {
+      const slides = document.getElementById('greetingSlides');
+      if (!slides.querySelector('#greetingSlideImage')) {
+        slides.innerHTML = '<img id="greetingSlideImage" alt="शुभकामना" decoding="async">';
+      }
+      slides.querySelector('#greetingSlideImage').src = card.imageUrl;
+    }
+    if (card.kind !== 'birthday') document.getElementById('greetingSlideImage').alt = card.title || 'शुभकामना';
     title.textContent = card.title || 'हार्दिक शुभकामना';
     message.textContent = card.message || '';
     message.hidden = !card.message;
@@ -2502,7 +2512,8 @@ function escapeHtml(v) {
     });
     if (greetingSlideCards.length > 1) {
       const next = new Image();
-      next.src = greetingSlideCards[(greetingSlideIndex + 1) % greetingSlideCards.length].imageUrl;
+      const nextCard = greetingSlideCards[(greetingSlideIndex + 1) % greetingSlideCards.length];
+      if (nextCard.imageUrl) next.src = nextCard.imageUrl;
     }
   }
 
@@ -2511,8 +2522,9 @@ function escapeHtml(v) {
     const dots = document.getElementById('greetingDots');
     if (!slides || !dots) return;
     if (greetingSlideTimer) clearInterval(greetingSlideTimer);
+    wardGreetingSettings = settings || {};
     const entries = Array.isArray(settings.GreetingCards) ? settings.GreetingCards : [];
-    greetingSlideCards = entries.filter(card => /^https:\/\//i.test(card.imageUrl || ''));
+    greetingSlideCards = entries.filter(card => /^https:\/\//i.test(card.imageUrl || '')).concat(wardBirthdayCards);
     greetingSlideIndex = 0;
     dots.innerHTML = '';
     if (!greetingSlideCards.length) {
@@ -2541,6 +2553,64 @@ function escapeHtml(v) {
     }
   }
 
+
+  function slidesBirthdayCard(card) {
+    const slides = document.getElementById('greetingSlides');
+    slides.innerHTML = '';
+    const frame = document.createElement('div');
+    frame.className = 'ward-birthday-card';
+    const photo = document.createElement('img');
+    photo.className = 'ward-birthday-photo';
+    photo.alt = 'सदस्यको फोटो';
+    photo.decoding = 'async';
+    photo.referrerPolicy = 'no-referrer';
+    const candidates = [card.photoUrl, card.photoFileID ?
+      'https://drive.google.com/thumbnail?id=' + encodeURIComponent(card.photoFileID) + '&sz=w900' : '']
+      .filter(Boolean);
+    let attempt = 0;
+    photo.onerror = function () {
+      attempt++;
+      if (attempt < candidates.length) photo.src = candidates[attempt];
+      else photo.style.visibility = 'hidden';
+    };
+    if (candidates.length) photo.src = candidates[0];
+    const template = document.createElement('img');
+    template.className = 'ward-birthday-template';
+    template.src = 'birthday-template.png';
+    template.alt = '';
+    const name = document.createElement('div');
+    name.className = 'ward-birthday-name';
+    name.textContent = (card.personName || 'सदस्य') + ' ज्यू';
+    frame.append(photo, template, name);
+    slides.appendChild(frame);
+    requestAnimationFrame(function () {
+      let size = 4.1;
+      while (name.scrollWidth > name.clientWidth + 1 && size > 2.0) {
+        size -= 0.2;
+        name.style.fontSize = size + 'cqw';
+      }
+    });
+  }
+
+  async function loadWardBirthdays() {
+    try {
+      const result = await api('birthdayToday');
+      if (!result.ok || !Array.isArray(result.rows)) return;
+      wardBirthdayCards = result.rows.map(function (person) {
+        return {
+          kind: 'birthday',
+          title: '🎂 जन्मदिनको हार्दिक शुभकामना',
+          personName: person.Name || 'सदस्य',
+          photoUrl: person.PhotoURL || '',
+          photoFileID: person.PhotoFileID || '',
+          message: ''
+        };
+      });
+      renderGreetingCard(wardGreetingSettings);
+    } catch (error) {
+      console.warn('Birthday data unavailable:', error);
+    }
+  }
   async function loadPublicHome() {
     try {
       const r = await api('publicHome');
@@ -2598,29 +2668,23 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   function openAlbum(i){const a=(window._albums||[])[i];
       if(!a)return;const c=document.getElementById('galleryContent');
       c.className='';c.innerHTML=`<button class="secondary" onclick="loadGallery()">← Album</button><h3>${escapeHtml(a.name)}</h3><div class="photos">${(a.photos||[]).map(p=>`<a href="${escapeAttr(p.url)}" target="_blank"><img src="${escapeAttr(p.url)}" alt="${escapeAttr(p.name)}"></a>`).join('')}</div>`;}
-  loadPublicHome();
+  loadPublicHome().then(loadWardBirthdays);
   loadGallery(false);
   loadPublicProtocol();
   loadPublicRepresentatives();
   loadPublicRepresentation();
   loadDashboard();
 </script>
-    <!-- Today's birthday cards: original PNG overlay with transparent photo window. -->
+    <!-- Birthday cards share the existing greeting slider; no extra page section. -->
 <style>
-  .ward-birthday-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 370px));
-    gap: 16px;
-    justify-content: center;
-  }
   .ward-birthday-card {
     position: relative;
     width: 100%;
     aspect-ratio: 1;
     overflow: hidden;
     border-radius: 12px;
-    background: #fff;
-    box-shadow: 0 8px 25px #1232;
+    background: #f4f4f4;
+    container-type: inline-size;
   }
   .ward-birthday-photo {
     position: absolute;
@@ -2647,61 +2711,27 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
     width: 50%;
     height: 6.2%;
     display: flex;
-    justify-content: center;
     align-items: center;
-    color: #fff;
+    justify-content: center;
+    color: white;
+    font-family: 'Noto Sans Devanagari', 'Nirmala UI', Mangal, sans-serif;
     font-weight: 800;
-    font-size: clamp(11px, 2.2vw, 21px);
+    font-size: 4.1cqw;
     line-height: 1.1;
     text-align: center;
-    overflow-wrap: anywhere;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0 2%;
+    text-shadow: 0 1px 1px #7b1717;
   }
+  .greeting-slides .ward-birthday-card img.ward-birthday-photo,
+  .greeting-slides .ward-birthday-card img.ward-birthday-template {
+    display: block;
+    max-height: none;
+    border-radius: inherit;
+  }
+  .greeting-slides .ward-birthday-card img.ward-birthday-photo { width:43.15%; height:43.15%; object-fit:cover; border-radius:50%; }
+  .greeting-slides .ward-birthday-card img.ward-birthday-template { width:100%; height:100%; border-radius:0; object-fit:fill; }
 </style>
-<section id="wardBirthdaySection" style="display:none;max-width:1150px;margin:22px auto;padding:0 16px">
-  <h2 style="color:#0d4771">🎂 आज जन्मदिन भएका सदस्यहरू</h2>
-  <div id="wardBirthdayCards" class="ward-birthday-grid"></div>
-</section>
-<script>
-(function () {
-  const endpoint = 'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
-  fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ action: 'birthdayToday' })
-  }).then(function (response) {
-    if (!response.ok) throw new Error('Birthday data load failed');
-    return response.json();
-  }).then(function (data) {
-    if (!data.ok || !Array.isArray(data.rows) || !data.rows.length) return;
-    const section = document.getElementById('wardBirthdaySection');
-    const wrap = document.getElementById('wardBirthdayCards');
-    data.rows.forEach(function (person) {
-      const card = document.createElement('article');
-      card.className = 'ward-birthday-card';
-      const photo = document.createElement('img');
-      photo.className = 'ward-birthday-photo';
-      photo.alt = 'सदस्यको फोटो';
-      photo.loading = 'lazy';
-      photo.decoding = 'async';
-      if (person.PhotoURL && /^https:\/\//i.test(person.PhotoURL)) {
-        photo.src = person.PhotoURL;
-      }
-      const template = document.createElement('img');
-      template.className = 'ward-birthday-template';
-      template.src = 'birthday-template.png';
-      template.alt = '';
-      template.loading = 'lazy';
-      const name = document.createElement('div');
-      name.className = 'ward-birthday-name';
-      name.textContent = (person.Name || 'सदस्य') + ' ज्यू';
-      card.append(photo, template, name);
-      wrap.appendChild(card);
-    });
-    section.style.display = 'block';
-  }).catch(function (error) {
-    console.warn('Birthday cards unavailable:', error);
-  });
-})();
-</script>
 </body>
   </html>
