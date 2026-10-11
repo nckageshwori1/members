@@ -1473,6 +1473,10 @@ main {
               <p class="greeting-empty">हाल कुनै शुभकामना प्रकाशित गरिएको छैन ।</p>
             </div>
             <div id="greetingDots" class="greeting-dots" hidden></div>
+            <div id="birthdayDownloadWrap" class="birthday-download-wrap" hidden>
+              <button id="birthdayDownloadBtn" type="button" class="birthday-download-btn" onclick="downloadCurrentBirthdayCard()">⬇ Birthday Card Download (PNG)</button>
+              <p id="birthdayDownloadStatus" role="status" aria-live="polite"></p>
+            </div>
             <p id="greetingPublicMessage" class="greeting-card-message" hidden></p>
           </div>
         </div>
@@ -2487,6 +2491,7 @@ function escapeHtml(v) {
     if (!greetingSlideCards.length) return;
     greetingSlideIndex = index % greetingSlideCards.length;
     const card = greetingSlideCards[greetingSlideIndex];
+    updateBirthdayDownloadButton(card);
     const image = document.getElementById('greetingSlideImage');
     const title = document.getElementById('greetingPublicTitle');
     const message = document.getElementById('greetingPublicMessage');
@@ -2529,6 +2534,7 @@ function escapeHtml(v) {
     dots.innerHTML = '';
     if (!greetingSlideCards.length) {
       slides.innerHTML = '<p class="greeting-empty">हाल कुनै शुभकामना प्रकाशित गरिएको छैन ।</p>';
+      updateBirthdayDownloadButton(null);
       document.getElementById('greetingPublicTitle').textContent = 'हार्दिक शुभकामना';
       document.getElementById('greetingPublicMessage').hidden = true;
       dots.hidden = true;
@@ -2592,6 +2598,132 @@ function escapeHtml(v) {
     });
   }
 
+
+  /* ============================================================
+     BIRTHDAY CARD PNG EXPORT — targeted additive feature
+     Renders the same template, circular member photo and name
+     into a single 1080 x 1080 canvas. Other sliders are untouched.
+     ============================================================ */
+  function updateBirthdayDownloadButton(card) {
+    const wrap = document.getElementById('birthdayDownloadWrap');
+    const status = document.getElementById('birthdayDownloadStatus');
+    if (!wrap) return;
+    wrap.hidden = !card || card.kind !== 'birthday';
+    if (status) status.textContent = '';
+  }
+
+  function loadBirthdayCanvasImage(src) {
+    return new Promise(function (resolve, reject) {
+      const img = new Image();
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { reject(new Error('फोटो लोड हुन सकेन ।')); };
+      img.src = src;
+    });
+  }
+
+  function drawBirthdayName(ctx, text) {
+    const maxWidth = 540;
+    let size = 45;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(85, 15, 15, 0.55)';
+    ctx.shadowBlur = 2;
+    ctx.shadowOffsetY = 1;
+    while (size > 19) {
+      ctx.font = '800 ' + size + 'px "Noto Sans Devanagari", "Nirmala UI", Mangal, sans-serif';
+      if (ctx.measureText(text).width <= maxWidth) break;
+      size -= 1;
+    }
+    ctx.fillText(text, 540, 783, maxWidth);
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+  }
+
+  async function downloadCurrentBirthdayCard() {
+    const card = greetingSlideCards[greetingSlideIndex];
+    if (!card || card.kind !== 'birthday') return;
+    const button = document.getElementById('birthdayDownloadBtn');
+    const status = document.getElementById('birthdayDownloadStatus');
+    if (button.disabled) return;
+    button.disabled = true;
+    button.textContent = 'PNG तयार हुँदैछ...';
+    status.textContent = 'डिजाइन, फोटो र नाम मिलाइँदैछ...';
+
+    try {
+      await document.fonts.ready;
+      const template = await loadBirthdayCanvasImage('birthday-template.png');
+      let photo;
+      if (card.photoFileID) {
+        const response = await api('birthdayPhotoForDownload', {
+          ncid: card.ncid,
+          photoFileID: card.photoFileID
+        });
+        if (!response.ok || !response.dataUrl) {
+          throw new Error(response.message || 'Drive बाट फोटो प्राप्त भएन ।');
+        }
+        photo = await loadBirthdayCanvasImage(response.dataUrl);
+      } else if (card.photoUrl) {
+        // A remote photo can be drawn only when its host permits CORS.
+        // Refuse incomplete downloads rather than saving a card without photo.
+        photo = await new Promise(function (resolve, reject) {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = function () { resolve(img); };
+          img.onerror = function () { reject(new Error('यो फोटो Download गर्न Drive PhotoFileID आवश्यक छ ।')); };
+          img.src = card.photoUrl;
+        });
+      } else {
+        throw new Error('सदस्यको फोटो उपलब्ध छैन ।');
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1080;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#f4f4f4';
+      ctx.fillRect(0, 0, 1080, 1080);
+
+      // Match the existing on-screen circle: left 28.43%, top 16.02%, size 43.15%.
+      const x = 1080 * 0.2843;
+      const y = 1080 * 0.1602;
+      const diameter = 1080 * 0.4315;
+      const scale = Math.max(diameter / photo.naturalWidth, diameter / photo.naturalHeight);
+      const dw = photo.naturalWidth * scale;
+      const dh = photo.naturalHeight * scale;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x + diameter / 2, y + diameter / 2, diameter / 2, 0, Math.PI * 2);
+      ctx.clip();
+      // object-position: center 35%, matching the public card.
+      ctx.drawImage(photo, x + (diameter - dw) / 2, y + (diameter - dh) * 0.35, dw, dh);
+      ctx.restore();
+      ctx.drawImage(template, 0, 0, 1080, 1080);
+      drawBirthdayName(ctx, (card.personName || 'सदस्य') + ' ज्यू');
+
+      const blob = await new Promise(function (resolve) {
+        canvas.toBlob(resolve, 'image/png');
+      });
+      if (!blob) throw new Error('PNG बनाउन सकिएन ।');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const safeId = String(card.ncid || 'Member').replace(/[^a-zA-Z0-9_-]/g, '_');
+      a.download = 'Birthday_' + safeId + '.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 15000);
+      status.textContent = 'पूरा Birthday Card PNG तयार भयो ।';
+    } catch (error) {
+      status.textContent = 'Download असफल: ' + (error.message || String(error));
+    } finally {
+      button.disabled = false;
+      button.textContent = '⬇ Birthday Card Download (PNG)';
+    }
+  }
+
   async function loadWardBirthdays() {
     try {
       const result = await api('birthdayToday');
@@ -2601,6 +2733,7 @@ function escapeHtml(v) {
           kind: 'birthday',
           title: '🎂 जन्मदिनको हार्दिक शुभकामना',
           personName: person.Name || 'सदस्य',
+          ncid: person.NCID || '',
           photoUrl: person.PhotoURL || '',
           photoFileID: person.PhotoFileID || '',
           message: ''
@@ -2676,6 +2809,13 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   loadDashboard();
 </script>
     <!-- Birthday cards share the existing greeting slider; no extra page section. -->
+<style>
+  .birthday-download-wrap { margin-top: 10px; text-align: center; }
+  .birthday-download-wrap[hidden] { display: none !important; }
+  .birthday-download-btn { background: #078f49; color: #fff; border: 0; border-radius: 9px; padding: 10px 15px; font: inherit; font-weight: 800; cursor: pointer; }
+  .birthday-download-btn:disabled { opacity: .65; cursor: wait; }
+  #birthdayDownloadStatus { font-size: 12px; color: #526579; margin: 6px 0 0; }
+</style>
 <style>
   .ward-birthday-card {
     position: relative;
