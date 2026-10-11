@@ -1026,6 +1026,45 @@ main {
       margin: 0 auto;
     }
 
+    .greeting-slides {
+      width: 100%;
+      height: clamp(210px, 29vw, 350px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f5f8fc;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+    .greeting-slides img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+    .greeting-empty {
+      text-align: center;
+      padding: 20px;
+      color: #66758a;
+      font-size: 13px;
+    }
+    .greeting-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .greeting-dots[hidden] { display: none; }
+    .greeting-dots button {
+      border: 0;
+      border-radius: 50%;
+      width: 9px;
+      height: 9px;
+      background: #b7c6d7;
+      padding: 0;
+      cursor: pointer;
+    }
+    .greeting-dots button.on { background: #0d467c; }
     .greeting-card-message {
       margin: 10px 4px 2px;
       line-height: 1.7;
@@ -1430,12 +1469,10 @@ main {
             <h3 id="greetingPublicTitle">हार्दिक शुभकामना</h3>
           </div>
           <div class="greeting-card-wrap">
-            <img
-              id="greetingPublicImage"
-              src="shubhakamana.jpg"
-              alt="हार्दिक शुभकामना"
-              loading="lazy"
-            >
+            <div id="greetingSlides" class="greeting-slides" aria-live="off">
+              <p class="greeting-empty">हाल कुनै शुभकामना प्रकाशित गरिएको छैन ।</p>
+            </div>
+            <div id="greetingDots" class="greeting-dots" hidden></div>
             <p id="greetingPublicMessage" class="greeting-card-message" hidden></p>
           </div>
         </div>
@@ -2439,21 +2476,69 @@ function escapeHtml(v) {
   /* ============================================================
      GREETING CARD — ADMIN SETTINGS WITH GITHUB IMAGE FALLBACK
      ============================================================ */
-  function renderGreetingCard(settings) {
-    const title = document.getElementById('greetingPublicTitle');
-    const image = document.getElementById('greetingPublicImage');
-    const message = document.getElementById('greetingPublicMessage');
+  /* Greeting slider: preload the next photo, keep original aspect ratio. */
+  let greetingSlideTimer = null;
+  let greetingSlideIndex = 0;
+  let greetingSlideCards = [];
 
-    if (!title || !image || !message) {
+  function showGreetingSlide(index) {
+    if (!greetingSlideCards.length) return;
+    greetingSlideIndex = index % greetingSlideCards.length;
+    const card = greetingSlideCards[greetingSlideIndex];
+    const image = document.getElementById('greetingSlideImage');
+    const title = document.getElementById('greetingPublicTitle');
+    const message = document.getElementById('greetingPublicMessage');
+    const dots = document.getElementById('greetingDots');
+    if (!image || !title || !message) return;
+
+    image.src = card.imageUrl;
+    image.alt = card.title || 'शुभकामना';
+    title.textContent = card.title || 'हार्दिक शुभकामना';
+    message.textContent = card.message || '';
+    message.hidden = !card.message;
+    dots.querySelectorAll('button').forEach((button, i) => {
+      button.classList.toggle('on', i === greetingSlideIndex);
+      button.setAttribute('aria-current', String(i === greetingSlideIndex));
+    });
+    if (greetingSlideCards.length > 1) {
+      const next = new Image();
+      next.src = greetingSlideCards[(greetingSlideIndex + 1) % greetingSlideCards.length].imageUrl;
+    }
+  }
+
+  function renderGreetingCard(settings) {
+    const slides = document.getElementById('greetingSlides');
+    const dots = document.getElementById('greetingDots');
+    if (!slides || !dots) return;
+    if (greetingSlideTimer) clearInterval(greetingSlideTimer);
+    const entries = Array.isArray(settings.GreetingCards) ? settings.GreetingCards : [];
+    greetingSlideCards = entries.filter(card => /^https:\/\//i.test(card.imageUrl || ''));
+    greetingSlideIndex = 0;
+    dots.innerHTML = '';
+    if (!greetingSlideCards.length) {
+      slides.innerHTML = '<p class="greeting-empty">हाल कुनै शुभकामना प्रकाशित गरिएको छैन ।</p>';
+      document.getElementById('greetingPublicTitle').textContent = 'हार्दिक शुभकामना';
+      document.getElementById('greetingPublicMessage').hidden = true;
+      dots.hidden = true;
       return;
     }
-
-    title.textContent = settings.GreetingTitle || 'हार्दिक शुभकामना';
-    image.src = settings.GreetingImageURL || 'shubhakamana.jpg';
-
-    const text = String(settings.GreetingMessage || '').trim();
-    message.textContent = text;
-    message.hidden = !text;
+    slides.innerHTML = '<img id="greetingSlideImage" alt="शुभकामना" decoding="async" fetchpriority="high">';
+    dots.hidden = greetingSlideCards.length < 2;
+    greetingSlideCards.forEach((card, i) => {
+      if (greetingSlideCards.length < 2) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('aria-label', 'फोटो ' + (i + 1));
+      button.addEventListener('click', () => showGreetingSlide(i));
+      dots.appendChild(button);
+    });
+    showGreetingSlide(0);
+    if (greetingSlideCards.length > 1) {
+      const seconds = Math.min(15, Math.max(2, Number(settings.GreetingSlideSeconds) || 5));
+      greetingSlideTimer = setInterval(() => {
+        if (!document.hidden) showGreetingSlide(greetingSlideIndex + 1);
+      }, seconds * 1000);
+    }
   }
 
   async function loadPublicHome() {
