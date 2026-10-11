@@ -1005,6 +1005,33 @@ main {
      visibility:visible!important}@page{size:A4;margin:12mm}
 }
 
+
+    /* ============================================================
+       GREETING CARD — FIT INSIDE EXISTING RIGHT PANEL
+       ============================================================ */
+    .greeting-card-wrap {
+      width: 100%;
+      margin-top: 12px;
+      overflow: hidden;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .greeting-card-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 350px;
+      object-fit: contain;
+      margin: 0 auto;
+    }
+
+    .greeting-card-message {
+      margin: 10px 4px 2px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
 </style>
   
 <style id="representationReferenceDesign">
@@ -1399,29 +1426,17 @@ main {
         </div>
         <div class="card panel">
           <div class="paneltitle">
-            <div class="ico">🛡️</div>
-            <h3>सिस्टम सम्बन्धी सूचना</h3>
+            <div class="ico">🎉</div>
+            <h3 id="greetingPublicTitle">हार्दिक शुभकामना</h3>
           </div>
-          <div class="notice">व्यक्तिगत सदस्य विवरण हेर्न NCID खोजीपछि दर्ता भएको मोबाइल नम्बरबाट प्रमाणीकरण अनिवार्य छ&#x20;
-              । मूल विवरण थप्ने वा सच्याउने अधिकार प्रशासनमा मात्र रहनेछ&#x20;
-              ।</div>
-          <div class="quick">
-            <div>
-              <b>NCID आधारित खोजी</b>
-              <small>छिटो र स्पष्ट सदस्य पहिचान</small>
-            </div>
-            <div>
-              <b>मोबाइल प्रमाणीकरण</b>
-              <small>व्यक्तिगत विवरणको सुरक्षा</small>
-            </div>
-            <div>
-              <b>Admin Data Edit</b>
-              <small>Google Sheet मा सुरक्षित अपडेट</small>
-            </div>
-            <div>
-              <b>Live Dashboard</b>
-              <small>Sheet अनुसार स्वतः तथ्याङ्क</small>
-            </div>
+          <div class="greeting-card-wrap">
+            <img
+              id="greetingPublicImage"
+              src="shubhakamana.jpg"
+              alt="हार्दिक शुभकामना"
+              loading="lazy"
+            >
+            <p id="greetingPublicMessage" class="greeting-card-message" hidden></p>
           </div>
         </div>
       </section>
@@ -2421,6 +2436,26 @@ function escapeHtml(v) {
     return{text:'कार्यक्रम सञ्चालनमा',cls:'live',html:`<span class="statusTop"><span class="liveDot"></span> LIVE</span><span class="statusMain">कार्यक्रम सञ्चालनमा${x?' • '+x+' बाँकी':''}</span>`};
   }
 
+  /* ============================================================
+     GREETING CARD — ADMIN SETTINGS WITH GITHUB IMAGE FALLBACK
+     ============================================================ */
+  function renderGreetingCard(settings) {
+    const title = document.getElementById('greetingPublicTitle');
+    const image = document.getElementById('greetingPublicImage');
+    const message = document.getElementById('greetingPublicMessage');
+
+    if (!title || !image || !message) {
+      return;
+    }
+
+    title.textContent = settings.GreetingTitle || 'हार्दिक शुभकामना';
+    image.src = settings.GreetingImageURL || 'shubhakamana.jpg';
+
+    const text = String(settings.GreetingMessage || '').trim();
+    message.textContent = text;
+    message.hidden = !text;
+  }
+
   async function loadPublicHome() {
     try {
       const r = await api('publicHome');
@@ -2445,6 +2480,7 @@ function escapeHtml(v) {
           </div>
         </div>`;
       }).join('') : '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
+      renderGreetingCard(r.settings || {});
       renderContacts(r.settings || {});
     } catch (e) {}
   }
