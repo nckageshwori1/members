@@ -1470,7 +1470,7 @@ main {
           </div>
           <div class="greeting-card-wrap">
             <div id="greetingSlides" class="greeting-slides" aria-live="off">
-              <p class="greeting-empty">हाल कुनै शुभकामना प्रकाशित गरिएको छैन ।</p>
+              <p class="greeting-empty" role="status">⏳ शुभकामना विवरण लोड हुँदैछ, कृपया प्रतीक्षा गर्नुहोस्...</p>
             </div>
             <div id="greetingDots" class="greeting-dots" hidden></div>
             <div id="birthdayDownloadWrap" class="birthday-download-wrap" hidden>
@@ -2486,6 +2486,8 @@ function escapeHtml(v) {
   let greetingSlideCards = [];
   let wardBirthdayCards = [];
   let wardGreetingSettings = {};
+  let birthdayRequestPending = true;
+  let greetingHomeLoadFailed = false;
 
   function showGreetingSlide(index) {
     if (!greetingSlideCards.length) return;
@@ -2533,7 +2535,12 @@ function escapeHtml(v) {
     greetingSlideIndex = 0;
     dots.innerHTML = '';
     if (!greetingSlideCards.length) {
-      slides.innerHTML = '<p class="greeting-empty">हाल कुनै शुभकामना प्रकाशित गरिएको छैन ।</p>';
+      const emptyMessage = birthdayRequestPending
+        ? '⏳ शुभकामना विवरण लोड हुँदैछ, कृपया प्रतीक्षा गर्नुहोस्...'
+        : greetingHomeLoadFailed
+          ? 'शुभकामना विवरण लोड गर्न सकिएन । कृपया पुनः प्रयास गर्नुहोस् ।'
+          : 'हाल कुनै शुभकामना उपलब्ध छैन ।';
+      slides.innerHTML = '<p class="greeting-empty" role="status">' + emptyMessage + '</p>';
       updateBirthdayDownloadButton(null);
       document.getElementById('greetingPublicTitle').textContent = 'हार्दिक शुभकामना';
       document.getElementById('greetingPublicMessage').hidden = true;
@@ -2742,12 +2749,19 @@ function escapeHtml(v) {
       renderGreetingCard(wardGreetingSettings);
     } catch (error) {
       console.warn('Birthday data unavailable:', error);
+    } finally {
+      birthdayRequestPending = false;
+      renderGreetingCard(wardGreetingSettings);
     }
   }
   async function loadPublicHome() {
     try {
       const r = await api('publicHome');
-      if (!r.ok) return;
+      if (!r.ok) {
+        greetingHomeLoadFailed = true;
+        renderGreetingCard(wardGreetingSettings);
+        return;
+      }
       const ns = r.notices || [];
       document.getElementById('publicNotices').innerHTML = ns.length ? ns.map(n => {
         const status = noticeStatus(n);
@@ -2770,7 +2784,10 @@ function escapeHtml(v) {
       }).join('') : '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
       renderGreetingCard(r.settings || {});
       renderContacts(r.settings || {});
-    } catch (e) {}
+    } catch (e) {
+      greetingHomeLoadFailed = true;
+      renderGreetingCard(wardGreetingSettings);
+    }
   }
   
   function renderOfficeInfo(s){
