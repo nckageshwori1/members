@@ -427,6 +427,70 @@ main {
     bottom:18px;z-index:99999;background:#0d315d;color:#fff;
     padding:10px 14px;border-radius:10px;box-shadow:0 8px 25px #0003;
     font-weight:700;display:none}
+
+/* ============================================================
+   ADMIN SIDEBAR + GREETING MODULE — RESPONSIVE ADDITIVE CSS
+   ============================================================ */
+.admin-workspace {
+  display: grid;
+  grid-template-columns: 245px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+}
+.admin-workspace .tabs {
+  position: sticky;
+  top: 83px;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  margin: 0;
+  gap: 6px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+.admin-workspace .tabs .tab,
+.admin-workspace .tabs a {
+  width: 100%;
+  white-space: normal !important;
+  text-align: left;
+  line-height: 1.5;
+}
+.admin-main-panes { min-width: 0; }
+.admin-menu-toggle { display: none; margin: 12px 0; }
+.greeting-admin-preview {
+  min-height: 150px;
+  max-height: 360px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f4f8fc;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+}
+.greeting-admin-preview img {
+  max-width: 100%;
+  max-height: 330px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+.greeting-admin-preview img[hidden],
+.greeting-admin-preview span[hidden] { display: none; }
+.greeting-speed { margin-top: 22px; padding: 15px; border: 1px solid var(--line); border-radius: 12px; }
+.greeting-speed-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+.greeting-speed-controls input { flex: 1; min-width: 130px; }
+.greeting-admin-list { display: grid; gap: 10px; }
+.greeting-admin-item { display: flex; gap: 14px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; }
+.greeting-admin-item img { width: 112px; height: 90px; object-fit: contain; background: #f5f8fc; border-radius: 8px; }
+.greeting-admin-detail { min-width: 0; flex: 1; font-size: 13px; }
+.greeting-admin-actions { display: flex; gap: 7px; margin-top: 9px; }
+@media (max-width: 850px) {
+  .admin-workspace { display: block; }
+  .admin-menu-toggle { display: inline-block; }
+  .admin-workspace .tabs { display: none; position: static; max-height: 55vh; margin-bottom: 12px; overflow-y: auto; }
+  .admin-workspace .tabs.mobile-open { display: flex; }
+}
 </style></head>
     <body>
       <header class="top">
@@ -485,7 +549,9 @@ main {
               <span>प्रतिनिधि</span>
             </div>
           </div>
-          <div class="tabs">
+          <button id="adminMenuToggle" class="btn secondary admin-menu-toggle" type="button" onclick="toggleAdminMenu()" aria-expanded="false">☰ व्यवस्थापन Menu</button>
+          <div class="admin-workspace">
+          <div class="tabs" id="adminSideMenu">
             <a class="btn secondary" href="meeting.html" style="white-space:nowrap;text-decoration:none">📋 बैठक तथा उपस्थिति</a>
             <button class="btn tab on" data-tab="data" onclick="showTab('data',this)">📊 सबै सदस्य Data</button>
             <button class="btn tab" data-tab="member" onclick="showTab('member',this)">👤 सदस्य Profile</button>
@@ -493,10 +559,11 @@ main {
             <button class="btn tab" data-tab="protocol" onclick="showTab('protocol',this)">🏛️ वडा कार्यसमिति / Protocol</button>
             <button class="btn tab" data-tab="representation" onclick="showTab('representation',this)">🌐 यस वडाबाट प्रतिनिधित्व</button>
             <button class="btn tab" data-tab="notice" onclick="showTab('notice',this)">📢 सूचना</button>
-            <button class="btn tab" data-tab="greeting" onclick="showTab('greeting',this)">🎉 शुभकामना व्यवस्थापन</button>
+            <button class="btn tab" data-tab="greeting" onclick="showTab('greeting',this)">🖼️ फोटो तथा शुभकामना</button>
             <button class="btn tab" data-tab="contact" onclick="showTab('contact',this)">☎ सम्पर्क / Social</button>
             <button class="btn tab" data-tab="gallery" onclick="showTab('gallery',this)">🖼️ Photo Gallery</button>
           </div>
+          <div class="admin-main-panes">
           <section id="pane-data" class="card pane on">
             <h3>सदस्य Data तथा Summary</h3>
             <div class="hint">Dashboard को कुनै संख्या क्लिक गर्दा सम्बन्धित सदस्यहरूको सूची देखिन्छ । सदस्यको row क्लिक गर्दा Edit Profile खुल्छ ।</div>
@@ -730,59 +797,63 @@ main {
             <div id="noticeList" style="margin-top:18px">
             </div>
           </section>
-          <!-- =====================================================
-               GREETING CARD — ADMIN UPLOAD / PUBLISH
-               ===================================================== -->
+          <!-- PHOTO / GREETING CARDS: TARGETED ADMIN MODULE -->
           <section id="pane-greeting" class="card pane">
-            <h3>🎉 शुभकामना व्यवस्थापन</h3>
-            <p class="hint">
-              नयाँ फोटो Upload गरेपछि प्रकाशित गर्नुहोस् ।
-              सार्वजनिक वेबसाइटको दायाँ Box मा फोटो आफैँ मिलेर देखिन्छ ।
-            </p>
-
+            <h3>🖼️ फोटो तथा शुभकामना व्यवस्थापन</h3>
+            <div class="hint">जन्मदिन, चाडपर्व र विशेष दिवसका फोटो थप्नुहोस् । एउटा फोटो स्थिर रहन्छ, दुई वा बढी फोटो स्वतः Slide हुन्छन् ।</div>
             <div class="grid">
-              <div class="field wide">
+              <div class="field">
+                <label for="greetingCategoryInput">कार्डको प्रकार</label>
+                <select id="greetingCategoryInput">
+                  <option value="शुभकामना">चाडपर्व / शुभकामना</option>
+                  <option value="जन्मदिन">जन्मदिन शुभकामना</option>
+                  <option value="विशेष दिवस">विशेष दिवस / अन्य</option>
+                </select>
+              </div>
+              <div class="field">
                 <label for="greetingTitleInput">शीर्षक</label>
                 <input id="greetingTitleInput" value="हार्दिक शुभकामना">
               </div>
-
               <div class="field wide">
-                <label for="greetingImageInput">शुभकामना फोटो (JPG / PNG / WEBP, अधिकतम 5 MB)</label>
-                <input
-                  id="greetingImageInput"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onchange="previewGreetingImage(this)"
-                >
+                <label for="greetingImageInput">फोटो Upload (JPG / PNG / WEBP, 5 MB सम्म)</label>
+                <input id="greetingImageInput" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewGreetingImage(this)">
+                <small>Upload अघि फोटोको Web-optimized प्रतिलिपि तयार हुन्छ । मूल फोटोको Ratio सुरक्षित रहन्छ ।</small>
               </div>
-
               <div class="field wide">
                 <label for="greetingMessageInput">सन्देश (वैकल्पिक)</label>
                 <textarea id="greetingMessageInput"></textarea>
               </div>
-
+              <div class="field">
+                <label for="greetingOrderInput">Display क्रम</label>
+                <input id="greetingOrderInput" type="number" min="1" value="1">
+              </div>
+              <div class="field">
+                <label for="greetingActiveInput">स्थिति</label>
+                <select id="greetingActiveInput">
+                  <option value="true">प्रकाशित</option>
+                  <option value="false">लुकाइएको</option>
+                </select>
+              </div>
               <div class="field wide">
-                <label>हालको / नयाँ फोटो Preview</label>
-                <img
-                  id="greetingAdminPreview"
-                  src="shubhakamana.jpg"
-                  alt="शुभकामना फोटो"
-                  style="display:block;width:100%;max-width:460px;max-height:350px;object-fit:contain;border:1px solid #dce5ee;border-radius:12px"
-                >
+                <label>Photo Preview</label>
+                <div class="greeting-admin-preview"><img id="greetingAdminPreview" alt="Preview" hidden><span id="greetingPreviewEmpty">फोटो छान्नुहोस् ।</span></div>
               </div>
             </div>
-
             <div class="actions">
-              <button
-                id="greetingPublishButton"
-                class="btn primary"
-                onclick="publishGreeting()"
-              >शुभकामना प्रकाशित गर्नुहोस्</button>
-              <button class="btn" onclick="resetGreetingImage()">
-                GitHub को पुरानो फोटो प्रयोग गर्नुहोस्
-              </button>
+              <button class="btn secondary" type="button" onclick="clearGreetingForm()">+ नयाँ कार्ड</button>
+              <button id="greetingPublishButton" class="btn primary" type="button" onclick="publishGreeting()">कार्ड प्रकाशित गर्नुहोस्</button>
             </div>
-            <div id="greetingAdminMessage" class="msg"></div>
+            <div id="greetingAdminMessage" class="msg" role="status" aria-live="polite"></div>
+            <div class="greeting-speed">
+              <label for="greetingSpeedInput"><b>Slider Speed (सेकेन्ड)</b></label>
+              <div class="greeting-speed-controls">
+                <input id="greetingSpeedInput" type="range" min="2" max="15" value="5" oninput="greetingSpeedValue.textContent=this.value+' सेकेन्ड'">
+                <span id="greetingSpeedValue">5 सेकेन्ड</span>
+                <button id="greetingSpeedButton" type="button" class="btn secondary" onclick="saveGreetingSpeed()">Speed सुरक्षित गर्नुहोस्</button>
+              </div>
+            </div>
+            <h3 style="margin-top:24px">प्रकाशित तथा सुरक्षित कार्डहरू</h3>
+            <div id="greetingCardsList" class="greeting-admin-list"><div class="empty">लोड हुँदैछ...</div></div>
           </section>
 
           <section id="pane-contact" class="card pane">
@@ -819,6 +890,8 @@ main {
             <div id="galleryInfo">
             </div>
           </section>
+          </div>
+          </div>
         </section>
       </main>
       <footer class="footer">Designed &amp; Developed by Nirajan Aryal (<a href="tel:9851113811">9851113811</a>)</footer>
@@ -919,7 +992,16 @@ function logout(show=true) {
   loginView.style.display='block';
   if(show)msg('Logout सफल भयो ।')
 }
+function toggleAdminMenu() {
+  const menu = document.getElementById('adminSideMenu');
+  const toggle = document.getElementById('adminMenuToggle');
+  const open = menu.classList.toggle('mobile-open');
+  toggle.setAttribute('aria-expanded', String(open));
+}
+
 function showTab(n,b) {
+  document.getElementById('adminSideMenu').classList.remove('mobile-open');
+  document.getElementById('adminMenuToggle').setAttribute('aria-expanded', 'false');
   document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
   document.getElementById('pane-'+n).classList.add('on');
@@ -1778,119 +1860,205 @@ if(token)openApp().catch(e=>msg(e.message));adminPass.addEventListener('keydown'
 })();
 
 /* ============================================================
-   GREETING CARD — ADMIN MODULE (ADDITIVE ONLY)
+   PHOTO / GREETING CARDS — FAST UPLOAD + MANAGEMENT
    ============================================================ */
 let greetingImageData = '';
 let greetingImageName = '';
 let greetingImageURL = '';
-let greetingResetRequested = false;
+let greetingEditingId = '';
+let greetingCards = [];
+
+function greetingNotice(text, success = true) {
+  const el = document.getElementById('greetingAdminMessage');
+  el.textContent = text;
+  el.style.display = 'block';
+  el.style.background = success ? '#edf9f1' : '#fff0f1';
+  el.style.color = success ? '#176534' : '#a8202d';
+}
+
+function greetingPreview(src) {
+  const img = document.getElementById('greetingAdminPreview');
+  const empty = document.getElementById('greetingPreviewEmpty');
+  img.hidden = !src;
+  empty.hidden = Boolean(src);
+  if (src) img.src = src;
+  else img.removeAttribute('src');
+}
+
+function clearGreetingForm() {
+  greetingEditingId = '';
+  greetingImageData = '';
+  greetingImageName = '';
+  greetingImageURL = '';
+  greetingImageInput.value = '';
+  greetingCategoryInput.value = 'शुभकामना';
+  greetingTitleInput.value = 'हार्दिक शुभकामना';
+  greetingMessageInput.value = '';
+  greetingOrderInput.value = String(greetingCards.length + 1);
+  greetingActiveInput.value = 'true';
+  greetingPublishButton.textContent = 'कार्ड प्रकाशित गर्नुहोस्';
+  greetingPreview('');
+}
 
 async function loadGreetingSettings() {
   try {
-    const result = await api('adminGetSettings', { token });
-
-    if (!result.ok) {
-      throw new Error(result.message || 'सेटिङ लोड भएन ।');
-    }
-
-    const settings = result.settings || {};
-    greetingTitleInput.value = settings.GreetingTitle || 'हार्दिक शुभकामना';
-    greetingMessageInput.value = settings.GreetingMessage || '';
-    greetingImageURL = settings.GreetingImageURL || '';
-    greetingAdminPreview.src = greetingImageURL || 'shubhakamana.jpg';
-    greetingImageData = '';
-    greetingImageName = '';
-    greetingResetRequested = false;
+    const result = await api('adminListGreetingCards', { token });
+    if (!result.ok) throw new Error(result.message || 'कार्ड लोड भएन ।');
+    greetingCards = result.cards || [];
+    greetingSpeedInput.value = String(result.seconds || 5);
+    greetingSpeedValue.textContent = greetingSpeedInput.value + ' सेकेन्ड';
+    renderGreetingCardsList();
+    if (!greetingEditingId) clearGreetingForm();
   } catch (error) {
-    greetingAdminMessage.textContent = error.message;
+    greetingNotice('कार्ड लोड हुन सकेन: ' + error.message, false);
   }
+}
+
+function renderGreetingCardsList() {
+  const box = document.getElementById('greetingCardsList');
+  if (!greetingCards.length) {
+    box.innerHTML = '<div class="empty">हाल कुनै कार्ड छैन । नयाँ फोटो Upload गर्नुहोस् ।</div>';
+    return;
+  }
+  box.innerHTML = greetingCards.map(card => `
+    <div class="greeting-admin-item">
+      <img src="${attr(card.ImageURL || '')}" alt="" loading="lazy">
+      <div class="greeting-admin-detail">
+        <b>${esc(card.Title || '')}</b>
+        <div>${esc(card.Category || '')} · क्रम ${esc(card.SortOrder || '1')} · ${String(card.Active).toLowerCase() === 'false' ? 'लुकाइएको' : 'प्रकाशित'}</div>
+        <div class="greeting-admin-actions">
+          <button class="btn secondary" type="button" onclick="editGreetingCard('${attr(card.ID)}')">Edit</button>
+          <button class="btn danger" type="button" onclick="deleteGreetingCard('${attr(card.ID)}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function editGreetingCard(id) {
+  const card = greetingCards.find(item => item.ID === id);
+  if (!card) return;
+  greetingEditingId = id;
+  greetingImageData = '';
+  greetingImageName = '';
+  greetingImageURL = card.ImageURL || '';
+  greetingImageInput.value = '';
+  greetingCategoryInput.value = card.Category || 'शुभकामना';
+  greetingTitleInput.value = card.Title || '';
+  greetingMessageInput.value = card.Message || '';
+  greetingOrderInput.value = card.SortOrder || '1';
+  greetingActiveInput.value = String(card.Active).toLowerCase() === 'false' ? 'false' : 'true';
+  greetingPreview(greetingImageURL);
+  greetingPublishButton.textContent = 'कार्ड Update गर्नुहोस्';
+  document.getElementById('pane-greeting').scrollIntoView({ behavior: 'smooth' });
 }
 
 function previewGreetingImage(input) {
   const file = input.files && input.files[0];
-
-  if (!file) {
-    return;
-  }
-
-  const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-
-  if (!allowed.includes(file.type) || file.size > 5 * 1024 * 1024) {
-    alert('JPG, PNG वा WEBP फोटो (5 MB भित्र) छान्नुहोस् ।');
+  if (!file) return;
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
+      file.size > 5 * 1024 * 1024) {
+    greetingNotice('JPG, PNG वा WEBP फोटो 5 MB भित्र छान्नुहोस् ।', false);
     input.value = '';
     return;
   }
-
+  greetingNotice('फोटो तयार हुँदैछ...', true);
   const reader = new FileReader();
-
-  reader.onload = function () {
-    greetingImageData = String(reader.result || '');
-    greetingImageName = file.name;
-    greetingResetRequested = false;
-    greetingAdminPreview.src = greetingImageData;
+  reader.onerror = () => greetingNotice('फोटो पढ्न सकिएन ।', false);
+  reader.onload = () => {
+    const image = new Image();
+    image.onerror = () => greetingNotice('फोटो खोल्न सकिएन ।', false);
+    image.onload = () => {
+      const scale = Math.min(1, 1600 / Math.max(image.width, image.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(image.width * scale));
+      canvas.height = Math.max(1, Math.round(image.height * scale));
+      canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+      greetingImageData = canvas.toDataURL('image/jpeg', 0.84);
+      greetingImageName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+      greetingPreview(greetingImageData);
+      greetingNotice('फोटो तयार भयो । अब प्रकाशित गर्नुहोस् ।');
+    };
+    image.src = String(reader.result || '');
   };
-
   reader.readAsDataURL(file);
-}
-
-function resetGreetingImage() {
-  greetingImageData = '';
-  greetingImageName = '';
-  greetingImageURL = '';
-  greetingResetRequested = true;
-  greetingImageInput.value = '';
-  greetingAdminPreview.src = 'shubhakamana.jpg';
 }
 
 async function publishGreeting() {
   const button = document.getElementById('greetingPublishButton');
-  const message = document.getElementById('greetingAdminMessage');
-
+  if (button.disabled) return;
+  const title = greetingTitleInput.value.trim();
+  if (!title || (!greetingImageData && !greetingImageURL)) {
+    greetingNotice('शीर्षक र फोटो दुवै अनिवार्य छन् ।', false);
+    return;
+  }
+  const oldLabel = button.textContent;
   button.disabled = true;
   button.textContent = 'प्रकाशित हुँदैछ...';
-  message.textContent = '';
-
+  greetingNotice('सर्भरमा सुरक्षित गरिँदैछ...');
   try {
-    let imageURL = greetingResetRequested ? '' : greetingImageURL;
-
+    let imageUrl = greetingImageURL;
     if (greetingImageData) {
-      const upload = await api('adminUploadGreetingImage', {
-        token,
-        dataUrl: greetingImageData,
-        fileName: greetingImageName
+      greetingNotice('फोटो Google Drive मा Upload हुँदैछ...');
+      const uploaded = await api('adminUploadGreetingImage', {
+        token, dataUrl: greetingImageData, fileName: greetingImageName
       });
-
-      if (!upload.ok) {
-        throw new Error(upload.message || 'फोटो Upload भएन ।');
-      }
-
-      imageURL = upload.url;
+      if (!uploaded.ok) throw new Error(uploaded.message || 'फोटो Upload असफल भयो ।');
+      imageUrl = uploaded.url;
     }
-
-    const result = await api('adminSaveGreeting', {
+    greetingNotice('कार्ड प्रकाशित गरिँदैछ...');
+    const saved = await api('adminSaveGreetingCard', {
       token,
-      greeting: {
-        title: greetingTitleInput.value.trim() || 'हार्दिक शुभकामना',
+      card: {
+        id: greetingEditingId,
+        category: greetingCategoryInput.value,
+        title,
         message: greetingMessageInput.value.trim(),
-        imageUrl: imageURL
+        imageUrl,
+        sortOrder: Number(greetingOrderInput.value) || 1,
+        active: greetingActiveInput.value === 'true'
       }
     });
-
-    if (!result.ok) {
-      throw new Error(result.message || 'प्रकाशन असफल भयो ।');
-    }
-
-    greetingImageURL = imageURL;
-    greetingImageData = '';
-    greetingImageName = '';
-    greetingResetRequested = false;
-    greetingImageInput.value = '';
-    message.textContent = 'शुभकामना सफलतापूर्वक प्रकाशित भयो ।';
+    if (!saved.ok) throw new Error(saved.message || 'कार्ड Save भएन ।');
+    greetingEditingId = '';
+    await loadGreetingSettings();
+    greetingNotice('कार्ड सफलतापूर्वक प्रकाशित भयो ।');
   } catch (error) {
-    message.textContent = error.message;
+    greetingNotice('प्रकाशन असफल: ' + error.message, false);
   } finally {
     button.disabled = false;
-    button.textContent = 'शुभकामना प्रकाशित गर्नुहोस्';
+    if (greetingEditingId) button.textContent = oldLabel;
+    else button.textContent = 'कार्ड प्रकाशित गर्नुहोस्';
+  }
+}
+
+async function deleteGreetingCard(id) {
+  if (!confirm('यो कार्ड सार्वजनिक वेबसाइटबाट हटाउने हो ?')) return;
+  greetingNotice('कार्ड हटाइँदैछ...');
+  try {
+    const result = await api('adminDeleteGreetingCard', { token, id });
+    if (!result.ok) throw new Error(result.message || 'Delete असफल भयो ।');
+    await loadGreetingSettings();
+    greetingNotice('कार्ड हटाइयो ।');
+  } catch (error) {
+    greetingNotice(error.message, false);
+  }
+}
+
+async function saveGreetingSpeed() {
+  const button = document.getElementById('greetingSpeedButton');
+  button.disabled = true;
+  greetingNotice('Slider Speed सुरक्षित हुँदैछ...');
+  try {
+    const result = await api('adminSaveGreetingSpeed', {
+      token, seconds: Number(greetingSpeedInput.value)
+    });
+    if (!result.ok) throw new Error(result.message || 'Speed Save भएन ।');
+    greetingNotice(result.message);
+  } catch (error) {
+    greetingNotice(error.message, false);
+  } finally {
+    button.disabled = false;
   }
 }
 
