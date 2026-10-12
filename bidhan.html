@@ -259,7 +259,7 @@
         </section>
     </main>
 
-    <footer class="page-credit">Designed by: Nirajan Aryal (9851113811)</footer>
+    <footer class="page-credit">Designed &amp; Developed by Nirajan Aryal (9851113811)</footer>
 
     <script>
         'use strict';
@@ -344,6 +344,10 @@
             function flush() {
                 if (!paragraph.trim()) return;
                 const block = makeElement('p', kind, paragraph.trim());
+                // Keep long clauses as normal body text; bold only short headings.
+                if (kind === 'bidhan-subheading' && paragraph.trim().length > 85) {
+                    block.style.fontWeight = '400';
+                }
                 target.append(block);
                 paragraph = '';
             }
