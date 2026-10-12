@@ -120,15 +120,35 @@
             overflow-wrap: break-word;
         }
 
-        /* Preserve original wording while improving paragraph readability. */
+        /* Document-like layout; source text remains unchanged. */
+        .answer { white-space: normal; }
         .bidhan-text {
-            white-space: pre-line;
+            font-family: "Noto Sans Devanagari", system-ui, sans-serif;
+            font-size: 16px;
+            line-height: 1.95;
+            color: #183453;
             overflow-wrap: break-word;
             word-break: normal;
-            line-height: 1.9;
-            font-size: 16px;
+        }
+        .bidhan-paragraph {
+            margin: 0 0 13px;
+            text-align: justify;
+            text-justify: inter-word;
+        }
+        .bidhan-subheading {
+            margin: 17px 0 9px;
+            font-weight: 700;
             text-align: left;
-            font-family: "Noto Sans Devanagari", system-ui, sans-serif;
+        }
+        .bidhan-clause {
+            margin: 0 0 12px;
+            padding-left: 30px;
+            text-indent: -26px;
+            text-align: justify;
+        }
+        @media (max-width: 600px) {
+            .bidhan-text { font-size: 15px; line-height: 1.85; }
+            .bidhan-clause { padding-left: 23px; text-indent: -20px; }
         }
 
         .source {
@@ -310,6 +330,47 @@
         // ============================================================
         // 05. SHOW FULL SHEET TEXT, NEVER SHORTEN
         // ============================================================
+        // Render imported PDF/Sheet text as readable clauses without editing words.
+        // A newline inside an ordinary paragraph is treated as PDF line wrapping.
+        function renderBidhanText(target, rawText) {
+            const source = String(rawText == null ? '' : rawText)
+                .replace(/\r\n?/g, '\n');
+            const lines = source.split('\n');
+            const headingPattern = /^\s*[（(]?[कखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसह][)）.]\s*/u;
+            const clausePattern = /^\s*[（(][०-९0-9]+[)）]\s*/u;
+            let paragraph = '';
+            let kind = 'bidhan-paragraph';
+
+            function flush() {
+                if (!paragraph.trim()) return;
+                const block = makeElement('p', kind, paragraph.trim());
+                target.append(block);
+                paragraph = '';
+            }
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    flush();
+                    continue;
+                }
+                const nextKind = headingPattern.test(trimmed)
+                    ? 'bidhan-subheading'
+                    : clausePattern.test(trimmed)
+                        ? 'bidhan-clause'
+                        : null;
+                if (nextKind) {
+                    flush();
+                    kind = nextKind;
+                    paragraph = trimmed;
+                } else {
+                    if (!paragraph) kind = 'bidhan-paragraph';
+                    paragraph += (paragraph ? ' ' : '') + trimmed;
+                }
+            }
+            flush();
+        }
+
         function showResults(records) {
             const container = $('results');
             container.replaceChildren();
@@ -328,9 +389,9 @@
                     'div', 'source', record.title
                 ));
 
-                article.append(makeElement(
-                    'div', 'bidhan-text', record.text
-                ));
+                const documentText = makeElement('div', 'bidhan-text');
+                renderBidhanText(documentText, record.text);
+                article.append(documentText);
 
                 container.append(article);
             }
