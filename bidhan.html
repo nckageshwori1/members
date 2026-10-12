@@ -137,7 +137,7 @@
         }
         .bidhan-subheading {
             margin: 17px 0 9px;
-            font-weight: 700;
+            font-weight: 400;
             text-align: left;
         }
         .bidhan-clause {
@@ -149,6 +149,13 @@
         @media (max-width: 600px) {
             .bidhan-text { font-size: 15px; line-height: 1.85; }
             .bidhan-clause { padding-left: 23px; text-indent: -20px; }
+        }
+
+        /* Discourage casual copying of displayed Bidhan text only. */
+        #results {
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
 
         .source {
@@ -400,6 +407,22 @@
                 container.append(article);
             }
         }
+
+        // ============================================================
+        // 05A. DISPLAY-ONLY UI GUARD (NOT A SECURITY BOUNDARY)
+        // ============================================================
+        const bidhanResults = $('results');
+
+        ['copy', 'cut', 'contextmenu', 'dragstart', 'selectstart'].forEach(type => {
+            bidhanResults.addEventListener(type, event => event.preventDefault());
+        });
+
+        bidhanResults.addEventListener('keydown', event => {
+            if ((event.ctrlKey || event.metaKey) &&
+                ['c', 'x', 'a', 's', 'p'].includes(event.key.toLowerCase())) {
+                event.preventDefault();
+            }
+        });
 
         // ============================================================
         // 06. SEARCH OR SELECT EXACT TOPIC
