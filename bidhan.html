@@ -117,7 +117,18 @@
             padding: 15px;
             line-height: 1.8;
             white-space: pre-wrap;
-            overflow-wrap: anywhere;
+            overflow-wrap: break-word;
+        }
+
+        /* Preserve original wording while improving paragraph readability. */
+        .bidhan-text {
+            white-space: pre-line;
+            overflow-wrap: break-word;
+            word-break: normal;
+            line-height: 1.9;
+            font-size: 16px;
+            text-align: left;
+            font-family: "Noto Sans Devanagari", system-ui, sans-serif;
         }
 
         .source {
@@ -147,6 +158,15 @@
         .empty {
             color: #6b788a;
             margin-top: 14px;
+        }
+
+        .page-credit {
+            max-width: 1050px;
+            margin: 4px auto 22px;
+            padding: 14px;
+            text-align: center;
+            font-size: 13px;
+            color: #63778c;
         }
 
         /* ============================================================
@@ -218,6 +238,8 @@
             <div id="results" aria-live="polite"></div>
         </section>
     </main>
+
+    <footer class="page-credit">Designed by: Nirajan Aryal (9851113811)</footer>
 
     <script>
         'use strict';
@@ -307,7 +329,7 @@
                 ));
 
                 article.append(makeElement(
-                    'div', '', record.text
+                    'div', 'bidhan-text', record.text
                 ));
 
                 container.append(article);
