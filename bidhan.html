@@ -320,7 +320,15 @@
                 const result = await request('bidhanList');
                 const dropdown = $('topicSelect');
 
-                for (const topic of result.topics || []) {
+                // Sheet row 1 contains column headings, not a Bidhan topic.
+                // Keep original sheet row IDs for every actual topic.
+                const topics = (result.topics || []).filter(topic => {
+                    const title = String(topic.title || '').trim();
+                    return Number(topic.row) !== 1 &&
+                        title !== 'विधानको धारा / विषय';
+                });
+
+                for (const topic of topics) {
                     const option = document.createElement('option');
                     option.value = String(topic.row);
                     option.textContent = topic.title;
@@ -328,7 +336,7 @@
                 }
 
                 $('status').textContent =
-                    result.count + ' वटा धारा / विषय उपलब्ध छन् ।';
+                    topics.length + ' वटा धारा / विषय उपलब्ध छन् ।';
             } catch (error) {
                 $('status').textContent = error.message;
             }
