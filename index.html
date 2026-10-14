@@ -1389,6 +1389,25 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
 @media(min-width:701px){.wardMenuShade,.wardMenuPanel{display:none!important}}
 @media(prefers-reduced-motion:reduce){.wardMenuShade,.wardMenuPanel{transition:none}}
 </style>
+
+<style id="ncCentralCommitteeTrialStyle">
+/* Only the previously empty NCID search area is enhanced. */
+.ncCentral{margin-top:18px;border:1px solid #dce7f2;border-radius:15px;background:linear-gradient(155deg,#f8fbff,#fff);padding:13px;text-align:center;min-height:240px}
+.ncCentral[hidden]{display:none!important}
+.ncCentral h4{margin:0 0 5px;font-size:17px;color:#0d315d}
+.ncCentral .ncCentralNote{margin:0 0 11px;font-size:12px;color:#60738a;line-height:1.5}
+.ncCentralSlide{display:flex;align-items:center;justify-content:center;gap:7px}
+.ncCentralArrow{flex:0 0 39px;width:39px;height:46px;border:1px solid #d8e5f0;border-radius:11px;background:#eaf3fd;color:#0d315d;font-size:26px;font-weight:900;cursor:pointer}
+.ncCentralArrow:disabled{opacity:.4;cursor:not-allowed}
+.ncCentralPerson{flex:1;min-width:0;max-width:410px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:190px;padding:12px;border-radius:13px;background:white;border:1px solid #e2eaf3}
+.ncCentralPerson img{width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid #e6eff8;background:#edf3f9}
+.ncCentralPerson strong{font-size:18px;color:#163b62;margin-top:8px;overflow-wrap:anywhere}
+.ncCentralPerson span{font-size:14px;color:#c52836;font-weight:800;margin-top:3px}
+.ncCentralCount{font-size:12px;color:#68798a;margin:8px 0}
+.ncCentralSource{font-size:12px;color:#1769aa;text-decoration:underline}
+.ncCentralError{font-size:13px;color:#8a4c18;line-height:1.7}
+@media(max-width:650px){.ncCentral{padding:9px}.ncCentralArrow{flex-basis:34px;width:34px}.ncCentralPerson{padding:8px}.ncCentralPerson strong{font-size:16px}}
+</style>
 </head>
   <body>
 
@@ -1506,6 +1525,19 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
           </div>
           <div id="profile" class="member">
           </div>
+          <!-- Trial-only central committee carousel. Member search markup is untouched. -->
+          <section id="ncCentralCommitteeTrial" class="ncCentral" aria-label="केन्द्रीय कार्यसमिति">
+            <h4>🏛️ केन्द्रीय कार्यसमिति</h4>
+            <p class="ncCentralNote">नेपाली कांग्रेसका सभापति, पदाधिकारी र केन्द्रीय सदस्यहरू</p>
+            <div class="ncCentralSlide">
+              <button class="ncCentralArrow" type="button" onclick="ncCentralMove(-1)" aria-label="अघिल्लो सदस्य">‹‹</button>
+              <div id="ncCentralPerson" class="ncCentralPerson" aria-live="polite"><span>आधिकारिक विवरण लोड हुँदैछ...</span></div>
+              <button class="ncCentralArrow" type="button" onclick="ncCentralMove(1)" aria-label="अर्को सदस्य">››</button>
+            </div>
+            <p id="ncCentralCount" class="ncCentralCount"></p>
+            <a class="ncCentralSource" href="https://nepalicongress.org/central-committee/" target="_blank" rel="noopener noreferrer">आधिकारिक केन्द्रीय कार्यसमिति ↗</a>
+          </section>
+
         </div>
         <div class="card panel">
           <div class="paneltitle">
@@ -2966,6 +2998,75 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape' && document.body.classList.contains('wardMenuVisible')) wardMenuClose();
   });
+})();
+</script>
+
+<script id="ncCentralCommitteeTrialScript">
+/* Separate trial widget: no existing app function is overridden. */
+const NC_CENTRAL_FEED_URL = 'PASTE_CENTRAL_FEED_WEB_APP_URL_HERE';
+let ncCentralPeople = [];
+let ncCentralIndex = 0;
+let ncCentralRequest = null;
+function ncCentralEscape(value){
+  return String(value == null ? '' : value).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function ncCentralRender(){
+  const card=document.getElementById('ncCentralPerson');
+  const counter=document.getElementById('ncCentralCount');
+  if(!card||!counter)return;
+  if(!ncCentralPeople.length){
+    card.innerHTML='<div class="ncCentralError">आधिकारिक सूची अहिले लोड हुन सकेन । तलको आधिकारिक लिंकबाट हेर्न सक्नुहुन्छ ।</div>';
+    counter.textContent='';return;
+  }
+  const p=ncCentralPeople[ncCentralIndex];
+  const img=p.photo?'<img src="'+ncCentralEscape(p.photo)+'" alt="'+ncCentralEscape(p.name)+'" loading="lazy">':'';
+  card.innerHTML=img+'<strong>'+ncCentralEscape(p.name)+'</strong><span>'+ncCentralEscape(p.role)+'</span>';
+  counter.textContent=(ncCentralIndex+1)+' / '+ncCentralPeople.length;
+}
+function ncCentralMove(direction){
+  if(!ncCentralPeople.length)return;
+  ncCentralIndex=(ncCentralIndex+direction+ncCentralPeople.length)%ncCentralPeople.length;
+  ncCentralRender();
+}
+function ncCentralFeedCallback(data){
+  if(ncCentralRequest){ncCentralRequest.remove();ncCentralRequest=null;}
+  if(data&&data.ok&&Array.isArray(data.members)){
+    ncCentralPeople=data.members.filter(function(p){return p&&p.name&&p.role;});
+  }
+  ncCentralRender();
+}
+function ncCentralLoad(){
+  if(NC_CENTRAL_FEED_URL.indexOf('PASTE_')===0){
+    document.getElementById('ncCentralPerson').innerHTML='<div class="ncCentralError">स्वचालित सूची चलाउन पहिले छुट्टै Central Committee Feed Web App URL राख्नुपर्छ ।</div>';
+    return;
+  }
+  const script=document.createElement('script');
+  ncCentralRequest=script;
+  script.src=NC_CENTRAL_FEED_URL+(NC_CENTRAL_FEED_URL.includes('?')?'&':'?')+'callback=ncCentralFeedCallback&t='+Date.now();
+  script.onerror=function(){ncCentralFeedCallback({ok:false});};
+  document.head.appendChild(script);
+}
+function ncCentralVisibility(){
+  const widget=document.getElementById('ncCentralCommitteeTrial');
+  if(!widget)return;
+  const memberOpen=document.getElementById('profile')?.style.display==='block';
+  const verificationOpen=document.getElementById('verifyBox')?.style.display==='block';
+  const ncid=document.getElementById('ncid')?.value.trim();
+  widget.hidden=Boolean(memberOpen||verificationOpen||ncid);
+}
+(function(){
+  const ncid=document.getElementById('ncid');
+  if(ncid){ncid.addEventListener('input',ncCentralVisibility);}
+  const profile=document.getElementById('profile');
+  const verify=document.getElementById('verifyBox');
+  if(typeof MutationObserver!=='undefined'){
+    const observer=new MutationObserver(ncCentralVisibility);
+    if(profile)observer.observe(profile,{attributes:true,attributeFilter:['style']});
+    if(verify)observer.observe(verify,{attributes:true,attributeFilter:['style']});
+  }
+  ncCentralVisibility();ncCentralLoad();
 })();
 </script>
 </body>
