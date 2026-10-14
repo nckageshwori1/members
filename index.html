@@ -1391,22 +1391,28 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
 </style>
 
 <style id="ncCentralCommitteeTrialStyle">
-/* Only the previously empty NCID search area is enhanced. */
-.ncCentral{margin-top:18px;border:1px solid #dce7f2;border-radius:15px;background:linear-gradient(155deg,#f8fbff,#fff);padding:13px;text-align:center;min-height:240px}
+/* Central Committee crystal slider: isolated visual update only. */
+.ncCentral{position:relative;margin-top:18px;overflow:hidden;border:1px solid #cbdff1;border-radius:19px;background:linear-gradient(125deg,#e7f4ff 0%,#f5faff 42%,#e9f7f2 100%);padding:17px 21px;text-align:center;min-height:270px;box-shadow:0 12px 30px rgba(13,49,93,.10)}
+.ncCentral:before{content:"";position:absolute;inset:-90px auto auto -80px;width:240px;height:240px;border-radius:50%;background:rgba(70,164,246,.11);pointer-events:none}
 .ncCentral[hidden]{display:none!important}
-.ncCentral h4{margin:0 0 5px;font-size:17px;color:#0d315d}
-.ncCentral .ncCentralNote{margin:0 0 11px;font-size:12px;color:#60738a;line-height:1.5}
-.ncCentralSlide{display:flex;align-items:center;justify-content:center;gap:7px}
-.ncCentralArrow{flex:0 0 39px;width:39px;height:46px;border:1px solid #d8e5f0;border-radius:11px;background:#eaf3fd;color:#0d315d;font-size:26px;font-weight:900;cursor:pointer}
+.ncCentral h4{position:relative;margin:0 0 5px;font-size:19px;color:#0d315d;font-weight:900}
+.ncCentral .ncCentralNote{position:relative;margin:0 0 14px;font-size:12px;color:#55708a;line-height:1.6}
+.ncCentralSlide{position:relative;display:grid;grid-template-columns:46px minmax(0,1fr) 46px;align-items:center;gap:15px;max-width:690px;margin:0 auto}
+.ncCentralArrow{width:46px;height:52px;border:1px solid #c4dbef;border-radius:14px;background:rgba(255,255,255,.75);backdrop-filter:blur(10px);color:#0d315d;font-size:25px;font-weight:900;cursor:pointer;box-shadow:0 5px 15px #0d315d12;transition:transform .2s,background .2s}
+.ncCentralArrow:hover{background:#fff;transform:translateY(-2px)}
+.ncCentralArrow:focus-visible{outline:3px solid #1687f8;outline-offset:2px}
 .ncCentralArrow:disabled{opacity:.4;cursor:not-allowed}
-.ncCentralPerson{flex:1;min-width:0;max-width:410px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:190px;padding:12px;border-radius:13px;background:white;border:1px solid #e2eaf3}
-.ncCentralPerson img{width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid #e6eff8;background:#edf3f9}
-.ncCentralPerson strong{font-size:18px;color:#163b62;margin-top:8px;overflow-wrap:anywhere}
-.ncCentralPerson span{font-size:14px;color:#c52836;font-weight:800;margin-top:3px}
-.ncCentralCount{font-size:12px;color:#68798a;margin:8px 0}
-.ncCentralSource{font-size:12px;color:#1769aa;text-decoration:underline}
+.ncCentralPerson{min-width:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:205px;padding:18px 15px;border-radius:18px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.96);box-shadow:0 10px 30px rgba(22,75,120,.10),inset 0 1px 0 #fff;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.ncCentralPerson.ncCentralEnter{animation:ncCentralFade .42s ease both}
+@keyframes ncCentralFade{from{opacity:.3;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.ncCentralPerson img{width:102px;height:102px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 0 0 2px #bfd9f0,0 6px 16px #173b6230;background:#edf3f9}
+.ncCentralPerson strong{font-size:20px;color:#123a65;margin-top:11px;line-height:1.45;overflow-wrap:anywhere}
+.ncCentralPerson span{font-size:15px;color:#c52836;font-weight:900;margin-top:4px}
+.ncCentralCount{position:relative;font-size:12px;color:#60758c;margin:10px 0 5px;font-weight:800}
+.ncCentralSource{position:relative;font-size:12px;color:#1769aa;text-decoration:underline;text-underline-offset:3px}
 .ncCentralError{font-size:13px;color:#8a4c18;line-height:1.7}
-@media(max-width:650px){.ncCentral{padding:9px}.ncCentralArrow{flex-basis:34px;width:34px}.ncCentralPerson{padding:8px}.ncCentralPerson strong{font-size:16px}}
+@media(max-width:650px){.ncCentral{padding:14px 10px;min-height:255px;border-radius:15px}.ncCentral h4{font-size:17px}.ncCentralSlide{grid-template-columns:35px minmax(0,1fr) 35px;gap:7px}.ncCentralArrow{width:35px;height:44px;border-radius:10px;font-size:21px}.ncCentralPerson{min-height:190px;padding:12px 7px}.ncCentralPerson img{width:86px;height:86px}.ncCentralPerson strong{font-size:17px}.ncCentralPerson span{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.ncCentralPerson.ncCentralEnter{animation:none}.ncCentralArrow{transition:none}}
 </style>
 </head>
   <body>
@@ -3002,15 +3008,28 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
 </script>
 
 <script id="ncCentralCommitteeTrialScript">
-/* Separate trial widget: no existing app function is overridden. */
+/* Isolated Central Committee slider. No original app functions are overridden. */
 const NC_CENTRAL_FEED_URL = 'https://script.google.com/macros/s/AKfycby3HFgNAnKFwdyUK5vS0ZtXfk9ZKjm7HJ_jq-Ru6MsW3lhGF852fOVI0KxHWgHwlkcUhg/exec';
 let ncCentralPeople = [];
 let ncCentralIndex = 0;
 let ncCentralRequest = null;
+let ncCentralAutoTimer = null;
+let ncCentralRefreshTimer = null;
+let ncCentralFeedTimeout = null;
+let ncCentralHover = false;
+let ncCentralPageVisible = !document.hidden;
+const NC_CENTRAL_SLIDE_MS = 5000;
+const NC_CENTRAL_REFRESH_MS = 30 * 60 * 1000;
 function ncCentralEscape(value){
   return String(value == null ? '' : value).replace(/[&<>"']/g, function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
+}
+function ncCentralPhotoUrl(url){
+  /* Refresh browser image cache on a 30-minute boundary, without changing source data. */
+  if(!/^https?:\/\//i.test(String(url||''))) return '';
+  const separator = String(url).includes('?') ? '&' : '?';
+  return String(url) + separator + 'nc_photo_refresh=' + Math.floor(Date.now()/NC_CENTRAL_REFRESH_MS);
 }
 function ncCentralRender(){
   const card=document.getElementById('ncCentralPerson');
@@ -3021,31 +3040,55 @@ function ncCentralRender(){
     counter.textContent='';return;
   }
   const p=ncCentralPeople[ncCentralIndex];
-  const img=p.photo?'<img src="'+ncCentralEscape(p.photo)+'" alt="'+ncCentralEscape(p.name)+'" loading="lazy">':'';
+  const photo=ncCentralPhotoUrl(p.photo);
+  const img=photo?'<img src="'+ncCentralEscape(photo)+'" alt="'+ncCentralEscape(p.name)+'" loading="eager" referrerpolicy="no-referrer">':'';
+  card.classList.remove('ncCentralEnter');
   card.innerHTML=img+'<strong>'+ncCentralEscape(p.name)+'</strong><span>'+ncCentralEscape(p.role)+'</span>';
+  void card.offsetWidth;
+  card.classList.add('ncCentralEnter');
   counter.textContent=(ncCentralIndex+1)+' / '+ncCentralPeople.length;
 }
 function ncCentralMove(direction){
   if(!ncCentralPeople.length)return;
   ncCentralIndex=(ncCentralIndex+direction+ncCentralPeople.length)%ncCentralPeople.length;
   ncCentralRender();
+  ncCentralStartAuto();
+}
+function ncCentralStartAuto(){
+  if(ncCentralAutoTimer){clearInterval(ncCentralAutoTimer);ncCentralAutoTimer=null;}
+  if(ncCentralPeople.length<2||ncCentralHover||!ncCentralPageVisible)return;
+  const widget=document.getElementById('ncCentralCommitteeTrial');
+  if(!widget||widget.hidden)return;
+  ncCentralAutoTimer=setInterval(function(){
+    if(!ncCentralHover&&!document.hidden&&!widget.hidden){
+      ncCentralIndex=(ncCentralIndex+1)%ncCentralPeople.length;
+      ncCentralRender();
+    }
+  },NC_CENTRAL_SLIDE_MS);
 }
 function ncCentralFeedCallback(data){
+  if(ncCentralFeedTimeout){clearTimeout(ncCentralFeedTimeout);ncCentralFeedTimeout=null;}
   if(ncCentralRequest){ncCentralRequest.remove();ncCentralRequest=null;}
-  if(data&&data.ok&&Array.isArray(data.members)){
-    ncCentralPeople=data.members.filter(function(p){return p&&p.name&&p.role;});
+  if(data&&data.ok&&Array.isArray(data.members)&&data.members.length){
+    const incoming=data.members.filter(function(p){return p&&p.name&&p.role;});
+    if(incoming.length){
+      const current=ncCentralPeople[ncCentralIndex];
+      ncCentralPeople=incoming;
+      const previousIndex=current?incoming.findIndex(function(p){return p.name===current.name;}):-1;
+      ncCentralIndex=previousIndex>=0?previousIndex:Math.min(ncCentralIndex,incoming.length-1);
+      ncCentralRender();ncCentralStartAuto();return;
+    }
   }
-  ncCentralRender();
+  /* On temporary feed failure, preserve the last successfully loaded members. */
+  if(!ncCentralPeople.length)ncCentralRender();
 }
 function ncCentralLoad(){
-  if(NC_CENTRAL_FEED_URL.indexOf('PASTE_')===0){
-    document.getElementById('ncCentralPerson').innerHTML='<div class="ncCentralError">स्वचालित सूची चलाउन पहिले छुट्टै Central Committee Feed Web App URL राख्नुपर्छ ।</div>';
-    return;
-  }
+  if(ncCentralRequest)return;
   const script=document.createElement('script');
   ncCentralRequest=script;
   script.src=NC_CENTRAL_FEED_URL+(NC_CENTRAL_FEED_URL.includes('?')?'&':'?')+'callback=ncCentralFeedCallback&t='+Date.now();
   script.onerror=function(){ncCentralFeedCallback({ok:false});};
+  ncCentralFeedTimeout=setTimeout(function(){ncCentralFeedCallback({ok:false});},18000);
   document.head.appendChild(script);
 }
 function ncCentralVisibility(){
@@ -3055,10 +3098,11 @@ function ncCentralVisibility(){
   const verificationOpen=document.getElementById('verifyBox')?.style.display==='block';
   const ncid=document.getElementById('ncid')?.value.trim();
   widget.hidden=Boolean(memberOpen||verificationOpen||ncid);
+  ncCentralStartAuto();
 }
 (function(){
   const ncid=document.getElementById('ncid');
-  if(ncid){ncid.addEventListener('input',ncCentralVisibility);}
+  if(ncid)ncid.addEventListener('input',ncCentralVisibility);
   const profile=document.getElementById('profile');
   const verify=document.getElementById('verifyBox');
   if(typeof MutationObserver!=='undefined'){
@@ -3066,7 +3110,23 @@ function ncCentralVisibility(){
     if(profile)observer.observe(profile,{attributes:true,attributeFilter:['style']});
     if(verify)observer.observe(verify,{attributes:true,attributeFilter:['style']});
   }
-  ncCentralVisibility();ncCentralLoad();
+  const widget=document.getElementById('ncCentralCommitteeTrial');
+  if(widget){
+    widget.addEventListener('mouseenter',function(){ncCentralHover=true;ncCentralStartAuto();});
+    widget.addEventListener('mouseleave',function(){ncCentralHover=false;ncCentralStartAuto();});
+    widget.addEventListener('focusin',function(){ncCentralHover=true;ncCentralStartAuto();});
+    widget.addEventListener('focusout',function(e){
+      if(!widget.contains(e.relatedTarget)){ncCentralHover=false;ncCentralStartAuto();}
+    });
+  }
+  document.addEventListener('visibilitychange',function(){
+    ncCentralPageVisible=!document.hidden;
+    ncCentralStartAuto();
+    if(ncCentralPageVisible&&ncCentralPeople.length===0)ncCentralLoad();
+  });
+  ncCentralVisibility();
+  ncCentralLoad();
+  ncCentralRefreshTimer=setInterval(ncCentralLoad,NC_CENTRAL_REFRESH_MS);
 })();
 </script>
 </body>
