@@ -191,46 +191,6 @@ button {
 .nav button:hover {
   background:#ffffff18
 }
-/* Mobile navigation: desktop layout remains unchanged. */
-.mobileMenuToggle {
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  border: 0;
-  background: transparent;
-  color: #fff;
-  padding: 13px 16px;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-}
-.mobileMenuToggle:focus-visible,
-.navin button:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: -3px;
-}
-@media (max-width: 767px) {
-  .mobileMenuToggle { display: flex; }
-  .navin {
-    display: none;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 4px;
-    padding: 7px 12px 13px;
-    overflow: visible;
-  }
-  .navin.is-open { display: flex; }
-  .navin button {
-    width: 100%;
-    text-align: left;
-    font-size: 14px;
-    padding: 12px 14px;
-    white-space: normal;
-  }
-  .navin .spacer { display: none; }
-}
-
 .spacer {
   flex:1
 }
@@ -1111,6 +1071,46 @@ main {
       white-space: pre-wrap;
     }
 
+
+/* ============================================================
+   MOBILE NAVIGATION — NO SCROLL, NO HAMBURGER
+   Only the navigation presentation is changed.
+   ============================================================ */
+@media (max-width: 767px) {
+  .navin {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    padding: 10px;
+    overflow: visible;
+  }
+
+  .navin button {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 10px 7px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .09);
+    font-size: 12px;
+    line-height: 1.45;
+    white-space: normal;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .navin button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  .navin .spacer,
+  .navin .navAdminDesktop {
+    display: none;
+  }
+}
+
 </style>
   
 <style id="representationReferenceDesign">
@@ -1447,14 +1447,8 @@ main {
       <div class="tricolor">
       </div>
     </header>
-    <nav class="nav" aria-label="मुख्य नेभिगेसन">
-      <button class="mobileMenuToggle" id="mobileMenuToggle" type="button"
-              aria-controls="mainNavLinks" aria-expanded="false"
-              onclick="toggleMobileMenu()">
-        <span>☰ मेनु</span>
-        <span id="mobileMenuIndicator" aria-hidden="true">▾</span>
-      </button>
-      <div class="navin" id="mainNavLinks">
+    <nav class="nav">
+      <div class="navin">
         <button onclick="showHome()">⌂ गृहपृष्ठ</button>
         <button onclick="focusSearch()">👥 क्रियाशील सदस्य</button>
         <button onclick="scrollToId('protocolSection')">🏛️ वडा कार्यसमिति</button>
@@ -1463,37 +1457,9 @@ main {
         <button onclick="loadGallery()">🖼️ फोटो ग्यालरी</button>
         <span class="spacer">
         </span>
-        <button onclick="window.location.href='admin.html'">⚙ प्रशासन</button>
+        <button class="navAdminDesktop" onclick="window.location.href='admin.html'">⚙ प्रशासन</button>
       </div>
     </nav>
-    <script>
-      // Only the mobile menu's visibility is changed; existing button actions stay intact.
-      function setMobileMenuOpen(open) {
-        const menu = document.getElementById('mainNavLinks');
-        const toggle = document.getElementById('mobileMenuToggle');
-        const indicator = document.getElementById('mobileMenuIndicator');
-        if (!menu || !toggle) return;
-        menu.classList.toggle('is-open', open);
-        toggle.setAttribute('aria-expanded', String(open));
-        if (indicator) indicator.textContent = open ? '▴' : '▾';
-      }
-      function toggleMobileMenu() {
-        const menu = document.getElementById('mainNavLinks');
-        setMobileMenuOpen(!menu.classList.contains('is-open'));
-      }
-      document.getElementById('mainNavLinks').addEventListener('click', function (event) {
-        if (event.target.closest('button')) setMobileMenuOpen(false);
-      });
-      document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') setMobileMenuOpen(false);
-      });
-      document.addEventListener('click', function (event) {
-        if (!event.target.closest('.nav')) setMobileMenuOpen(false);
-      });
-      window.addEventListener('resize', function () {
-        if (window.innerWidth > 767) setMobileMenuOpen(false);
-      });
-    </script>
     <main>
       <section class="welcome">
         <div>
