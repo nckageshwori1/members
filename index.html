@@ -1367,34 +1367,51 @@ main {
   }
 }
 </style>
-<style id="wardMobileMenuStyles">
-/* Ward 1: isolated mobile side menu; existing website styles preserved */
-.wardMobileMenuBar,.wardMenuOverlay,.wardMenuDrawer{display:none}
-@media(max-width:760px){
-  .nav .navin{display:none}
-  .wardMobileMenuBar{display:block;background:linear-gradient(90deg,#102f55,#0c416d);padding:9px 12px}
-  .wardMenuOpen{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px 16px;border:1px solid #ffffff55;border-radius:12px;background:#fff;color:#0d315d;font-weight:900;font-size:17px;box-shadow:0 3px 12px #0002}
-  .wardMenuOverlay{display:block;position:fixed;inset:0;z-index:10000;background:rgba(4,19,40,.65);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
-  .wardMenuDrawer{display:flex;flex-direction:column;position:fixed;right:0;top:0;bottom:0;width:min(360px,88vw);z-index:10001;background:#fff;box-shadow:-12px 0 36px #0003;transform:translateX(105%);visibility:hidden;transition:transform .28s ease,visibility .28s}
-  body.wardMenuActive .wardMenuOverlay{opacity:1;visibility:visible}
-  body.wardMenuActive .wardMenuDrawer{transform:translateX(0);visibility:visible}
-  body.wardMenuActive{overflow:hidden}
-  .wardMenuHeader{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:21px 17px;background:linear-gradient(110deg,#0d315d,#075a9d);color:#fff}
-  .wardMenuHeader strong{display:block;font-size:22px}
-  .wardMenuHeader small{display:block;margin-top:5px;font-size:12px}
-  #wardMenuClose{width:40px;height:40px;border:1px solid #ffffff66;border-radius:50%;background:#ffffff20;color:#fff;font-size:20px}
-  .wardMenuItems{overflow-y:auto;padding:12px 11px 25px;overscroll-behavior:contain}
-  .wardMenuItem{width:100%;display:flex;align-items:center;gap:13px;text-align:left;background:#fff;color:#15385f;border:0;border-bottom:1px solid #e9eff5;padding:12px 8px;font-size:15px;font-weight:800;cursor:pointer}
-  .wardMenuItem:focus-visible,.wardMenuOpen:focus-visible,#wardMenuClose:focus-visible{outline:3px solid #ffbe38;outline-offset:2px}
-  .wardMenuIcon{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;background:#eaf4ff;border-radius:50%;font-size:19px}
-  .wardMenuItem:nth-child(3n+2) .wardMenuIcon{background:#e9f8ef}
-  .wardMenuItem:nth-child(3n) .wardMenuIcon{background:#fff1e8}
-  .wardMenuArrow{margin-left:auto;color:#9aabc0;font-size:24px}
-}
-@media(min-width:761px){.wardMenuDrawer,.wardMenuOverlay,.wardMobileMenuBar{display:none!important}}
+
+<style id="wardMenuOnlyStyles">
+/* Mobile-only drawer. No existing styles or functions are modified. */
+.wardMenuTrigger{display:none;width:100%;border:0;background:transparent;color:#fff;padding:13px 17px;font-size:18px;font-weight:900;align-items:center;justify-content:space-between}
+.wardMenuShade{position:fixed;inset:0;background:rgba(9,25,45,.57);z-index:7000;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+.wardMenuPanel{position:fixed;top:0;right:0;bottom:0;width:min(390px,89vw);background:#fff;z-index:7001;display:flex;flex-direction:column;transform:translateX(105%);visibility:hidden;transition:transform .28s,visibility .28s;box-shadow:-12px 0 32px #102d4c33}
+body.wardMenuVisible .wardMenuShade{opacity:1;visibility:visible}
+body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
+.wardMenuHeader{display:flex;align-items:center;gap:12px;padding:18px 13px;border-bottom:1px solid #e2e8f0}
+.wardMenuHeader img{width:53px;height:53px;object-fit:contain}
+.wardMenuHeader div{flex:1;min-width:0}.wardMenuHeader strong{display:block;color:#b91c1c;font-size:17px}.wardMenuHeader small{display:block;color:#48627d;font-size:12px;font-weight:800}
+.wardMenuClose{border:0;border-radius:50%;background:#edf3f9;color:#183f65;width:39px;height:39px;font-size:25px}
+.wardMenuLinks{padding:10px;overflow:auto;flex:1}
+.wardMenuLinks button{display:flex;width:100%;align-items:center;gap:12px;padding:10px;border:0;border-bottom:1px solid #eaf0f6;background:#fff;color:#17334e;text-align:left;font-weight:900;font-size:16px;min-height:63px;border-radius:8px}
+.wardMenuLinks button:hover,.wardMenuLinks button:focus-visible{background:#f2f7fc}
+.wardMenuIcon{width:42px;height:42px;border-radius:50%;color:#fff;display:grid;place-items:center;font-size:22px;flex:none}
+.wardMenuArrow{margin-left:auto;color:#8697a8}
+.wardMenuFooter{border-top:1px solid #e2e8f0;padding:14px;color:#61758a;text-align:center;font-size:12px}
+@media(max-width:700px){.nav .navin{display:none!important}.nav .wardMenuTrigger{display:flex}}
+@media(min-width:701px){.wardMenuShade,.wardMenuPanel{display:none!important}}
+@media(prefers-reduced-motion:reduce){.wardMenuShade,.wardMenuPanel{transition:none}}
 </style>
 </head>
   <body>
+
+<!-- Mobile main menu: isolated addition, all original nav buttons remain unchanged. -->
+<div class="wardMenuShade" id="wardMenuShade" onclick="wardMenuClose()" aria-hidden="true"></div>
+<aside class="wardMenuPanel" id="wardMenuPanel" role="dialog" aria-modal="true" aria-label="मुख्य मेनु" aria-hidden="true">
+  <div class="wardMenuHeader">
+    <img src="tree-logo.png" alt="नेपाली कांग्रेस रुख चिन्ह">
+    <div><strong>नेपाली कांग्रेस</strong><small>वडा नं. १ · मुख्य मेनु</small></div>
+    <button type="button" class="wardMenuClose" onclick="wardMenuClose()" aria-label="मेनु बन्द गर्नुहोस्">×</button>
+  </div>
+  <div class="wardMenuLinks">
+    <button type="button" onclick="wardMenuRun(function(){showHome();})"><span class="wardMenuIcon" style="background:#1769bd">⌂</span><span>गृहपृष्ठ</span><span class="wardMenuArrow">›</span></button>
+    <button type="button" onclick="wardMenuRun(function(){focusSearch();})"><span class="wardMenuIcon" style="background:#0b9854">👥</span><span>क्रियाशील सदस्य</span><span class="wardMenuArrow">›</span></button>
+    <button type="button" onclick="wardMenuRun(function(){scrollToId('protocolSection');})"><span class="wardMenuIcon" style="background:#8c42b4">🏛</span><span>वडा कार्यसमिति</span><span class="wardMenuArrow">›</span></button>
+    <button type="button" onclick="wardMenuRun(function(){window.location.href='bidhan.html';})"><span class="wardMenuIcon" style="background:#e08114">📖</span><span>पार्टीको विधान</span><span class="wardMenuArrow">›</span></button>
+    <button type="button" onclick="wardMenuRun(function(){scrollToId('noticeSection');})"><span class="wardMenuIcon" style="background:#d82c42">📢</span><span>सूचना</span><span class="wardMenuArrow">›</span></button>
+    <button type="button" onclick="wardMenuRun(function(){loadGallery();})"><span class="wardMenuIcon" style="background:#078e9f">🖼</span><span>फोटो ग्यालरी</span><span class="wardMenuArrow">›</span></button>
+    <button type="button" onclick="wardMenuRun(function(){window.location.href='admin.html';})"><span class="wardMenuIcon" style="background:#485c76">⚙</span><span>प्रशासन</span><span class="wardMenuArrow">›</span></button>
+  </div>
+  <div class="wardMenuFooter">नेपाली कांग्रेस · वडा नं. १</div>
+</aside>
+
     <div class="topbar">
       <div class="topin">
         <div class="brandmark">
@@ -1445,24 +1462,8 @@ main {
         </span>
         <button onclick="window.location.href='admin.html'">⚙ प्रशासन</button>
       </div>
+      <button type="button" class="wardMenuTrigger" id="wardMenuTrigger" aria-controls="wardMenuPanel" aria-expanded="false" onclick="wardMenuOpen()"><span>☰ &nbsp;मुख्य मेनु</span><span aria-hidden="true">❯</span></button>
     </nav>
-    <!-- Ward 1 mobile menu: additive, original desktop navigation untouched -->
-    <div class="wardMobileMenuBar">
-      <button id="wardMenuOpen" class="wardMenuOpen" type="button" aria-controls="wardMenuDrawer" aria-expanded="false" onclick="wardMenuSetOpen(true)">☰ मुख्य मेनु <span aria-hidden="true">›</span></button>
-    </div>
-    <div id="wardMenuOverlay" class="wardMenuOverlay" onclick="wardMenuSetOpen(false)" aria-hidden="true"></div>
-    <aside id="wardMenuDrawer" class="wardMenuDrawer" role="dialog" aria-modal="true" aria-label="मुख्य मेनु" aria-hidden="true" inert>
-      <div class="wardMenuHeader"><div><strong>मुख्य मेनु</strong><small>नेपाली कांग्रेस · वडा नं. १</small></div><button id="wardMenuClose" type="button" aria-label="मेनु बन्द गर्नुहोस्" onclick="wardMenuSetOpen(false)">✕</button></div>
-      <div class="wardMenuItems">
-        <button type="button" class="wardMenuItem" onclick="showHome()"><span class="wardMenuIcon" aria-hidden="true">⌂</span><span>गृहपृष्ठ</span><span class="wardMenuArrow" aria-hidden="true">›</span></button>
-        <button type="button" class="wardMenuItem" onclick="focusSearch()"><span class="wardMenuIcon" aria-hidden="true">👥</span><span>क्रियाशील सदस्य</span><span class="wardMenuArrow" aria-hidden="true">›</span></button>
-        <button type="button" class="wardMenuItem" onclick="scrollToId('protocolSection')"><span class="wardMenuIcon" aria-hidden="true">🏛️</span><span>वडा कार्यसमिति</span><span class="wardMenuArrow" aria-hidden="true">›</span></button>
-        <button type="button" class="wardMenuItem" onclick="window.location.href='bidhan.html'"><span class="wardMenuIcon" aria-hidden="true">📖</span><span>पार्टीको विधान</span><span class="wardMenuArrow" aria-hidden="true">›</span></button>
-        <button type="button" class="wardMenuItem" onclick="scrollToId('noticeSection')"><span class="wardMenuIcon" aria-hidden="true">📢</span><span>सूचना</span><span class="wardMenuArrow" aria-hidden="true">›</span></button>
-        <button type="button" class="wardMenuItem" onclick="loadGallery()"><span class="wardMenuIcon" aria-hidden="true">🖼️</span><span>फोटो ग्यालरी</span><span class="wardMenuArrow" aria-hidden="true">›</span></button>
-        <button type="button" class="wardMenuItem" onclick="window.location.href='admin.html'"><span class="wardMenuIcon" aria-hidden="true">⚙</span><span>प्रशासन</span><span class="wardMenuArrow" aria-hidden="true">›</span></button>
-      </div>
-    </aside>
     <main>
       <section class="welcome">
         <div>
@@ -2173,38 +2174,6 @@ function buildMemberDocumentHtml() {
 
 
 
-
-<script id="wardMobileMenuScript">
-/* Independent menu control: no changes to existing site functions. */
-(function () {
-  var drawer = document.getElementById('wardMenuDrawer');
-  var opener = document.getElementById('wardMenuOpen');
-  var closeButton = document.getElementById('wardMenuClose');
-  if (!drawer || !opener) return;
-  window.wardMenuSetOpen = function (open) {
-    var isOpen = Boolean(open);
-    document.body.classList.toggle('wardMenuActive', isOpen);
-    opener.setAttribute('aria-expanded', String(isOpen));
-    drawer.setAttribute('aria-hidden', String(!isOpen));
-    drawer.inert = !isOpen;
-    if (isOpen) closeButton.focus();
-    else if (drawer.contains(document.activeElement)) opener.focus();
-  };
-  drawer.querySelectorAll('.wardMenuItem').forEach(function (item) {
-    item.addEventListener('click', function () { window.wardMenuSetOpen(false); });
-  });
-  document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && document.body.classList.contains('wardMenuActive')) {
-      window.wardMenuSetOpen(false);
-    }
-  });
-  window.addEventListener('resize', function () {
-    if (window.innerWidth > 760 && document.body.classList.contains('wardMenuActive')) {
-      window.wardMenuSetOpen(false);
-    }
-  });
-})();
-</script>
 </body>
 </html>`;
 }
@@ -2970,5 +2939,34 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   .greeting-slides .ward-birthday-card img.ward-birthday-photo { width:43.15%; height:43.15%; object-fit:cover; border-radius:50%; }
   .greeting-slides .ward-birthday-card img.ward-birthday-template { width:100%; height:100%; border-radius:0; object-fit:fill; }
 </style>
+
+<script id="wardMenuOnlyScript">
+(function () {
+  'use strict';
+  var trigger = document.getElementById('wardMenuTrigger');
+  var panel = document.getElementById('wardMenuPanel');
+  var previousFocus = null;
+  window.wardMenuOpen = function () {
+    previousFocus = document.activeElement;
+    document.body.classList.add('wardMenuVisible');
+    trigger.setAttribute('aria-expanded', 'true');
+    panel.setAttribute('aria-hidden', 'false');
+    panel.querySelector('.wardMenuClose').focus();
+  };
+  window.wardMenuClose = function () {
+    document.body.classList.remove('wardMenuVisible');
+    trigger.setAttribute('aria-expanded', 'false');
+    panel.setAttribute('aria-hidden', 'true');
+    if (previousFocus && previousFocus.focus) previousFocus.focus();
+  };
+  window.wardMenuRun = function (callback) {
+    wardMenuClose();
+    callback();
+  };
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && document.body.classList.contains('wardMenuVisible')) wardMenuClose();
+  });
+})();
+</script>
 </body>
   </html>
