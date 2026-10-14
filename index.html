@@ -1427,6 +1427,17 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
   transform:scaleX(-1);
   opacity:.19;
   pointer-events:none;
+  transform-origin:center center;
+  animation:ncCentralFlagWave 14s ease-in-out infinite alternate;
+}
+/* Gentle flag movement only; portrait and text stay stationary. */
+@keyframes ncCentralFlagWave{
+  0%{transform:scaleX(-1) scale(1.06) translateX(1.5%);background-position:47% 50%;}
+  50%{transform:scaleX(-1) scale(1.10) translateX(-1.5%);background-position:53% 48%;}
+  100%{transform:scaleX(-1) scale(1.06) translateX(1.5%);background-position:47% 52%;}
+}
+@media(prefers-reduced-motion:reduce){
+  .ncCentralPerson::before{animation:none;transform:scaleX(-1);}
 }
 .ncCentralPerson::after{
   content:"";
