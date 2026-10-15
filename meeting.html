@@ -294,8 +294,8 @@ th {
 <h3>बैठकको प्रकार र उपस्थिति</h3>
 <div class="tools"><label><input type="radio" name="meetingType" value="regular" checked onchange="onMeetingTypeChange()"> नियमित बैठक</label>
 <label><input type="radio" name="meetingType" value="all" onchange="onMeetingTypeChange()"> सम्पूर्ण क्रियाशील सदस्य आमन्त्रित</label></div>
-<p class="muted">कार्यसमिति, निर्वाचित प्रतिनिधि र यस इकाइबाट विभिन्न तहमा प्रतिनिधित्व गर्ने सदस्य हरेक बैठकमा अनिवार्य छन् । नियमित बैठकमा अन्य क्रियाशील सदस्य उपस्थित भए मात्र तलबाट थप्नुहोस् ।</p>
-<input id="filter" placeholder="NCID वा नामबाट सदस्य खोज्नुहोस्" oninput="renderMembers()">
+<p class="muted">Sheet मा NCID वा T बाट सुरु हुने Temporary ID भएका सबै सदस्य यहाँ देखिन्छन् । अनिवार्य सदस्यहरू स्वतः चयन हुन्छन् । अन्य सदस्यलाई आवश्यकताअनुसार छान्नुहोस् ।</p>
+<div class="tools"><input id="filter" placeholder="NCID, T-ID वा नामबाट सदस्य खोज्नुहोस्" oninput="renderMembers()"><button type="button" onclick="refreshMeetingMembers()">↻ Sheet बाट सदस्य Refresh</button></div>
 <p id="selectedCount" class="muted">
 </p>
 <div id="memberChecks" class="checklist">
@@ -477,6 +477,17 @@ async function init() {
         if (/token|session|login|unauthor|अधिकार|समाप्त/i.test(e.message)) loginVisibility(true);
     }
 }
+async function refreshMeetingMembers() {
+    note('Google Sheet बाट सदस्य सूची Refresh हुँदैछ...');
+    try {
+        const result = await api('meetingMembers');
+        members = Array.isArray(result.rows) ? result.rows : [];
+        renderMembers();
+        note('सदस्य सूची अपडेट भयो: ' + members.length + ' जना ।');
+    } catch (error) {
+        note('सदस्य सूची Refresh हुन सकेन: ' + error.message);
+    }
+}
 function selectGroup(g) {
     if (g === 'none')
         selected.clear();
@@ -486,13 +497,26 @@ function selectGroup(g) {
     renderMembers();
 }
 function renderMembers() {
-    const q = el('filter').value.toLowerCase();
+    const q = el('filter').value.trim().toLocaleLowerCase();
     const all = meetingTypeValue()==='all';
-    const mandatory = members.filter(m => m.mandatory);
-    const extras = members.filter(m => !m.mandatory && m.active);
-    const rows = (legacyEditing ? members : extras).filter(m => !q || m.Name.toLowerCase().includes(q) || m.NCID.toLowerCase().includes(q)).slice(0, 300);
-    el('memberChecks').innerHTML = rows.map(m => `<label><input type="checkbox" data-ncid="${safe(m.NCID)}" ${selected.has(m.NCID) || (!legacyEditing && all) ? 'checked' : ''} ${!legacyEditing && all ? 'disabled' : ''}><span>${safe(m.Name)} — ${safe(m.NCID)} ${m.committee?'(कार्यसमिति)':''} ${m.representative?'(प्रतिनिधि)':''} ${m.representation?'(अन्य तहको प्रतिनिधित्व)':''}</span></label>`).join('');
-    el('memberChecks').querySelectorAll('input:not(:disabled)').forEach(i => i.addEventListener('change', () => { i.checked ? selected.add(i.dataset.ncid) : selected.delete(i.dataset.ncid); renderCount(); }));
+    // Always show the complete live Sheet member list, including mandatory members.
+    // The checkbox of a mandatory member is checked and locked because they
+    // are automatically included in regular meetings.
+    const rows = members.filter(m => !q ||
+        String(m.Name || '').toLocaleLowerCase().includes(q) ||
+        String(m.NCID || '').toLocaleLowerCase().includes(q));
+    el('memberChecks').innerHTML = rows.length ? rows.map(m => {
+        const auto = !legacyEditing && (m.mandatory || (all && m.active));
+        const checked = auto || selected.has(m.NCID);
+        const type = m.mandatory ? 'अनिवार्य सदस्य' :
+            (m.representative ? 'प्रतिनिधि' : 'क्रियाशील सदस्य');
+        return `<label><input type="checkbox" data-ncid="${safe(m.NCID)}" ${checked ? 'checked' : ''} ${auto ? 'disabled' : ''}><span>${safe(m.Name)} — ${safe(m.NCID)} <small>(${safe(type)}${auto ? ' · स्वतः समावेश' : ''})</small></span></label>`;
+    }).join('') : '<p class="muted">खोजिएको सदस्य सूचीमा भेटिएन । Sheet मा NCID र नाम जाँचेर Refresh गर्नुहोस् ।</p>';
+    el('memberChecks').querySelectorAll('input:not(:disabled)').forEach(i =>
+        i.addEventListener('change', () => {
+            i.checked ? selected.add(i.dataset.ncid) : selected.delete(i.dataset.ncid);
+            renderCount();
+        }));
     renderCount();
 }
 function renderCount() {
