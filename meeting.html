@@ -521,7 +521,7 @@ function renderMembers() {
 }
 function renderCount() {
     const count = members.filter(m=>m.mandatory).length;
-    el('selectedCount').textContent = legacyEditing ? selected.size+' जना (पुरानो बैठकको सूची)' : count+' जना अनिवार्य; '+(meetingTypeValue()==='all' ? members.filter(m=>m.active&&!m.mandatory).length+' जना अन्य सक्रिय सदस्य स्वतः आमन्त्रित' : selected.size+' जना अतिरिक्त उपस्थित सदस्य चयन');
+    el('selectedCount').textContent = legacyEditing ? selected.size+' जना (पुरानो बैठकको सूची)' : selected.size+' जना उपस्थित टिक गरिएको; '+(meetingTypeValue()==='all' ? members.filter(m=>m.active).length+' जना क्रियाशील सहभागी आधार' : count+' जना अनिवार्य सहभागी आधार');
 }
 function clearMeeting() { note('नयाँ बैठकको फारम तयार छ ।'); editingId = ''; legacyEditing=false; meetingRequestId = ''; ['date', 'time', 'title', 'venue', 'agenda', 'decisions'].forEach(x => el(x).value = ''); selected.clear(); document.querySelector('input[name="meetingType"][value="regular"]').checked=true; renderMembers(); updateEditControls(); }
 async function saveMeeting() {
@@ -589,7 +589,7 @@ async function editMeeting(id) {
         el('agenda').value = m['एजेन्डा'] || '';
         el('decisions').value = m['निर्णय'] || '';
         selected.clear();
-        r.rows.forEach(x => selected.add(x.NCID));
+        r.rows.forEach(x => { if (legacyEditing || x.Attendance === 'Present') selected.add(x.NCID); });
         renderMembers();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -602,12 +602,16 @@ async function openAttendance(id) {
     try {
         const r = await api('meetingAttendance', { id });
         currentId = id;
-        attendees = r.rows;
+        // Keep the full saved roster on the server for correct absence reports.
+        // The attendance screen shows only manually ticked (Present) members
+        // for typed meetings. Legacy meetings retain their original view.
+        const modern = r.meeting.MeetingType === 'regular' || r.meeting.MeetingType === 'all';
+        attendees = modern ? r.rows.filter(x => x.Attendance === 'Present') : r.rows;
         el('attendancePanel').classList.remove('hidden');
     showView('attendance');
         el('meetingTitle').textContent = '३. उपस्थिति — ' + r.meeting['शीर्षक'] + ' (' + r.meeting['मिति BS'] + ')';
         const locked = r.meeting.Status === 'Finalized';
-        el('attendanceTable').innerHTML = '<table><tr><th>सदस्य</th><th>NCID</th><th>समूह</th><th>स्थिति</th><th>कैफियत</th></tr>' + attendees.map((x, i) => `<tr><td>${safe(x.Name)}</td><td>${safe(x.NCID)}</td><td>${safe(x.Group)}</td><td><select data-i="${i}" class="att-status" ${locked ? 'disabled' : ''}>${['Pending', 'Present', 'Absent'].map(s => `<option value="${s}" ${x.Attendance === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td><td><input data-i="${i}" class="att-remark" value="${safe(x.Remarks)}" ${locked ? 'readonly' : ''}></td></tr>`).join('') + '</table>';
+        el('attendanceTable').innerHTML = (modern && !attendees.length ? '<p class="muted">यस बैठकमा उपस्थित सदस्य चयन गरिएको छैन । बैठक सम्पादनमा गएर माइनटअनुसार टिक लगाउनुहोस् ।</p>' : '') + '<table><tr><th>सदस्य</th><th>NCID</th><th>समूह</th><th>स्थिति</th><th>कैफियत</th></tr>' + attendees.map((x, i) => `<tr><td>${safe(x.Name)}</td><td>${safe(x.NCID)}</td><td>${safe(x.Group)}</td><td><select data-i="${i}" class="att-status" ${locked ? 'disabled' : ''}>${['Pending', 'Present', 'Absent'].map(s => `<option value="${s}" ${x.Attendance === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td><td><input data-i="${i}" class="att-remark" value="${safe(x.Remarks)}" ${locked ? 'readonly' : ''}></td></tr>`).join('') + '</table>';
         el('attendancePanel').querySelectorAll('.tools button').forEach(b => b.disabled = locked);
         el('attendancePanel').scrollIntoView({ behavior: 'smooth' });
     }
