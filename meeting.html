@@ -212,7 +212,8 @@ th {
 </p>
 <div id="memberChecks" class="checklist">
 </div>
-<button class="success" onclick="saveMeeting()">बैठक सुरक्षित गर्नुहोस्</button>
+<button id="saveMeetingBtn" class="success" onclick="saveMeeting()">बैठक सुरक्षित गर्नुहोस्</button>
+ <button id="cancelEditBtn" class="hidden" onclick="cancelMeetingEdit()">✕ सम्पादन बन्द गर्नुहोस्</button>
 <button onclick="clearMeeting()">नयाँ बैठक</button>
 </section>
 <section class="panel no-print">
@@ -266,6 +267,19 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2
 const token = sessionStorage.getItem('nc_admin_token') || '';
 const el = id => document.getElementById(id);
 let members = [], meetings = [], currentId = '', editingId = '', attendees = [];
+let meetingSaving = false, meetingDeleting = false, attendanceSaving = false, finalizing = false;
+let meetingRequestId = '';
+function setBusy(button, busy, text) {
+    if (!button) return;
+    if (busy) { button.dataset.originalText = button.textContent; button.textContent = text; }
+    else { button.textContent = button.dataset.originalText || button.textContent; }
+    button.disabled = busy;
+}
+function updateEditControls() {
+    el('cancelEditBtn').classList.toggle('hidden', !editingId);
+    el('saveMeetingBtn').textContent = editingId ? 'बैठक अपडेट गर्नुहोस्' : 'बैठक सुरक्षित गर्नुहोस्';
+}
+function cancelMeetingEdit() { clearMeeting(); note('सम्पादन बन्द गरियो । कुनै परिवर्तन सुरक्षित गरिएको छैन ।'); }
 const selected = new Set();
 function note(s) { el('notice').textContent = s; }
 function safe(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -312,30 +326,63 @@ function renderMembers() {
     el('memberChecks').querySelectorAll('input').forEach(i => i.addEventListener('change', () => { i.checked ? selected.add(i.dataset.ncid) : selected.delete(i.dataset.ncid); el('selectedCount').textContent = selected.size + ' जना आमन्त्रित'; }));
     el('selectedCount').textContent = selected.size + ' जना आमन्त्रित';
 }
-function clearMeeting() { editingId = ''; ['date', 'time', 'title', 'venue', 'agenda', 'decisions'].forEach(x => el(x).value = ''); selected.clear(); renderMembers(); }
+function clearMeeting() { editingId = ''; meetingRequestId = ''; ['date', 'time', 'title', 'venue', 'agenda', 'decisions'].forEach(x => el(x).value = ''); selected.clear(); renderMembers(); updateEditControls(); }
 async function saveMeeting() {
+    if (meetingSaving) return;
+    const button = el('saveMeetingBtn');
+    meetingSaving = true;
+    setBusy(button, true, '⏳ सुरक्षित हुँदैछ...');
+    note('बैठक सुरक्षित हुँदैछ । कृपया प्रतीक्षा गर्नुहोस् ।');
     try {
-        const meeting = { id: editingId, date: el('date').value.trim(), time: el('time').value, venue: el('venue').value, title: el('title').value, agenda: el('agenda').value, decisions: el('decisions').value, ncids: [...selected] };
+        if (!meetingRequestId) meetingRequestId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random());
+        const meeting = { id: editingId, requestId: meetingRequestId, date: el('date').value.trim(), time: el('time').value, venue: el('venue').value, title: el('title').value, agenda: el('agenda').value, decisions: el('decisions').value, ncids: [...selected] };
         const r = await api('meetingSave', { meeting });
         editingId = r.id;
+        meetingRequestId = '';
+        note(r.message);
         alert(r.message);
         await init();
-    }
-    catch (e) {
+    } catch (e) {
+        note('बैठक सुरक्षित हुन सकेन: ' + e.message);
         alert(e.message);
+        // Keep requestId on retry: if server saved before network failed,
+        // retry safely returns the existing meeting instead of adding another.
+    } finally {
+        meetingSaving = false;
+        setBusy(button, false);
+        updateEditControls();
     }
 }
 function renderMeetings() {
-    el('meetingList').innerHTML = meetings.length ? '<div class="tablewrap"><table><tr><th>मिति</th><th>शीर्षक</th><th>स्थिति</th><th>कार्य</th></tr>' + meetings.map(m => `<tr><td>${safe(m['मिति BS'])}</td><td>${safe(m['शीर्षक'])}</td><td>${safe(m.Status)}</td><td><button data-open="${safe(m.ID)}">उपस्थिति</button> ${m.Status === 'Finalized' ? '' : `<button data-edit="${safe(m.ID)}">Edit</button>`}</td></tr>`).join('') + '</table></div>' : 'बैठक दर्ता भएको छैन ।';
+    el('meetingList').innerHTML = meetings.length ? '<div class="tablewrap"><table><tr><th>मिति</th><th>शीर्षक</th><th>स्थिति</th><th>कार्य</th></tr>' + meetings.map(m => `<tr><td>${safe(m['मिति BS'])}</td><td>${safe(m['शीर्षक'])}</td><td>${safe(m.Status)}</td><td><button data-open="${safe(m.ID)}">उपस्थिति</button> ${m.Status === 'Finalized' ? '' : `<button data-edit="${safe(m.ID)}">Edit</button> <button class="danger" data-delete="${safe(m.ID)}">Delete</button>`}</td></tr>`).join('') + '</table></div>' : 'बैठक दर्ता भएको छैन ।';
     el('meetingList').querySelectorAll('[data-open]').forEach(b => b.onclick = () => openAttendance(b.dataset.open));
     el('meetingList').querySelectorAll('[data-edit]').forEach(b => b.onclick = () => editMeeting(b.dataset.edit));
+    el('meetingList').querySelectorAll('[data-delete]').forEach(b => b.onclick = () => deleteMeeting(b.dataset.delete, b));
     el('reportMeeting').innerHTML = '<option value="">सबै बैठक</option>' + meetings.map(m => `<option value="${safe(m.ID)}">${safe(m['मिति BS'])} — ${safe(m['शीर्षक'])}</option>`).join('');
+}
+async function deleteMeeting(id, button) {
+    if (meetingDeleting) return;
+    const m = meetings.find(x => String(x.ID) === String(id));
+    if (!m || !confirm('यो Draft बैठक हटाउने हो?\n' + (m['शीर्षक'] || '') + '\n\nयसको आमन्त्रित सूची पनि हट्नेछ ।')) return;
+    meetingDeleting = true;
+    setBusy(button, true, '⏳ हटाउँदै...');
+    note('बैठक हटाउँदैछ ।');
+    try {
+        const r = await api('meetingDelete', { id });
+        if (editingId === id) clearMeeting();
+        if (currentId === id) { currentId = ''; el('attendancePanel').classList.add('hidden'); }
+        note(r.message);
+        await init();
+    } catch (e) { note(e.message); alert(e.message); }
+    finally { meetingDeleting = false; setBusy(button, false); }
 }
 async function editMeeting(id) {
     try {
         const r = await api('meetingAttendance', { id });
         const m = r.meeting;
         editingId = id;
+        meetingRequestId = '';
+        updateEditControls();
         el('date').value = m['मिति BS'] || '';
         el('time').value = m['समय'] || '';
         el('venue').value = m['स्थान'] || '';
@@ -369,22 +416,35 @@ async function openAttendance(id) {
 }
 function markAll(status) { el('attendanceTable').querySelectorAll('.att-status').forEach(x => x.value = status); }
 async function saveAttendance() {
+    if (attendanceSaving) return false;
+    attendanceSaving = true;
+    const button = [...el('attendancePanel').querySelectorAll('button')].find(b => b.getAttribute('onclick') === 'saveAttendance()');
+    setBusy(button, true, '⏳ सुरक्षित हुँदैछ...');
     try {
         const entries = attendees.map((a, i) => ({ NCID: a.NCID, status: el('attendanceTable').querySelector(`.att-status[data-i="${i}"]`).value, remarks: el('attendanceTable').querySelector(`.att-remark[data-i="${i}"]`).value }));
         const r = await api('meetingSaveAttendance', { id: currentId, entries });
         alert(r.message);
         await openAttendance(currentId);
+        return true;
     }
     catch (e) {
         alert(e.message);
-        throw e;
+        return false;
+    } finally {
+        attendanceSaving = false;
+        setBusy(button, false);
     }
 }
 async function finalizeMeeting() {
+    if (finalizing) return;
     if (!confirm('सबै उपस्थिति जाँचिसक्नुभयो? Finalize पछि Edit हुँदैन ।'))
         return;
+    finalizing = true;
+    const button = [...el('attendancePanel').querySelectorAll('button')].find(b => b.getAttribute('onclick') === 'finalizeMeeting()');
+    setBusy(button, true, '⏳ Finalize हुँदैछ...');
     try {
-        await saveAttendance();
+        const saved = await saveAttendance();
+        if (!saved) return;
         const r = await api('meetingFinalize', { id: currentId });
         alert(r.message);
         await init();
@@ -392,6 +452,9 @@ async function finalizeMeeting() {
     }
     catch (e) {
         alert(e.message);
+    } finally {
+        finalizing = false;
+        setBusy(button, false);
     }
 }
 async function loadReport() {
@@ -405,6 +468,7 @@ async function loadReport() {
         el('reportSummary').textContent = e.message;
     }
 }
+document.querySelectorAll('#date,#time,#title,#venue,#agenda,#decisions,#memberChecks').forEach(x => x.addEventListener('input', () => { if (!meetingSaving) meetingRequestId = ''; }));
 init();
 </script></body>
 </html>
