@@ -294,7 +294,7 @@ th {
 <h3>बैठकको प्रकार र उपस्थिति</h3>
 <div class="tools"><label><input type="radio" name="meetingType" value="regular" checked onchange="onMeetingTypeChange()"> नियमित बैठक</label>
 <label><input type="radio" name="meetingType" value="all" onchange="onMeetingTypeChange()"> सम्पूर्ण क्रियाशील सदस्य आमन्त्रित</label></div>
-<p class="muted">Sheet मा NCID वा T बाट सुरु हुने Temporary ID भएका सबै सदस्य यहाँ देखिन्छन् । अनिवार्य सदस्यहरू स्वतः चयन हुन्छन् । अन्य सदस्यलाई आवश्यकताअनुसार छान्नुहोस् ।</p>
+<p class="muted">Sheet मा NCID वा T बाट सुरु हुने Temporary ID भएका सबै सदस्य यहाँ देखिन्छन् । माइनटमा दस्तखत भएका सदस्यलाई मात्र टिक गर्नुहोस् ।</p>
 <div class="tools"><input id="filter" placeholder="NCID, T-ID वा नामबाट सदस्य खोज्नुहोस्" oninput="renderMembers()"><button type="button" onclick="refreshMeetingMembers()">↻ Sheet बाट सदस्य Refresh</button></div>
 <p id="selectedCount" class="muted">
 </p>
@@ -506,11 +506,11 @@ function renderMembers() {
         String(m.Name || '').toLocaleLowerCase().includes(q) ||
         String(m.NCID || '').toLocaleLowerCase().includes(q));
     el('memberChecks').innerHTML = rows.length ? rows.map(m => {
-        const auto = !legacyEditing && (m.mandatory || (all && m.active));
-        const checked = auto || selected.has(m.NCID);
+        const auto = false; // No automatic attendance selection; only manual ticks.
+        const checked = selected.has(m.NCID);
         const type = m.mandatory ? 'अनिवार्य सदस्य' :
             (m.representative ? 'प्रतिनिधि' : 'क्रियाशील सदस्य');
-        return `<label><input type="checkbox" data-ncid="${safe(m.NCID)}" ${checked ? 'checked' : ''} ${auto ? 'disabled' : ''}><span>${safe(m.Name)} — ${safe(m.NCID)} <small>(${safe(type)}${auto ? ' · स्वतः समावेश' : ''})</small></span></label>`;
+        return `<label><input type="checkbox" data-ncid="${safe(m.NCID)}" ${checked ? 'checked' : ''} ><span>${safe(m.Name)} — ${safe(m.NCID)} <small>(${safe(type)})</small></span></label>`;
     }).join('') : '<p class="muted">खोजिएको सदस्य सूचीमा भेटिएन । Sheet मा NCID र नाम जाँचेर Refresh गर्नुहोस् ।</p>';
     el('memberChecks').querySelectorAll('input:not(:disabled)').forEach(i =>
         i.addEventListener('change', () => {
