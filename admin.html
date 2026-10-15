@@ -500,7 +500,7 @@ main {
             <h1>सदस्य व्यवस्थापन केन्द्र</h1>
             <p>नेपाली कांग्रेस • कागेश्वरी मनोहरा नगरपालिका वडा नं. १</p>
           </div>
-          <a class="back" href="index.html">← गृहपृष्ठ</a>
+          <a class="back" href="https://nckageshwori1.github.io/members/index.html">← गृहपृष्ठ</a>
         </div>
       </header>
       <main>
@@ -553,7 +553,6 @@ main {
           <div class="admin-workspace">
           <div class="tabs" id="adminSideMenu">
             <a class="btn secondary" href="meeting.html" style="white-space:nowrap;text-decoration:none">📋 बैठक तथा उपस्थिति</a>
-            <button type="button" class="btn" onclick="adminBack()">← Back</button><button type="button" class="btn" onclick="adminClose()">✕ Close / Home</button>
             <button class="btn tab on" data-tab="data" onclick="showTab('data',this)">📊 सबै सदस्य Data</button>
             <button class="btn tab" data-tab="member" onclick="showTab('member',this)">👤 सदस्य Profile</button>
             <button class="btn tab" data-tab="representative" onclick="showTab('representative',this)">🏛️ निर्वाचित प्रतिनिधि व्यवस्थापन</button>
@@ -1000,19 +999,7 @@ function toggleAdminMenu() {
   toggle.setAttribute('aria-expanded', String(open));
 }
 
-const adminTabHistory = [];
-function adminBack() {
-  const previous = adminTabHistory.pop() || 'data';
-  const button = document.querySelector('.tab[data-tab="' + previous + '"]');
-  if (button) showTab(previous, button, true);
-}
-function adminClose() {
-  const button = document.querySelector('.tab[data-tab="data"]');
-  if (button) showTab('data', button);
-}
-function showTab(n,b,fromBack=false) {
-  const current = document.querySelector('.tab.on');
-  if (!fromBack && current && current.dataset.tab !== n) adminTabHistory.push(current.dataset.tab);
+function showTab(n,b) {
   document.getElementById('adminSideMenu').classList.remove('mobile-open');
   document.getElementById('adminMenuToggle').setAttribute('aria-expanded', 'false');
   document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
