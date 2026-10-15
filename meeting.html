@@ -187,8 +187,34 @@ th {
  .report-letterhead{break-inside:avoid}
  .report-signatures{break-inside:avoid}
 }
+
+/* Professional responsive sidebar/dashboard; original functional panels preserved */
+.app-shell{display:flex;min-height:100vh}
+.app-sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:auto;width:250px;flex-shrink:0;background:linear-gradient(180deg,#142b45,#102138);color:white;padding:22px 12px;box-sizing:border-box}
+.sidebar-brand{text-align:center;padding:15px 5px 25px;border-bottom:1px solid #456079;display:flex;flex-direction:column;gap:5px}
+.brand-mark{font-size:45px}.sidebar-brand strong{font-size:21px}.sidebar-brand small{color:#d1dce9}
+.app-sidebar nav{display:flex;flex-direction:column;gap:8px;margin-top:22px}
+.app-sidebar .nav-link{width:100%;text-align:left;background:transparent;border:0;color:#eef4fc;padding:13px 12px;border-radius:10px;display:flex;gap:11px;align-items:center;font-size:15px;cursor:pointer}
+.app-sidebar .nav-link:hover{background:#2a4764}.app-sidebar .nav-link.active{background:#dc2635;color:white}
+.sidebar-bottom{margin-top:35px;border-top:1px solid #456079;padding:20px 12px}.sidebar-bottom a{color:#e3eaf5}
+.app-content{flex:1;min-width:0}.app-content main{max-width:1250px}
+.view-hidden{display:none!important}
+.dashboard-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.dashboard-heading h2{margin:0}.dashboard-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:24px 0}
+.metric{border:1px solid #d9e5f2;border-radius:13px;padding:22px 16px;display:flex;flex-direction:column;gap:9px;background:#eef6ff}
+.metric strong{font-size:32px;color:#123d70}.metric small{font-weight:700}.metric span{font-size:12px;color:#536477}
+.metric.green{background:#edfbf4}.metric.green strong{color:#08794e}
+.metric.red{background:#fff1f3}.metric.red strong{color:#bb2941}
+.metric.amber{background:#fff8eb}.metric.amber strong{color:#995307}
+.dashboard-columns{display:grid;grid-template-columns:minmax(0,2fr) minmax(230px,1fr);gap:15px}
+.dashboard-box{border:1px solid #e1e9f2;border-radius:12px;padding:15px;min-width:0}
+.quick-links{display:grid;gap:10px}.quick-links button{text-align:left;background:#f2f7fd;color:#164e83;border:1px solid #dbe7f4;padding:13px}
+@media(max-width:900px){.app-sidebar{width:210px}.dashboard-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-columns{grid-template-columns:1fr}}
+@media(max-width:650px){.app-shell{display:block}.app-sidebar{position:relative;width:100%;height:auto;padding:8px}.sidebar-brand,.sidebar-bottom{display:none}.app-sidebar nav{display:flex;flex-direction:row;overflow-x:auto;margin:0;gap:5px}.app-sidebar .nav-link{flex:0 0 auto;width:auto;white-space:nowrap;padding:11px 12px}.dashboard-metrics{gap:8px}.metric{padding:13px 9px}.metric strong{font-size:24px}}
+@media print{.app-sidebar,.dashboard{display:none!important}.app-content{width:100%}.view-hidden#officialReport{display:block!important}}
 </style></head>
 <body>
+<div class="app-shell"><aside class="app-sidebar no-print"><div class="sidebar-brand"><div class="brand-mark">🌳</div><strong>नेपाली कांग्रेस</strong><small>वडा नं. १ कार्यसमिति</small></div><nav aria-label="बैठक व्यवस्थापन"><button class="nav-link active" data-view="dashboard">▦ <span>ड्यासबोर्ड</span></button><button class="nav-link" data-view="registration">▣ <span>बैठक दर्ता / सम्पादन</span></button><button class="nav-link" data-view="meetings">▤ <span>बैठकहरू</span></button><button class="nav-link" data-view="attendance">♙ <span>उपस्थिति</span></button><button class="nav-link" data-view="official">▧ <span>आधिकारिक प्रतिवेदन</span></button><button class="nav-link" data-view="reports">▥ <span>रिपोर्ट</span></button></nav><div class="sidebar-bottom"><a href="admin.html">← Admin Panel</a></div></aside><div class="app-content">
 <header>
 <div>
 <h1>नेपाली कांग्रेस — वडा नं. १</h1>
@@ -211,8 +237,12 @@ th {
   </div>
   <button id="meetingLoginBtn" type="button" onclick="meetingLogin()">Login गर्नुहोस्</button>
 </section>
-<section class="panel no-print">
-<h2>१. बैठक दर्ता / सम्पादन</h2>
+<section class="panel view-section dashboard" data-section="dashboard" id="meetingDashboard">
+<div class="dashboard-heading"><div><h2>बैठक व्यवस्थापन ड्यासबोर्ड</h2><p class="muted">वडा कार्यसमितिको बैठक र उपस्थिति एकै ठाउँमा</p></div><button class="success" type="button" onclick="showView('registration')">＋ नयाँ बैठक दर्ता</button></div>
+<div class="dashboard-metrics"><div class="metric blue"><small>कुल बैठक</small><strong id="dashMeetings">—</strong><span>दर्ता भएका बैठक</span></div><div class="metric green"><small>जम्मा उपस्थित</small><strong id="dashPresent">—</strong><span>Finalized बैठकहरूबाट</span></div><div class="metric red"><small>जम्मा अनुपस्थित</small><strong id="dashAbsent">—</strong><span>Finalized बैठकहरूबाट</span></div><div class="metric amber"><small>उपस्थिति दर</small><strong id="dashPercent">—</strong><span>समग्र उपस्थिति प्रतिशत</span></div></div>
+<div class="dashboard-columns"><div class="dashboard-box"><h3>हालका बैठकहरू</h3><div id="dashboardRecent" class="tablewrap"><p class="muted">बैठकहरू लोड हुँदैछन्...</p></div></div><div class="dashboard-box"><h3>छिटो पहुँच</h3><div class="quick-links"><button onclick="showView('meetings')">▤ बैठकहरूको सूची हेर्नुहोस् →</button><button onclick="showView('attendance')">♙ उपस्थिति हेर्नुहोस् →</button><button onclick="showView('official')">▧ आधिकारिक प्रतिवेदन →</button><button onclick="showView('reports')">▥ समग्र रिपोर्ट →</button></div></div></div>
+</section><section class="panel no-print view-section" data-section="registration">
+<h2>बैठक दर्ता / सम्पादन</h2>
 <div class="grid">
 <div>
 <label>मिति (वि.सं. YYYY-MM-DD)</label>
@@ -254,13 +284,13 @@ th {
  <button id="cancelEditBtn" class="hidden" onclick="cancelMeetingEdit()">✕ सम्पादन बन्द गर्नुहोस्</button>
 <button onclick="clearMeeting()">नयाँ बैठक</button>
 </section>
-<section class="panel no-print">
-<h2>२. बैठकहरू</h2>
+<section class="panel no-print view-section" data-section="meetings">
+<h2>बैठकहरू</h2>
 <div id="meetingList">
 </div>
 </section>
-<section id="attendancePanel" class="panel hidden">
-<h2 id="meetingTitle">३. उपस्थिति</h2>
+<section id="attendancePanel" class="panel hidden view-section" data-section="attendance">
+<h2 id="meetingTitle">उपस्थिति</h2>
 <p class="muted">केवल आमन्त्रित सदस्यलाई Present वा Absent चिन्ह लगाउनुहोस् ।</p>
 <div id="attendanceTable" class="tablewrap">
 </div>
@@ -271,8 +301,8 @@ th {
 <button class="danger" onclick="finalizeMeeting()">बैठक Finalize</button>
 </div>
 </section>
-<section class="panel">
-<h2>४. आधिकारिक प्रतिवेदन (Finalized मात्र)</h2>
+<section class="panel view-section" data-section="reports">
+<h2>रिपोर्ट तथा फिल्टर</h2>
 <div class="grid no-print">
 <div>
 <label>मिति देखि (BS)</label>
@@ -299,7 +329,7 @@ th {
 <div id="reportTable" class="tablewrap">
 </div>
 </section>
-<section class="panel" id="officialReport">
+<section class="panel view-section" id="officialReport" data-section="official">
 <div class="report-letterhead">
 <img class="report-flag" src="flag-logo.png" alt="नेपाली कांग्रेसको चारतारे झण्डा" onerror="this.style.visibility='hidden'">
 <div><h2>नेपाली कांग्रेस</h2><p><strong>कागेश्वरी मनोहरा नगरपालिका, वडा नं. १ कार्यसमिति</strong></p><p>गागलफेदी, काठमाडौं</p></div>
@@ -368,6 +398,40 @@ async function api(action, data = {}) {
         throw Error(j.message || 'Error');
     return j;
 }
+
+let currentView = 'dashboard';
+function showView(view) {
+    currentView = view;
+    document.querySelectorAll('.view-section').forEach(section => {
+        const match = section.dataset.section === view;
+        section.classList.toggle('view-hidden', !match);
+    });
+    document.querySelectorAll('.nav-link').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+        btn.setAttribute('aria-current', btn.dataset.view === view ? 'page' : 'false');
+    });
+    if (view === 'attendance' && el('attendancePanel').classList.contains('hidden')) {
+        note('उपस्थिति हेर्न बैठकहरूको सूचीबाट सम्बन्धित बैठकको “उपस्थिति” बटन थिच्नुहोस् ।');
+        showView('meetings');
+        return;
+    }
+    if (view === 'reports' || view === 'official') {
+        if (token && meetings.length) loadReport();
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateDashboard() {
+    el('dashMeetings').textContent = meetings.length;
+    const recent = meetings.slice(0,8);
+    el('dashboardRecent').innerHTML = recent.length
+      ? '<table><thead><tr><th>मिति</th><th>बैठक</th><th>स्थिति</th><th>कार्य</th></tr></thead><tbody>'
+        + recent.map(m => '<tr><td>'+safe(m['मिति BS'])+'</td><td>'+safe(m['शीर्षक'])+'</td><td>'+safe(m.Status)+'</td><td><button type="button" data-dash-open="'+safe(m.ID)+'">हेर्नुहोस्</button></td></tr>').join('')
+        + '</tbody></table>'
+      : '<p class="muted">अहिलेसम्म बैठक दर्ता भएको छैन ।</p>';
+    el('dashboardRecent').querySelectorAll('[data-dash-open]').forEach(b => b.addEventListener('click',()=>openAttendance(b.dataset.dashOpen)));
+}
+document.querySelectorAll('.nav-link').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
+
 async function init() {
     if (!token) {
         loginVisibility(true);
@@ -383,6 +447,7 @@ async function init() {
         meetings = list.rows;
         renderMembers();
         renderMeetings();
+        updateDashboard();
         note('डेटा तयार छ ।');
         await loadReport();
     }
@@ -488,11 +553,13 @@ async function editMeeting(id) {
     }
 }
 async function openAttendance(id) {
+    currentView='attendance';
     try {
         const r = await api('meetingAttendance', { id });
         currentId = id;
         attendees = r.rows;
         el('attendancePanel').classList.remove('hidden');
+    showView('attendance');
         el('meetingTitle').textContent = '३. उपस्थिति — ' + r.meeting['शीर्षक'] + ' (' + r.meeting['मिति BS'] + ')';
         const locked = r.meeting.Status === 'Finalized';
         el('attendanceTable').innerHTML = '<table><tr><th>सदस्य</th><th>NCID</th><th>समूह</th><th>स्थिति</th><th>कैफियत</th></tr>' + attendees.map((x, i) => `<tr><td>${safe(x.Name)}</td><td>${safe(x.NCID)}</td><td>${safe(x.Group)}</td><td><select data-i="${i}" class="att-status" ${locked ? 'disabled' : ''}>${['Pending', 'Present', 'Absent'].map(s => `<option value="${s}" ${x.Attendance === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td><td><input data-i="${i}" class="att-remark" value="${safe(x.Remarks)}" ${locked ? 'readonly' : ''}></td></tr>`).join('') + '</table>';
@@ -555,6 +622,7 @@ function reportStat(number, label) {
     return `<div class="report-stat"><strong>${reportCell(number)}</strong><span>${safe(label)}</span></div>`;
 }
 function printMeetingReport() {
+    if (currentView !== 'official') showView('official');
     if (!el('officialReportBody').dataset.ready) { note('पहिले प्रतिवेदन हेर्नुहोस् बटन थिच्नुहोस् ।'); return; }
     window.print();
 }
@@ -569,6 +637,11 @@ async function loadReport() {
             ncid: el('reportNcid').value.trim()
         });
         const s = r.summary;
+        if (el('dashPresent')) {
+            el('dashPresent').textContent = s.present ?? '—';
+            el('dashAbsent').textContent = s.absent ?? '—';
+            el('dashPercent').textContent = s.percentage == null ? '—' : s.percentage + '%';
+        }
         const noteHtml = ''; // No warning in report.
         const stats = `<div class="report-stats">${reportStat(s.invited,'सहभागी हुनुपर्ने')}${reportStat(s.present,'जम्मा उपस्थित')}${reportStat(s.absent,'अनुपस्थित')}${reportStat(s.percentage + '%','उपस्थिति प्रतिशत')}</div>`;
         const selectedMeeting = r.meetings.length === 1 ? r.meetings[0] : null;
@@ -598,5 +671,5 @@ async function loadReport() {
 }
 document.querySelectorAll('#date,#time,#title,#venue,#agenda,#decisions,#memberChecks').forEach(x => x.addEventListener('input', () => { if (!meetingSaving) meetingRequestId = ''; }));
 init();
-</script></body>
+</script></div></div></body>
 </html>
