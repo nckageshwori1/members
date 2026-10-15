@@ -155,6 +155,38 @@ th {
         background:white
     }
 }
+
+/* Official report: separate from admin forms; no historical guesses. */
+.report-letterhead{display:flex;align-items:center;justify-content:center;gap:16px;text-align:center;border-bottom:3px double #b71c1c;padding:12px 0 16px;margin-bottom:18px}
+.report-letterhead img{width:78px;height:78px;object-fit:contain}
+.report-letterhead h2{color:#b21f29;margin:0;font-size:24px}
+.report-letterhead p{margin:3px 0}
+.report-title{text-align:center;margin:12px 0 20px;text-decoration:underline;text-underline-offset:6px}
+.report-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}
+.report-stat{background:#f0f6fa;border:1px solid #d7e3ed;border-radius:10px;padding:14px 7px;text-align:center}
+.report-stat strong{display:block;font-size:25px;color:#134d79}
+.report-stat span{font-size:12px}
+.report-note{background:#fff8e9;border-left:4px solid #d29c24;padding:10px 12px;margin:12px 0}
+.report-meta{line-height:1.9;margin:10px 0 18px}
+.report-signatures{display:flex;justify-content:space-between;gap:30px;margin-top:65px;text-align:center}
+.report-signatures div{min-width:150px;border-top:1px solid #333;padding-top:7px}
+.report-section{margin-top:25px}
+.report-section table{min-width:0;font-size:13px}
+.report-section td,.report-section th{padding:8px;border:1px solid #ccd7e1}
+@media(max-width:650px){.report-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.report-letterhead img{width:55px;height:55px}.report-letterhead h2{font-size:20px}}
+@media print{
+ @page{size:A4;margin:15mm 13mm}
+ body{background:#fff;color:#111;font-size:11pt}
+ main{padding:0;max-width:none}
+ main>.panel:not(#officialReport),main>.tools,main>#notice,header{display:none!important}
+ #officialReport{display:block!important;border:0;box-shadow:none;padding:0;margin:0}
+ .report-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .report-stat{background:#f5f5f5!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .report-section{break-inside:auto}
+ tr{break-inside:avoid}
+ .report-letterhead{break-inside:avoid}
+ .report-signatures{break-inside:avoid}
+}
 </style></head>
 <body>
 <header>
@@ -167,7 +199,7 @@ th {
 <div class="tools no-print">
 <a class="btn" href="admin.html">← Admin Panel</a>
 <button onclick="init()">↻ Refresh</button>
-<button onclick="window.print()">🖨 Print / PDF</button>
+<button onclick="printMeetingReport()">🖨 Print / PDF</button>
 </div>
 <div id="notice" class="muted" role="status" aria-live="polite">Admin Login Session जाँच हुँदैछ...</div>
 <section id="meetingLoginPanel" class="panel hidden no-print">
@@ -266,6 +298,15 @@ th {
 </div>
 <div id="reportTable" class="tablewrap">
 </div>
+</section>
+<section class="panel" id="officialReport">
+<div class="report-letterhead">
+<img src="logo.png" alt="नेपाली कांग्रेसको लोगो" onerror="this.style.display='none'">
+<div><h2>नेपाली कांग्रेस</h2><p><strong>कागेश्वरी मनोहरा नगरपालिका, वडा नं. १ कार्यसमिति</strong></p><p>गागलफेदी, काठमाडौं</p></div>
+</div>
+<h2 class="report-title">बैठक उपस्थिति प्रतिवेदन</h2>
+<div id="officialReportBody"><p class="muted">प्रतिवेदन हेर्नुहोस् थिचेर विवरण लोड गर्नुहोस् ।</p></div>
+<div class="report-signatures"><div>प्रतिवेदन तयार गर्ने<br>नाम / हस्ताक्षर</div><div>प्रमाणित गर्ने<br>नाम / हस्ताक्षर</div></div>
 </section>
 </main><script>
 'use strict';
@@ -508,16 +549,46 @@ async function finalizeMeeting() {
         setBusy(button, false);
     }
 }
+function reportCell(v) { return v === null || v === undefined ? 'पुष्टि बाँकी' : safe(v); }
+function reportStat(number, label) {
+    return `<div class="report-stat"><strong>${reportCell(number)}</strong><span>${safe(label)}</span></div>`;
+}
+function printMeetingReport() {
+    if (!el('officialReportBody').dataset.ready) { note('पहिले प्रतिवेदन हेर्नुहोस् बटन थिच्नुहोस् ।'); return; }
+    window.print();
+}
 async function loadReport() {
     note('प्रतिवेदन लोड हुँदैछ...');
+    el('officialReportBody').dataset.ready = '';
     try {
-        const r = await api('meetingReport', { id: el('reportMeeting').value, from: el('from').value, to: el('to').value, ncid: el('reportNcid').value.trim() });
+        const r = await api('meetingReport', {
+            id: el('reportMeeting').value,
+            from: el('from').value,
+            to: el('to').value,
+            ncid: el('reportNcid').value.trim()
+        });
         const s = r.summary;
-        el('reportSummary').innerHTML = `<p class="pill">बैठक: ${s.meetings} | अनिवार्य: ${s.mandatory} | अनिवार्य उपस्थित: ${s.mandatoryPresent} | अनिवार्य अनुपस्थित: ${s.mandatoryAbsent} | अनिवार्य उपस्थिति: ${s.mandatoryPercentage}%</p><p class="pill">कुल आमन्त्रित: ${s.invited} | जम्मा उपस्थित: ${s.present} | कुल उपस्थिति: ${s.percentage}%</p>`;
-        el('reportTable').innerHTML = '<table><tr><th>मिति</th><th>बैठक</th><th>कुल आमन्त्रित</th><th>कुल उपस्थित</th><th>अनिवार्य</th><th>अनिवार्य उपस्थित</th><th>अनिवार्य अनुपस्थित</th><th>अनिवार्य %</th></tr>' + r.meetings.map(x => `<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${x.invited}</td><td>${x.present}</td><td>${x.mandatory}</td><td>${x.mandatoryPresent}</td><td>${x.mandatoryAbsent}</td><td>${x.mandatoryPercentage}%</td></tr>`).join('') + '</table>' + (el('reportNcid').value ? '<h3>व्यक्तिगत इतिहास</h3><table><tr><th>बैठक ID</th><th>सदस्य</th><th>स्थिति</th></tr>' + r.records.map(x => `<tr><td>${safe(x.MeetingID)}</td><td>${safe(x.Name)}</td><td>${safe(x.Attendance)}</td></tr>`).join('') + '</table>' : '');
-    }
-    catch (e) {
+        const hasLegacy = s.unverifiedMeetings > 0;
+        const noteHtml = hasLegacy
+            ? '<div class="report-note">पुरानो बैठकको सहभागी हुनुपर्ने आधिकारिक सूची पुष्टि नभएकाले अनुपस्थित संख्या र उपस्थिति प्रतिशत देखाइएको छैन । अभिलेखमा प्रमाणित उपस्थित सदस्य मात्र गणना गरिएको छ ।</div>'
+            : '';
+        const stats = `<div class="report-stats">${reportStat(s.meetings,'कुल बैठक')}${reportStat(s.present,'जम्मा उपस्थित (बैठकगत)')}${reportStat(s.rosterVerified ? s.absent : null,'अनुपस्थित')}${reportStat(s.percentage === null ? null : s.percentage + '%','उपस्थिति प्रतिशत')}</div>`;
+        const selectedMeeting = r.meetings.length === 1 ? r.meetings[0] : null;
+        const metadata = selectedMeeting
+            ? `<div class="report-meta"><strong>बैठक:</strong> ${safe(selectedMeeting.title)}<br><strong>मिति:</strong> ${safe(selectedMeeting.date)}${selectedMeeting.time ? '<br><strong>समय:</strong> '+safe(selectedMeeting.time) : ''}${selectedMeeting.venue ? '<br><strong>स्थान:</strong> '+safe(selectedMeeting.venue) : ''}${selectedMeeting.agenda ? '<br><strong>एजेन्डा:</strong> '+safe(selectedMeeting.agenda) : ''}${selectedMeeting.decisions ? '<br><strong>निर्णय:</strong> '+safe(selectedMeeting.decisions) : ''}</div>`
+            : `<p><strong>प्रतिवेदन अवधि:</strong> ${safe(el('from').value || 'सुरुदेखि')} — ${safe(el('to').value || 'अहिलेसम्म')}</p>`;
+        const summaryTable = `<div class="report-section"><h3>बैठकगत सारांश</h3><div class="tablewrap"><table><thead><tr><th>मिति</th><th>बैठक</th><th>सहभागी हुनुपर्ने</th><th>उपस्थित</th><th>अनुपस्थित</th><th>उपस्थिति %</th></tr></thead><tbody>${r.meetings.map(x=>`<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${reportCell(x.invited)}</td><td>${reportCell(x.present)}</td><td>${reportCell(x.absent)}</td><td>${x.percentage===null?'पुष्टि बाँकी':safe(x.percentage)+'%'}</td></tr>`).join('') || '<tr><td colspan="6">प्रतिवेदन उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
+        const statusLabel = x => ({Present:'उपस्थित',Absent:'अनुपस्थित',Pending:'मिलान बाँकी'})[x] || x;
+        const memberTable = `<div class="report-section"><h3>सदस्य उपस्थिति विवरण</h3><div class="tablewrap"><table><thead><tr><th>क्र.स.</th><th>NCID</th><th>सदस्यको नाम</th><th>स्थिति</th></tr></thead><tbody>${r.records.map((x,i)=>`<tr><td>${i+1}</td><td>${safe(x.NCID)}</td><td>${safe(x.Name)}</td><td>${safe(statusLabel(x.Attendance))}</td></tr>`).join('') || '<tr><td colspan="4">विवरण उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
+        el('reportSummary').innerHTML = stats + noteHtml;
+        el('reportTable').innerHTML = summaryTable;
+        el('officialReportBody').innerHTML = metadata + stats + noteHtml + summaryTable + memberTable;
+        el('officialReportBody').dataset.ready = 'yes';
+        note('प्रतिवेदन तयार छ । Print / PDF बाट A4 प्रतिवेदन निकाल्न सक्नुहुन्छ ।');
+    } catch (e) {
         el('reportSummary').textContent = e.message;
+        el('reportTable').textContent = '';
+        el('officialReportBody').textContent = 'प्रतिवेदन लोड हुन सकेन: ' + e.message;
         note('प्रतिवेदन असफल: ' + e.message);
     }
 }
