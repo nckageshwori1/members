@@ -158,7 +158,7 @@ th {
 
 /* Official report: separate from admin forms; no historical guesses. */
 .report-letterhead{display:flex;align-items:center;justify-content:center;gap:16px;text-align:center;border-bottom:3px double #b71c1c;padding:12px 0 16px;margin-bottom:18px}
-.report-letterhead img{width:78px;height:78px;object-fit:contain}
+.report-letterhead img{width:86px;height:86px;object-fit:contain;flex-shrink:0}.report-letterhead>div{flex:1;min-width:0}.report-letterhead{justify-content:space-between}.report-flag,.report-tree{display:block}
 .report-letterhead h2{color:#b21f29;margin:0;font-size:24px}
 .report-letterhead p{margin:3px 0}
 .report-title{text-align:center;margin:12px 0 20px;text-decoration:underline;text-underline-offset:6px}
@@ -301,8 +301,9 @@ th {
 </section>
 <section class="panel" id="officialReport">
 <div class="report-letterhead">
-<img src="logo.png" alt="नेपाली कांग्रेसको लोगो" onerror="this.style.display='none'">
+<img class="report-flag" src="flag.png" alt="नेपाली कांग्रेसको चारतारे झण्डा" onerror="this.style.visibility='hidden'">
 <div><h2>नेपाली कांग्रेस</h2><p><strong>कागेश्वरी मनोहरा नगरपालिका, वडा नं. १ कार्यसमिति</strong></p><p>गागलफेदी, काठमाडौं</p></div>
+<img class="report-tree" src="logo.png" alt="नेपाली कांग्रेसको रुख चिन्ह" onerror="this.style.visibility='hidden'">
 </div>
 <h2 class="report-title">बैठक उपस्थिति प्रतिवेदन</h2>
 <div id="officialReportBody"><p class="muted">प्रतिवेदन हेर्नुहोस् थिचेर विवरण लोड गर्नुहोस् ।</p></div>
@@ -549,7 +550,7 @@ async function finalizeMeeting() {
         setBusy(button, false);
     }
 }
-function reportCell(v) { return v === null || v === undefined ? 'पुष्टि बाँकी' : safe(v); }
+function reportCell(v) { return v === null || v === undefined ? '—' : safe(v); }
 function reportStat(number, label) {
     return `<div class="report-stat"><strong>${reportCell(number)}</strong><span>${safe(label)}</span></div>`;
 }
@@ -568,18 +569,21 @@ async function loadReport() {
             ncid: el('reportNcid').value.trim()
         });
         const s = r.summary;
-        const hasLegacy = s.unverifiedMeetings > 0;
-        const noteHtml = hasLegacy
-            ? '<div class="report-note">पुरानो बैठकको सहभागी हुनुपर्ने आधिकारिक सूची पुष्टि नभएकाले अनुपस्थित संख्या र उपस्थिति प्रतिशत देखाइएको छैन । अभिलेखमा प्रमाणित उपस्थित सदस्य मात्र गणना गरिएको छ ।</div>'
-            : '';
+        const noteHtml = ''; // User requested removing the explanatory warning.
         const stats = `<div class="report-stats">${reportStat(s.meetings,'कुल बैठक')}${reportStat(s.present,'जम्मा उपस्थित (बैठकगत)')}${reportStat(s.rosterVerified ? s.absent : null,'अनुपस्थित')}${reportStat(s.percentage === null ? null : s.percentage + '%','उपस्थिति प्रतिशत')}</div>`;
         const selectedMeeting = r.meetings.length === 1 ? r.meetings[0] : null;
         const metadata = selectedMeeting
             ? `<div class="report-meta"><strong>बैठक:</strong> ${safe(selectedMeeting.title)}<br><strong>मिति:</strong> ${safe(selectedMeeting.date)}${selectedMeeting.time ? '<br><strong>समय:</strong> '+safe(selectedMeeting.time) : ''}${selectedMeeting.venue ? '<br><strong>स्थान:</strong> '+safe(selectedMeeting.venue) : ''}${selectedMeeting.agenda ? '<br><strong>एजेन्डा:</strong> '+safe(selectedMeeting.agenda) : ''}${selectedMeeting.decisions ? '<br><strong>निर्णय:</strong> '+safe(selectedMeeting.decisions) : ''}</div>`
             : `<p><strong>प्रतिवेदन अवधि:</strong> ${safe(el('from').value || 'सुरुदेखि')} — ${safe(el('to').value || 'अहिलेसम्म')}</p>`;
-        const summaryTable = `<div class="report-section"><h3>बैठकगत सारांश</h3><div class="tablewrap"><table><thead><tr><th>मिति</th><th>बैठक</th><th>सहभागी हुनुपर्ने</th><th>उपस्थित</th><th>अनुपस्थित</th><th>उपस्थिति %</th></tr></thead><tbody>${r.meetings.map(x=>`<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${reportCell(x.invited)}</td><td>${reportCell(x.present)}</td><td>${reportCell(x.absent)}</td><td>${x.percentage===null?'पुष्टि बाँकी':safe(x.percentage)+'%'}</td></tr>`).join('') || '<tr><td colspan="6">प्रतिवेदन उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
+        const summaryTable = `<div class="report-section"><h3>बैठकगत सारांश</h3><div class="tablewrap"><table><thead><tr><th>मिति</th><th>बैठक</th><th>सहभागी हुनुपर्ने</th><th>उपस्थित</th><th>अनुपस्थित</th><th>उपस्थिति %</th></tr></thead><tbody>${r.meetings.map(x=>`<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${reportCell(x.invited)}</td><td>${reportCell(x.present)}</td><td>${reportCell(x.absent)}</td><td>${x.percentage===null?'—':safe(x.percentage)+'%'}</td></tr>`).join('') || '<tr><td colspan="6">प्रतिवेदन उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
         const statusLabel = x => ({Present:'उपस्थित',Absent:'अनुपस्थित',Pending:'मिलान बाँकी'})[x] || x;
-        const memberTable = `<div class="report-section"><h3>सदस्य उपस्थिति विवरण</h3><div class="tablewrap"><table><thead><tr><th>क्र.स.</th><th>NCID</th><th>सदस्यको नाम</th><th>स्थिति</th></tr></thead><tbody>${r.records.map((x,i)=>`<tr><td>${i+1}</td><td>${safe(x.NCID)}</td><td>${safe(x.Name)}</td><td>${safe(statusLabel(x.Attendance))}</td></tr>`).join('') || '<tr><td colspan="4">विवरण उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
+        // Group is sourced from the saved meeting attendance records; never guess by NCID.
+        const isExtra = x => /अतिरिक्त|क्रियाशील|अन्य|extra|active/i.test(String(x.Group || '')) && !/अनिवार्य/i.test(String(x.Group || ''));
+        const extraRecords = r.records.filter(isExtra);
+        const mainRecords = r.records.filter(x => !isExtra(x));
+        const memberSection = (title, rows) => `<div class="report-section"><h3>${title} (${rows.length} जना)</h3><div class="tablewrap"><table><thead><tr><th>क्र.स.</th><th>NCID</th><th>सदस्यको नाम</th><th>स्थिति</th></tr></thead><tbody>${rows.map((x,i)=>`<tr><td>${i+1}</td><td>${safe(x.NCID)}</td><td>${safe(x.Name)}</td><td>${safe(statusLabel(x.Attendance))}</td></tr>`).join('') || '<tr><td colspan="4">विवरण उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
+        const memberTable = memberSection('अनिवार्य / अन्य अभिलेखित सदस्य विवरण', mainRecords)
+            + memberSection('अतिरिक्त क्रियाशील सदस्य उपस्थिति विवरण', extraRecords);
         el('reportSummary').innerHTML = stats + noteHtml;
         el('reportTable').innerHTML = summaryTable;
         el('officialReportBody').innerHTML = metadata + stats + noteHtml + summaryTable + memberTable;
