@@ -591,9 +591,13 @@ async function editMeeting(id) {
         selected.clear();
         r.rows.forEach(x => { if (legacyEditing || x.Attendance === 'Present') selected.add(x.NCID); });
         renderMembers();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Editing was loaded but the meetings view remained visible.
+        // Open the registration/edit form after loading the saved meeting.
+        showView('registration');
+        note('बैठक सम्पादनका लागि खुल्यो । आवश्यक परिवर्तन गरी “बैठक अपडेट गर्नुहोस्” थिच्नुहोस् ।');
     }
     catch (e) {
+        note('बैठक सम्पादन खोल्न सकिएन: ' + e.message);
         alert(e.message);
     }
 }
