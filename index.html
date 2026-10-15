@@ -1715,6 +1715,7 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
 // Google Apps Script Web App deploy गरेपछि यहाँ URL राख्नुहोस्&#x20;।
 const API_URL = 'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
 let currentNCID = '';
+let verifiedPdfPhotoFileID = '';
 let adminToken = sessionStorage.getItem('nc_admin_token') || '';
 let adminMembers = [];
 const labels = [     ['total','जम्मा क्रियाशील सदस्य'],['male','पुरुष'],['female','महिला'],['khasArya','खस–आर्य'],['janajati','आदिवासी जनजाति'],     ['dalit','दलित'],['newMember','नयाँ सदस्य'],['renewed','नवीकरण सदस्य'],['representatives','निर्वाचित प्रतिनिधि']   ];
@@ -1863,6 +1864,7 @@ async function verifyMobile() {
   try {
     const r=await api('verifyMobile',{ncid:currentNCID,mobile:document.getElementById('mobile').value});
     if(!r.ok) throw new Error(r.message);
+    verifiedPdfPhotoFileID = String(r.member.PhotoFileID || '').trim();
     renderProfile(r.member,r.designations||[]);
     msg.textContent=r.message;
   } catch(e) {
@@ -1929,7 +1931,7 @@ async function loadMemberMeetingHistory(ncid) {
   }
 }
 
-function buildMemberDocumentHtml() {
+function buildMemberDocumentHtml(pdfPhotoDataUrl) {
   const profile = document.getElementById('profile');
 
   if (!profile || !profile.innerHTML.trim()) {
@@ -1937,6 +1939,10 @@ function buildMemberDocumentHtml() {
   }
 
   const clone = profile.cloneNode(true);
+  if (pdfPhotoDataUrl) {
+    const memberPhoto = clone.querySelector('img.memberIdentityPhoto');
+    if (memberPhoto) memberPhoto.src = pdfPhotoDataUrl;
+  }
 
   clone.querySelectorAll('.memberProfileActions').forEach(function(el) {
     el.remove();
@@ -2374,6 +2380,13 @@ function buildMemberDocumentHtml() {
         });
       }
       if (document.fonts && document.fonts.ready) await document.fonts.ready;
+      await Promise.all(Array.from(document.querySelectorAll('.documentPage img')).map(function(img) {
+        if (img.complete && img.naturalWidth) return Promise.resolve();
+        return new Promise(function(resolve) {
+          img.addEventListener('load', resolve, {once:true});
+          img.addEventListener('error', resolve, {once:true});
+        });
+      }));
       var page = document.querySelector('.documentPage');
       if (!page) throw new Error('PDF content भेटिएन ।');
       await window.html2pdf().set({
@@ -2400,8 +2413,24 @@ function buildMemberDocumentHtml() {
 </html>`;
 }
 
-function openMemberDocument(autoPrint) {
-  const documentHtml = buildMemberDocumentHtml();
+async function openMemberDocument(autoPrint) {
+  let pdfPhotoDataUrl = '';
+  // PDF preview only: retrieve the verified member's photo as base64.
+  if (!autoPrint && verifiedPdfPhotoFileID) {
+    try {
+      const result = await api('memberPdfPhoto', {
+        ncid: currentNCID,
+        mobile: document.getElementById('mobile').value,
+        photoFileID: verifiedPdfPhotoFileID
+      });
+      if (!result.ok) throw new Error(result.message || 'फोटो उपलब्ध भएन ।');
+      pdfPhotoDataUrl = result.dataUrl;
+    } catch (error) {
+      alert('PDF फोटो प्राप्त गर्न सकिएन: ' + error.message);
+      return;
+    }
+  }
+  const documentHtml = buildMemberDocumentHtml(pdfPhotoDataUrl);
 
   if (!documentHtml) {
     alert('पहिला सदस्यको विवरण खोल्नुहोस् ।');
