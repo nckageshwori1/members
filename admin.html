@@ -556,7 +556,7 @@ main {
             <button class="btn tab on" data-tab="data" onclick="showTab('data',this)">📊 सबै सदस्य Data</button>
             <button class="btn tab" data-tab="member" onclick="showTab('member',this)">👤 सदस्य Profile</button>
             <button class="btn tab" data-tab="representative" onclick="showTab('representative',this)">🏛️ निर्वाचित प्रतिनिधि व्यवस्थापन</button>
-            <button class="btn tab" data-tab="protocol" onclick="showTab('protocol',this)">🏛️ वडा कार्यसमिति / Protocol</button>
+            <button class="btn tab" data-tab="protocol" onclick="showTab('protocol',this)">🏛️ वडा कार्यसमिति / मनोनयन</button>
             <button class="btn tab" data-tab="representation" onclick="showTab('representation',this)">🌐 यस वडाबाट प्रतिनिधित्व</button>
             <button class="btn tab" data-tab="notice" onclick="showTab('notice',this)">📢 सूचना</button>
             <button class="btn tab" data-tab="greeting" onclick="showTab('greeting',this)">🖼️ फोटो तथा शुभकामना</button>
@@ -738,8 +738,8 @@ main {
           </section>
 
           <section id="pane-protocol" class="card pane">
-            <h3>वर्तमान वडा कार्यसमिति / Protocol व्यवस्थापन</h3>
-            <div class="hint">नाम, NCID वा मोबाइलबाट क्रियाशील सदस्य खोजेर मात्र पद assign गर्नुहोस् । Protocol क्रम अनुसार Main Display मा स्वतः क्रमबद्ध हुन्छ । पूर्व सभापति पनि यही module बाट कार्यकालसहित राख्न सकिन्छ ।</div>
+            <h3>वडा कार्यसमिति / मनोनयन तथा Protocol व्यवस्थापन</h3>
+            <div class="hint">नाम, NCID वा मोबाइलबाट क्रियाशील सदस्य खोजेर मात्र पद assign गर्नुहोस् । Protocol क्रम अनुसार Main Display मा स्वतः क्रमबद्ध हुन्छ । पूर्व सभापति पनि यही module बाट कार्यकालसहित राख्न सकिन्छ । नयाँ मनोनयनको लागू मिति YYYY-MM-DD (वि.सं.) मा राख्दा बैठक सहभागिता रिपोर्टले सोही मितिदेखि गणना गर्छ ।</div>
             <div class="protocol-layout">
               <div>
                 <div class="field"><label>सदस्य खोज्नुहोस्</label><div class="search"><input id="protocolSearch" placeholder="नाम, NCID वा मोबाइल नम्बर"><button class="btn primary" onclick="searchProtocolMembers()">खोज्नुहोस्</button></div></div>
@@ -749,8 +749,8 @@ main {
                   <div class="field"><label>वर्ग</label><select id="protocolCategory"><option>वर्तमान वडा कार्यसमिति</option><option>पूर्व सभापति</option></select></div>
                   <div class="field"><label>पद</label><input id="protocolDesignation" placeholder="सभापति / उपसभापति / सचिव / सहसचिव / सदस्य"></div>
                   <div class="field"><label>Protocol क्रम</label><input id="protocolOrder" type="number" min="1" placeholder="1"></div>
-                  <div class="field"><label>कार्यकाल सुरु</label><input id="protocolFrom" placeholder="२०८१"></div>
-                  <div class="field"><label>कार्यकाल अन्त्य</label><input id="protocolTo" placeholder="हालसम्म / २०८३"></div>
+                  <div class="field"><label>लागू मिति / कार्यकाल सुरु (वि.सं.)</label><input id="protocolFrom" placeholder="2083-06-06"></div>
+                  <div class="field"><label>समाप्त मिति (वैकल्पिक)</label><input id="protocolTo" placeholder="2083-12-30"></div>
                   <div class="field"><label>स्थिति</label><select id="protocolActive"><option value="true">सक्रिय</option><option value="false">निष्क्रिय</option></select></div>
                   <div class="field wide"><label>कैफियत</label><input id="protocolRemarks"></div>
                 </div>
@@ -1776,6 +1776,15 @@ function resetProtocolForm(showResponse=false){
 async function saveProtocol(){
   if(!protocolMember){protocolFeedback('पहिले सदस्य खोजेर select गर्नुहोस् ।',false);return}
   if(!protocolDesignation.value.trim()||!protocolOrder.value){protocolFeedback('पद र Protocol क्रम अनिवार्य छन् ।',false);return}
+  // Date-based meeting eligibility requires a full BS date; leave legacy saved rows untouched.
+  if(protocolCategory.value==='वर्तमान वडा कार्यसमिति'){
+    const from=protocolFrom.value.trim(), to=protocolTo.value.trim();
+    const valid=/^\d{4}-\d{2}-\d{2}$/;
+    if(!valid.test(from)|| (to&&(!valid.test(to)||to<from))){
+      protocolFeedback('मनोनयन लागू मिति YYYY-MM-DD (वि.सं.) मा राख्नुहोस् । समाप्त मिति लागू मितिभन्दा अगाडि हुन मिल्दैन ।',false);
+      return;
+    }
+  }
   const b=document.getElementById('protocolSaveBtn');
   if(b.disabled)return;
   const original=b.textContent;
