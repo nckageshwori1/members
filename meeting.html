@@ -301,9 +301,9 @@ th {
 </section>
 <section class="panel" id="officialReport">
 <div class="report-letterhead">
-<img class="report-flag" src="flag.png" alt="नेपाली कांग्रेसको चारतारे झण्डा" onerror="this.style.visibility='hidden'">
+<img class="report-flag" src="flag-logo.png" alt="नेपाली कांग्रेसको चारतारे झण्डा" onerror="this.style.visibility='hidden'">
 <div><h2>नेपाली कांग्रेस</h2><p><strong>कागेश्वरी मनोहरा नगरपालिका, वडा नं. १ कार्यसमिति</strong></p><p>गागलफेदी, काठमाडौं</p></div>
-<img class="report-tree" src="logo.png" alt="नेपाली कांग्रेसको रुख चिन्ह" onerror="this.style.visibility='hidden'">
+<img class="report-tree" src="tree-logo.png" alt="नेपाली कांग्रेसको रुख चिन्ह" onerror="this.style.visibility='hidden'">
 </div>
 <h2 class="report-title">बैठक उपस्थिति प्रतिवेदन</h2>
 <div id="officialReportBody"><p class="muted">प्रतिवेदन हेर्नुहोस् थिचेर विवरण लोड गर्नुहोस् ।</p></div>
@@ -569,8 +569,8 @@ async function loadReport() {
             ncid: el('reportNcid').value.trim()
         });
         const s = r.summary;
-        const noteHtml = ''; // User requested removing the explanatory warning.
-        const stats = `<div class="report-stats">${reportStat(s.meetings,'कुल बैठक')}${reportStat(s.present,'जम्मा उपस्थित (बैठकगत)')}${reportStat(s.rosterVerified ? s.absent : null,'अनुपस्थित')}${reportStat(s.percentage === null ? null : s.percentage + '%','उपस्थिति प्रतिशत')}</div>`;
+        const noteHtml = ''; // No warning in report.
+        const stats = `<div class="report-stats">${reportStat(s.invited,'सहभागी हुनुपर्ने')}${reportStat(s.present,'जम्मा उपस्थित')}${reportStat(s.absent,'अनुपस्थित')}${reportStat(s.percentage + '%','उपस्थिति प्रतिशत')}</div>`;
         const selectedMeeting = r.meetings.length === 1 ? r.meetings[0] : null;
         const metadata = selectedMeeting
             ? `<div class="report-meta"><strong>बैठक:</strong> ${safe(selectedMeeting.title)}<br><strong>मिति:</strong> ${safe(selectedMeeting.date)}${selectedMeeting.time ? '<br><strong>समय:</strong> '+safe(selectedMeeting.time) : ''}${selectedMeeting.venue ? '<br><strong>स्थान:</strong> '+safe(selectedMeeting.venue) : ''}${selectedMeeting.agenda ? '<br><strong>एजेन्डा:</strong> '+safe(selectedMeeting.agenda) : ''}${selectedMeeting.decisions ? '<br><strong>निर्णय:</strong> '+safe(selectedMeeting.decisions) : ''}</div>`
@@ -584,9 +584,9 @@ async function loadReport() {
         const memberSection = (title, rows) => `<div class="report-section"><h3>${title} (${rows.length} जना)</h3><div class="tablewrap"><table><thead><tr><th>क्र.स.</th><th>NCID</th><th>सदस्यको नाम</th><th>स्थिति</th></tr></thead><tbody>${rows.map((x,i)=>`<tr><td>${i+1}</td><td>${safe(x.NCID)}</td><td>${safe(x.Name)}</td><td>${safe(statusLabel(x.Attendance))}</td></tr>`).join('') || '<tr><td colspan="4">विवरण उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
         const memberTable = memberSection('अनिवार्य / अन्य अभिलेखित सदस्य विवरण', mainRecords)
             + memberSection('अतिरिक्त क्रियाशील सदस्य उपस्थिति विवरण', extraRecords);
-        el('reportSummary').innerHTML = stats + noteHtml;
+        el('reportSummary').innerHTML = '<p><strong>कुल बैठक:</strong> ' + reportCell(s.meetings) + '</p>' + stats + noteHtml;
         el('reportTable').innerHTML = summaryTable;
-        el('officialReportBody').innerHTML = metadata + stats + noteHtml + summaryTable + memberTable;
+        el('officialReportBody').innerHTML = metadata + '<p><strong>कुल बैठक:</strong> ' + reportCell(s.meetings) + '</p>' + stats + noteHtml + summaryTable + memberTable;
         el('officialReportBody').dataset.ready = 'yes';
         note('प्रतिवेदन तयार छ । Print / PDF बाट A4 प्रतिवेदन निकाल्न सक्नुहुन्छ ।');
     } catch (e) {
