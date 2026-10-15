@@ -169,7 +169,16 @@ th {
 <button onclick="init()">↻ Refresh</button>
 <button onclick="window.print()">🖨 Print / PDF</button>
 </div>
-<div id="notice" class="muted">Admin Login Session जाँच हुँदैछ...</div>
+<div id="notice" class="muted" role="status" aria-live="polite">Admin Login Session जाँच हुँदैछ...</div>
+<section id="meetingLoginPanel" class="panel hidden no-print">
+  <h2>बैठक व्यवस्थापन — Admin Login</h2>
+  <p class="muted">Session उपलब्ध नभए यहाँबाट Login गर्नुहोस् ।</p>
+  <div class="grid">
+    <div><label for="meetingUsername">Username</label><input id="meetingUsername" autocomplete="username"></div>
+    <div><label for="meetingPassword">Password</label><input id="meetingPassword" type="password" autocomplete="current-password"></div>
+  </div>
+  <button id="meetingLoginBtn" type="button" onclick="meetingLogin()">Login गर्नुहोस्</button>
+</section>
 <section class="panel no-print">
 <h2>१. बैठक दर्ता / सम्पादन</h2>
 <div class="grid">
@@ -261,7 +270,7 @@ th {
 </main><script>
 'use strict';
 const API_URL = 'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
-const token = sessionStorage.getItem('nc_admin_token') || '';
+let token = sessionStorage.getItem('nc_admin_token') || '';
 const el = id => document.getElementById(id);
 let members = [], meetings = [], currentId = '', editingId = '', attendees = [];
 let meetingSaving = false, meetingDeleting = false, attendanceSaving = false, finalizing = false;
@@ -282,21 +291,49 @@ function updateEditControls() {
 function cancelMeetingEdit() { clearMeeting(); note('सम्पादन बन्द गरियो । कुनै परिवर्तन सुरक्षित गरिएको छैन ।'); }
 const selected = new Set();
 function note(s) { el('notice').textContent = s; }
+function loginVisibility(show) {
+    el('meetingLoginPanel').classList.toggle('hidden', !show);
+}
+async function meetingLogin() {
+    const username = el('meetingUsername').value.trim();
+    const password = el('meetingPassword').value;
+    if (!username || !password) { note('Username र Password आवश्यक छन् ।'); return; }
+    const button = el('meetingLoginBtn');
+    setBusy(button, true, 'Login हुँदैछ...');
+    try {
+        const r = await api('adminLogin', {username, password});
+        token = r.token;
+        sessionStorage.setItem('nc_admin_token', token);
+        sessionStorage.setItem('nc_admin_name', r.name || username);
+        el('meetingPassword').value = '';
+        loginVisibility(false);
+        await init();
+    } catch (e) {
+        note('Login असफल: ' + e.message);
+    } finally { setBusy(button, false); }
+}
+window.addEventListener('error', e => note('JavaScript समस्या: ' + e.message));
+window.addEventListener('unhandledrejection', e => note('अनुरोध असफल: ' + (e.reason?.message || e.reason)));
 function safe(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 async function api(action, data = {}) {
-    const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, token, ...data }) });
+    const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, token, ...data }), redirect: 'follow' });
     if (!r.ok)
-        throw Error('Network Error');
-    const j = await r.json();
+        throw Error('सर्भरमा सम्पर्क हुन सकेन (HTTP ' + r.status + ') ।');
+    let j;
+    try { j = await r.json(); }
+    catch (_) { throw Error('API बाट JSON आएन । Apps Script deployment / access जाँच्नुहोस् ।'); }
     if (!j.ok)
         throw Error(j.message || 'Error');
     return j;
 }
 async function init() {
     if (!token) {
-        note('पहिला Admin Panel मा Login गर्नुहोस् ।');
+        loginVisibility(true);
+        note('बैठकका बटन प्रयोग गर्न Admin Login गर्नुहोस् ।');
         return;
     }
+    loginVisibility(false);
+    note('बैठकको विवरण लोड हुँदैछ...');
     try {
         await api('meetingSetup');
         const [m, list] = await Promise.all([api('meetingMembers'), api('meetingList')]);
@@ -308,7 +345,8 @@ async function init() {
         await loadReport();
     }
     catch (e) {
-        note(e.message);
+        note('डेटा लोड हुन सकेन: ' + e.message);
+        if (/token|session|login|unauthor|अधिकार|समाप्त/i.test(e.message)) loginVisibility(true);
     }
 }
 function selectGroup(g) {
@@ -333,7 +371,7 @@ function renderCount() {
     const count = members.filter(m=>m.mandatory).length;
     el('selectedCount').textContent = legacyEditing ? selected.size+' जना (पुरानो बैठकको सूची)' : count+' जना अनिवार्य; '+(meetingTypeValue()==='all' ? members.filter(m=>m.active&&!m.mandatory).length+' जना अन्य सक्रिय सदस्य स्वतः आमन्त्रित' : selected.size+' जना अतिरिक्त उपस्थित सदस्य चयन');
 }
-function clearMeeting() { editingId = ''; legacyEditing=false; meetingRequestId = ''; ['date', 'time', 'title', 'venue', 'agenda', 'decisions'].forEach(x => el(x).value = ''); selected.clear(); document.querySelector('input[name="meetingType"][value="regular"]').checked=true; renderMembers(); updateEditControls(); }
+function clearMeeting() { note('नयाँ बैठकको फारम तयार छ ।'); editingId = ''; legacyEditing=false; meetingRequestId = ''; ['date', 'time', 'title', 'venue', 'agenda', 'decisions'].forEach(x => el(x).value = ''); selected.clear(); document.querySelector('input[name="meetingType"][value="regular"]').checked=true; renderMembers(); updateEditControls(); }
 async function saveMeeting() {
     if (meetingSaving) return;
     const button = el('saveMeetingBtn');
@@ -341,7 +379,7 @@ async function saveMeeting() {
     setBusy(button, true, '⏳ सुरक्षित हुँदैछ...');
     note('बैठक सुरक्षित हुँदैछ । कृपया प्रतीक्षा गर्नुहोस् ।');
     try {
-        if (!meetingRequestId) meetingRequestId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random());
+        if (!meetingRequestId) meetingRequestId = (globalThis.crypto && typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random());
         const meeting = { id: editingId, requestId: meetingRequestId, date: el('date').value.trim(), time: el('time').value, venue: el('venue').value, title: el('title').value, agenda: el('agenda').value, decisions: el('decisions').value, meetingType: meetingTypeValue(), ncids: [...selected] };
         const r = await api('meetingSave', { meeting });
         editingId = r.id;
@@ -423,7 +461,11 @@ async function openAttendance(id) {
         alert(e.message);
     }
 }
-function markAll(status) { el('attendanceTable').querySelectorAll('.att-status').forEach(x => x.value = status); }
+function markAll(status) {
+    const inputs = el('attendanceTable').querySelectorAll('.att-status:not(:disabled)');
+    inputs.forEach(x => x.value = status);
+    note(inputs.length ? inputs.length + ' सदस्यको स्थिति ' + status + ' चयन भयो । सुरक्षित गर्न बटन थिच्नुहोस् ।' : 'पहिले Draft बैठकको उपस्थिति खोल्नुहोस् ।');
+}
 async function saveAttendance() {
     if (attendanceSaving) return false;
     attendanceSaving = true;
@@ -467,6 +509,7 @@ async function finalizeMeeting() {
     }
 }
 async function loadReport() {
+    note('प्रतिवेदन लोड हुँदैछ...');
     try {
         const r = await api('meetingReport', { id: el('reportMeeting').value, from: el('from').value, to: el('to').value, ncid: el('reportNcid').value.trim() });
         const s = r.summary;
@@ -475,6 +518,7 @@ async function loadReport() {
     }
     catch (e) {
         el('reportSummary').textContent = e.message;
+        note('प्रतिवेदन असफल: ' + e.message);
     }
 }
 document.querySelectorAll('#date,#time,#title,#venue,#agenda,#decisions,#memberChecks').forEach(x => x.addEventListener('input', () => { if (!meetingSaving) meetingRequestId = ''; }));
