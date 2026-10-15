@@ -828,7 +828,7 @@ async function loadReport(button) {
             const personalHeading = `<div class="personal-identity"><div class="personal-identity-label">व्यक्तिगत बैठक उपस्थिति प्रतिवेदन</div><h3>${personalName ? safe(personalName) : 'सदस्यको नाम उपलब्ध छैन'}</h3><p><strong>NCID:</strong> ${safe(ncid)}</p></div>`;
             const personalHistory = `<div class="report-section personal-history"><h3>बैठकअनुसार उपस्थिति विवरण</h3><div class="tablewrap"><table><thead><tr><th>मिति (BS)</th><th>बैठकको विषय</th><th>सहभागिताको प्रकार</th><th>स्थिति</th></tr></thead><tbody>${r.meetings.map(x => {
                 const attendance = (r.records || []).find(y => String(y.MeetingID) === String(x.id) && String(y.NCID).trim() === ncid);
-                return `<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${safe(attendance ? attendance.Group : 'अभिलेखित')}</td><td>${safe(attendance ? statusLabel(attendance.Attendance) : (x.present ? 'उपस्थित' : 'अनुपस्थित'))}</td></tr>`;
+                return `<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${safe(attendance ? (attendance.Designation || attendance.Group) : 'अभिलेखित')}</td><td>${safe(attendance ? statusLabel(attendance.Attendance) : (x.present ? 'उपस्थित' : 'अनुपस्थित'))}</td></tr>`;
             }).join('') || '<tr><td colspan="4">यस अवधिमा व्यक्तिगत बैठक अभिलेख भेटिएन ।</td></tr>'}</tbody></table></div></div>`;
             const personalBody = personalHeading + periodHtml + stats + personalHistory;
             el('reportSummary').innerHTML = personalHeading + periodHtml + stats;
