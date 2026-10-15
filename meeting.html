@@ -200,13 +200,10 @@ th {
 </textarea>
 </div>
 </div>
-<h3>आमन्त्रित सदस्य छनोट</h3>
-<div class="tools">
-<button onclick="selectGroup('all')">सबै सक्रिय सदस्य</button>
-<button onclick="selectGroup('committee')">वडा कार्यसमिति</button>
-<button onclick="selectGroup('representative')">निर्वाचित प्रतिनिधि</button>
-<button onclick="selectGroup('none')">सबै हटाउने</button>
-</div>
+<h3>बैठकको प्रकार र उपस्थिति</h3>
+<div class="tools"><label><input type="radio" name="meetingType" value="regular" checked onchange="onMeetingTypeChange()"> नियमित बैठक</label>
+<label><input type="radio" name="meetingType" value="all" onchange="onMeetingTypeChange()"> सम्पूर्ण क्रियाशील सदस्य आमन्त्रित</label></div>
+<p class="muted">कार्यसमिति, निर्वाचित प्रतिनिधि र यस इकाइबाट विभिन्न तहमा प्रतिनिधित्व गर्ने सदस्य हरेक बैठकमा अनिवार्य छन् । नियमित बैठकमा अन्य क्रियाशील सदस्य उपस्थित भए मात्र तलबाट थप्नुहोस् ।</p>
 <input id="filter" placeholder="NCID वा नामबाट सदस्य खोज्नुहोस्" oninput="renderMembers()">
 <p id="selectedCount" class="muted">
 </p>
@@ -269,6 +266,9 @@ const el = id => document.getElementById(id);
 let members = [], meetings = [], currentId = '', editingId = '', attendees = [];
 let meetingSaving = false, meetingDeleting = false, attendanceSaving = false, finalizing = false;
 let meetingRequestId = '';
+let legacyEditing = false;
+function meetingTypeValue() { return document.querySelector('input[name="meetingType"]:checked').value; }
+function onMeetingTypeChange() { if (!legacyEditing) { selected.clear(); renderMembers(); } meetingRequestId=''; }
 function setBusy(button, busy, text) {
     if (!button) return;
     if (busy) { button.dataset.originalText = button.textContent; button.textContent = text; }
@@ -321,12 +321,19 @@ function selectGroup(g) {
 }
 function renderMembers() {
     const q = el('filter').value.toLowerCase();
-    const rows = members.filter(m => !q || m.Name.toLowerCase().includes(q) || m.NCID.toLowerCase().includes(q)).slice(0, 300);
-    el('memberChecks').innerHTML = rows.map(m => `<label><input type="checkbox" data-ncid="${safe(m.NCID)}" ${selected.has(m.NCID) ? 'checked' : ''}><span>${safe(m.Name)} — ${safe(m.NCID)} ${m.committee ? '(कार्यसमिति)' : ''} ${m.representative ? '(प्रतिनिधि)' : ''}</span></label>`).join('');
-    el('memberChecks').querySelectorAll('input').forEach(i => i.addEventListener('change', () => { i.checked ? selected.add(i.dataset.ncid) : selected.delete(i.dataset.ncid); el('selectedCount').textContent = selected.size + ' जना आमन्त्रित'; }));
-    el('selectedCount').textContent = selected.size + ' जना आमन्त्रित';
+    const all = meetingTypeValue()==='all';
+    const mandatory = members.filter(m => m.mandatory);
+    const extras = members.filter(m => !m.mandatory && m.active);
+    const rows = (legacyEditing ? members : extras).filter(m => !q || m.Name.toLowerCase().includes(q) || m.NCID.toLowerCase().includes(q)).slice(0, 300);
+    el('memberChecks').innerHTML = rows.map(m => `<label><input type="checkbox" data-ncid="${safe(m.NCID)}" ${selected.has(m.NCID) || (!legacyEditing && all) ? 'checked' : ''} ${!legacyEditing && all ? 'disabled' : ''}><span>${safe(m.Name)} — ${safe(m.NCID)} ${m.committee?'(कार्यसमिति)':''} ${m.representative?'(प्रतिनिधि)':''} ${m.representation?'(अन्य तहको प्रतिनिधित्व)':''}</span></label>`).join('');
+    el('memberChecks').querySelectorAll('input:not(:disabled)').forEach(i => i.addEventListener('change', () => { i.checked ? selected.add(i.dataset.ncid) : selected.delete(i.dataset.ncid); renderCount(); }));
+    renderCount();
 }
-function clearMeeting() { editingId = ''; meetingRequestId = ''; ['date', 'time', 'title', 'venue', 'agenda', 'decisions'].forEach(x => el(x).value = ''); selected.clear(); renderMembers(); updateEditControls(); }
+function renderCount() {
+    const count = members.filter(m=>m.mandatory).length;
+    el('selectedCount').textContent = legacyEditing ? selected.size+' जना (पुरानो बैठकको सूची)' : count+' जना अनिवार्य; '+(meetingTypeValue()==='all' ? members.filter(m=>m.active&&!m.mandatory).length+' जना अन्य सक्रिय सदस्य स्वतः आमन्त्रित' : selected.size+' जना अतिरिक्त उपस्थित सदस्य चयन');
+}
+function clearMeeting() { editingId = ''; legacyEditing=false; meetingRequestId = ''; ['date', 'time', 'title', 'venue', 'agenda', 'decisions'].forEach(x => el(x).value = ''); selected.clear(); document.querySelector('input[name="meetingType"][value="regular"]').checked=true; renderMembers(); updateEditControls(); }
 async function saveMeeting() {
     if (meetingSaving) return;
     const button = el('saveMeetingBtn');
@@ -335,7 +342,7 @@ async function saveMeeting() {
     note('बैठक सुरक्षित हुँदैछ । कृपया प्रतीक्षा गर्नुहोस् ।');
     try {
         if (!meetingRequestId) meetingRequestId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random());
-        const meeting = { id: editingId, requestId: meetingRequestId, date: el('date').value.trim(), time: el('time').value, venue: el('venue').value, title: el('title').value, agenda: el('agenda').value, decisions: el('decisions').value, ncids: [...selected] };
+        const meeting = { id: editingId, requestId: meetingRequestId, date: el('date').value.trim(), time: el('time').value, venue: el('venue').value, title: el('title').value, agenda: el('agenda').value, decisions: el('decisions').value, meetingType: meetingTypeValue(), ncids: [...selected] };
         const r = await api('meetingSave', { meeting });
         editingId = r.id;
         meetingRequestId = '';
@@ -381,6 +388,8 @@ async function editMeeting(id) {
         const r = await api('meetingAttendance', { id });
         const m = r.meeting;
         editingId = id;
+        legacyEditing = !m.MeetingType || m.MeetingType==='Legacy';
+        document.querySelector('input[name="meetingType"][value="'+(m.MeetingType==='all'?'all':'regular')+'"]').checked=true;
         meetingRequestId = '';
         updateEditControls();
         el('date').value = m['मिति BS'] || '';
@@ -406,7 +415,7 @@ async function openAttendance(id) {
         el('attendancePanel').classList.remove('hidden');
         el('meetingTitle').textContent = '३. उपस्थिति — ' + r.meeting['शीर्षक'] + ' (' + r.meeting['मिति BS'] + ')';
         const locked = r.meeting.Status === 'Finalized';
-        el('attendanceTable').innerHTML = '<table><tr><th>सदस्य</th><th>NCID</th><th>स्थिति</th><th>कैफियत</th></tr>' + attendees.map((x, i) => `<tr><td>${safe(x.Name)}</td><td>${safe(x.NCID)}</td><td><select data-i="${i}" class="att-status" ${locked ? 'disabled' : ''}>${['Pending', 'Present', 'Absent'].map(s => `<option value="${s}" ${x.Attendance === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td><td><input data-i="${i}" class="att-remark" value="${safe(x.Remarks)}" ${locked ? 'readonly' : ''}></td></tr>`).join('') + '</table>';
+        el('attendanceTable').innerHTML = '<table><tr><th>सदस्य</th><th>NCID</th><th>समूह</th><th>स्थिति</th><th>कैफियत</th></tr>' + attendees.map((x, i) => `<tr><td>${safe(x.Name)}</td><td>${safe(x.NCID)}</td><td>${safe(x.Group)}</td><td><select data-i="${i}" class="att-status" ${locked ? 'disabled' : ''}>${['Pending', 'Present', 'Absent'].map(s => `<option value="${s}" ${x.Attendance === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td><td><input data-i="${i}" class="att-remark" value="${safe(x.Remarks)}" ${locked ? 'readonly' : ''}></td></tr>`).join('') + '</table>';
         el('attendancePanel').querySelectorAll('.tools button').forEach(b => b.disabled = locked);
         el('attendancePanel').scrollIntoView({ behavior: 'smooth' });
     }
@@ -461,8 +470,8 @@ async function loadReport() {
     try {
         const r = await api('meetingReport', { id: el('reportMeeting').value, from: el('from').value, to: el('to').value, ncid: el('reportNcid').value.trim() });
         const s = r.summary;
-        el('reportSummary').innerHTML = `<p class="pill">बैठक: ${s.meetings} | आमन्त्रित उपस्थिति अवसर: ${s.invited} | Present: ${s.present} | Absent: ${s.absent} | उपस्थिति: ${s.percentage}%</p>`;
-        el('reportTable').innerHTML = '<table><tr><th>मिति</th><th>बैठक</th><th>Eligible</th><th>Present</th><th>Absent</th><th>%</th></tr>' + r.meetings.map(x => `<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${x.invited}</td><td>${x.present}</td><td>${x.absent}</td><td>${x.percentage}%</td></tr>`).join('') + '</table>' + (el('reportNcid').value ? '<h3>व्यक्तिगत इतिहास</h3><table><tr><th>बैठक ID</th><th>सदस्य</th><th>स्थिति</th></tr>' + r.records.map(x => `<tr><td>${safe(x.MeetingID)}</td><td>${safe(x.Name)}</td><td>${safe(x.Attendance)}</td></tr>`).join('') + '</table>' : '');
+        el('reportSummary').innerHTML = `<p class="pill">बैठक: ${s.meetings} | अनिवार्य: ${s.mandatory} | अनिवार्य उपस्थित: ${s.mandatoryPresent} | अनिवार्य अनुपस्थित: ${s.mandatoryAbsent} | अनिवार्य उपस्थिति: ${s.mandatoryPercentage}%</p><p class="pill">कुल आमन्त्रित: ${s.invited} | जम्मा उपस्थित: ${s.present} | कुल उपस्थिति: ${s.percentage}%</p>`;
+        el('reportTable').innerHTML = '<table><tr><th>मिति</th><th>बैठक</th><th>कुल आमन्त्रित</th><th>कुल उपस्थित</th><th>अनिवार्य</th><th>अनिवार्य उपस्थित</th><th>अनिवार्य अनुपस्थित</th><th>अनिवार्य %</th></tr>' + r.meetings.map(x => `<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${x.invited}</td><td>${x.present}</td><td>${x.mandatory}</td><td>${x.mandatoryPresent}</td><td>${x.mandatoryAbsent}</td><td>${x.mandatoryPercentage}%</td></tr>`).join('') + '</table>' + (el('reportNcid').value ? '<h3>व्यक्तिगत इतिहास</h3><table><tr><th>बैठक ID</th><th>सदस्य</th><th>स्थिति</th></tr>' + r.records.map(x => `<tr><td>${safe(x.MeetingID)}</td><td>${safe(x.Name)}</td><td>${safe(x.Attendance)}</td></tr>`).join('') + '</table>' : '');
     }
     catch (e) {
         el('reportSummary').textContent = e.message;
