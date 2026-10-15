@@ -1453,6 +1453,21 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
   .ncCentralPerson::after{background:linear-gradient(90deg,rgba(255,255,255,.18),rgba(218,248,227,.57))}
 }
 </style>
+
+<style id="memberMeetingHistoryStyles">
+.memberMeetingHistory{margin-top:16px;padding:15px;border:1px solid #d9e7f2;border-radius:13px;background:#f7fbff}
+.memberMeetingHistory h4{margin:0 0 11px;color:#0d315d;font-size:17px}
+.memberMeetingCards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+.memberMeetingCard{background:#fff;border:1px solid #dce7f2;border-radius:9px;text-align:center;padding:9px 5px}
+.memberMeetingCard b{display:block;font-size:19px;color:#0b548d}
+.memberMeetingCard span{font-size:11px;color:#52677d;font-weight:800}
+.memberMeetingTable{width:100%;border-collapse:collapse;margin-top:12px;font-size:12px}
+.memberMeetingTable th,.memberMeetingTable td{border:1px solid #dce7f2;padding:7px;text-align:left}
+.memberMeetingTable th{background:#eaf2fa;color:#123c64}
+.memberMeetingTableWrap{overflow-x:auto}
+@media(max-width:700px){.memberMeetingCards{grid-template-columns:repeat(2,1fr)}}
+@media print{.memberMeetingHistory{break-inside:avoid}.memberMeetingTable{font-size:10px}}
+</style>
 </head>
   <body>
 
@@ -1876,9 +1891,44 @@ function renderProfile(m,designations=[]) {
       <img src="tree-logo.png" alt="नेपाली कांग्रेसको रुख चिन्ह" style="display:block;width:50px;height:50px;max-width:50px;max-height:50px;object-fit:contain;opacity:1;filter:none">
     </div>
   </div>
-</div></div><div class="memberDetailGrid">${rows}</div>${history}<div class="memberProfileActions"><button class="memberPrintBtn" type="button" onclick="printMemberProfile()">🖨️ प्रिन्ट गर्नुहोस्</button><button class="memberPdfBtn" type="button" onclick="downloadMemberPdf()">📄 PDF डाउनलोड</button></div><div class="printOnly" style="margin-top:24px"><div style="display:flex;justify-content:space-between;align-items:end;gap:20px"><div>सदस्य परिचय विवरण</div><div style="text-align:center;min-width:190px">........................................<br><b>मोहन थापा</b><br>वडा सभापति<br>नेपाली कांग्रेस, वडा नं. १</div></div></div></div></div>`;
+</div></div><div class="memberDetailGrid">${rows}</div>${history}<div class="memberMeetingHistory" id="memberMeetingHistory"><h4>बैठक तथा उपस्थिति विवरण</h4><div id="memberMeetingHistoryBody">विवरण लोड हुँदैछ...</div></div><div class="memberProfileActions"><button class="memberPrintBtn" type="button" onclick="printMemberProfile()">🖨️ प्रिन्ट गर्नुहोस्</button><button class="memberPdfBtn" type="button" onclick="downloadMemberPdf()">📄 PDF डाउनलोड</button></div><div class="printOnly" style="margin-top:24px"><div style="display:flex;justify-content:space-between;align-items:end;gap:20px"><div>सदस्य परिचय विवरण</div><div style="text-align:center;min-width:190px">........................................<br><b>मोहन थापा</b><br>वडा सभापति<br>नेपाली कांग्रेस, वडा नं. १</div></div></div></div></div>`;
   p.style.display='block';
+  loadMemberMeetingHistory(m.NCID || m.ncid || currentNCID);
 }
+
+// Personal history is loaded only after the existing member/mobile verification.
+let memberMeetingRequestId = 0;
+async function loadMemberMeetingHistory(ncid) {
+  const requestId = ++memberMeetingRequestId;
+  const target = document.getElementById('memberMeetingHistoryBody');
+  if (!target) return;
+  try {
+    const response = await api('memberMeetingHistory',{ncid:String(ncid||'').trim(),mobile:document.getElementById('mobile').value});
+    if (requestId !== memberMeetingRequestId || !target.isConnected) return;
+    if (!response.ok) throw new Error(response.message || 'विवरण उपलब्ध भएन ।');
+    const summary = response.summary || {};
+    const fields = [
+      ['कुल आयोजित बैठक',summary.totalMeetings],
+      ['सहभागी हुनुपर्ने',summary.eligible],
+      ['उपस्थित',summary.present],
+      ['अनुपस्थित',summary.absent],
+      ['उपस्थिति %',(summary.percentage ?? 0)+'%']
+    ];
+    const cards = '<div class="memberMeetingCards">' + fields.map(([label,value]) =>
+      '<div class="memberMeetingCard"><b>'+escapeHtml(value)+'</b><span>'+escapeHtml(label)+'</span></div>'
+    ).join('')+'</div>';
+    const records = response.records || [];
+    const table = records.length ? '<div class="memberMeetingTableWrap"><table class="memberMeetingTable"><thead><tr><th>मिति (BS)</th><th>बैठक</th><th>प्रकार</th><th>स्थिति</th></tr></thead><tbody>'+
+      records.map(x=>'<tr><td>'+escapeHtml(x.date)+'</td><td>'+escapeHtml(x.title)+'</td><td>'+escapeHtml(x.group)+'</td><td>'+ (x.status==='Present'?'उपस्थित':'अनुपस्थित') +'</td></tr>').join('')+
+      '</tbody></table></div>' : '<p>यस सदस्यको सहभागी हुनुपर्ने Finalized बैठकको अभिलेख भेटिएन ।</p>';
+    target.innerHTML = cards + table;
+  } catch(error) {
+    if (requestId === memberMeetingRequestId && target.isConnected) {
+      target.textContent = 'बैठक विवरण प्राप्त गर्न सकिएन: '+error.message;
+    }
+  }
+}
+
 function buildMemberDocumentHtml() {
   const profile = document.getElementById('profile');
 
