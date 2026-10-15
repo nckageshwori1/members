@@ -216,6 +216,22 @@ th {
 .report-action-status.is-error{background:#fff0f0;border-color:#edb8b8;color:#a12229}
 .report-action-status.is-success{background:#eaf8ef;border-color:#b5dfc4;color:#12633d}
 #viewReportBtn:disabled{opacity:.65;cursor:wait}
+
+/* Targeted personal NCID report design: screen + existing A4 print/PDF. */
+.personal-identity{padding:14px 16px;border:1px solid #d6e3ee;border-radius:10px;background:#f4f9fd;margin:12px 0}
+.personal-identity-label{font-size:12px;color:#43617a;font-weight:700}
+.personal-identity h3{font-size:23px;margin:5px 0;color:#153c62}
+.personal-identity p{margin:0;font-size:13px}
+.personal-period{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 16px}
+.personal-period span{flex:1;min-width:190px;border:1px solid #dce6f0;padding:11px 13px;border-radius:8px;background:white}
+.personal-history table{min-width:0;width:100%;table-layout:auto}
+.personal-history th,.personal-history td{overflow-wrap:anywhere}
+@media print{
+ .personal-identity,.personal-period{break-inside:avoid}
+ .personal-identity{background:#f4f9fd!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .personal-period span{min-width:0}
+ .personal-history table{font-size:10pt}
+}
 </style></head>
 <body>
 <div class="app-shell"><aside class="app-sidebar no-print"><div class="sidebar-brand"><div class="brand-mark">🌳</div><strong>नेपाली कांग्रेस</strong><small>वडा नं. १ कार्यसमिति</small></div><nav aria-label="बैठक व्यवस्थापन"><button class="nav-link active" data-view="dashboard">▦ <span>ड्यासबोर्ड</span></button><button class="nav-link" data-view="registration">▣ <span>बैठक दर्ता / सम्पादन</span></button><button class="nav-link" data-view="meetings">▤ <span>बैठकहरू</span></button><button class="nav-link" data-view="attendance">♙ <span>उपस्थिति</span></button><button class="nav-link" data-view="official">▧ <span>आधिकारिक प्रतिवेदन</span></button><button class="nav-link" data-view="reports">▥ <span>रिपोर्ट</span></button></nav><div class="sidebar-bottom"><a href="admin.html">← Admin Panel</a></div></aside><div class="app-content">
@@ -688,24 +704,47 @@ async function loadReport(button) {
             el('dashAbsent').textContent = s.absent ?? '—';
             el('dashPercent').textContent = s.percentage == null ? '—' : s.percentage + '%';
         }
-        const noteHtml = ncid ? '<p class="personal-report-context"><strong>व्यक्तिगत NCID:</strong> ' + safe(ncid) + ' — तलको हिसाब यस सदस्यको मात्र हो ।</p>' : '';
+        // Only the personal report is changed. General report remains intact.
+        const personalRecord = ncid ? (r.records || []).find(x => String(x.NCID).trim() === ncid) : null;
+        const rosterMember = ncid ? members.find(x => String(x.NCID).trim() === ncid) : null;
+        const personalName = ncid ? String(
+            (personalRecord && personalRecord.Name) ||
+            (rosterMember && rosterMember.Name) ||
+            ''
+        ).trim() : '';
+        const periodFrom = from || (r.meetings.length ? r.meetings.map(x => x.date).sort()[0] : 'सुरुदेखि');
+        const periodTo = to || (r.meetings.length ? r.meetings.map(x => x.date).sort().slice(-1)[0] : 'अहिलेसम्म');
+        const periodHtml = `<div class="personal-period"><span><strong>मिति देखि (BS):</strong> ${safe(periodFrom)}</span><span><strong>मिति सम्म (BS):</strong> ${safe(periodTo)}</span></div>`;
+        const statusLabel = x => ({Present:'उपस्थित',Absent:'अनुपस्थित',Pending:'मिलान बाँकी'})[x] || x;
         const stats = `<div class="report-stats">${reportStat(s.invited,ncid ? 'सहभागी हुनुपर्ने बैठक' : 'सहभागी हुनुपर्ने')}${reportStat(s.present,ncid ? 'उपस्थित बैठक' : 'जम्मा उपस्थित')}${reportStat(s.absent,'अनुपस्थित')}${reportStat(s.percentage + '%','उपस्थिति प्रतिशत')}</div>`;
         const selectedMeeting = r.meetings.length === 1 ? r.meetings[0] : null;
         const metadata = selectedMeeting
             ? `<div class="report-meta"><strong>बैठक:</strong> ${safe(selectedMeeting.title)}<br><strong>मिति:</strong> ${safe(selectedMeeting.date)}${selectedMeeting.time ? '<br><strong>समय:</strong> '+safe(selectedMeeting.time) : ''}${selectedMeeting.venue ? '<br><strong>स्थान:</strong> '+safe(selectedMeeting.venue) : ''}${selectedMeeting.agenda ? '<br><strong>एजेन्डा:</strong> '+safe(selectedMeeting.agenda) : ''}${selectedMeeting.decisions ? '<br><strong>निर्णय:</strong> '+safe(selectedMeeting.decisions) : ''}</div>`
             : `<p><strong>प्रतिवेदन अवधि:</strong> ${safe(el('from').value || 'सुरुदेखि')} — ${safe(el('to').value || 'अहिलेसम्म')}</p>`;
-        const summaryTable = `<div class="report-section"><h3>${ncid ? 'व्यक्तिगत बैठक उपस्थिति इतिहास' : 'बैठकगत सारांश'}</h3><div class="tablewrap"><table><thead><tr><th>मिति</th><th>बैठक</th><th>${ncid ? 'सहभागिता' : 'सहभागी हुनुपर्ने'}</th><th>उपस्थित</th><th>अनुपस्थित</th><th>उपस्थिति %</th></tr></thead><tbody>${r.meetings.map(x=>`<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${reportCell(x.invited)}</td><td>${reportCell(x.present)}</td><td>${reportCell(x.absent)}</td><td>${x.percentage===null?'—':safe(x.percentage)+'%'}</td></tr>`).join('') || '<tr><td colspan="6">प्रतिवेदन उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
-        const statusLabel = x => ({Present:'उपस्थित',Absent:'अनुपस्थित',Pending:'मिलान बाँकी'})[x] || x;
-        // Group is sourced from the saved meeting attendance records; never guess by NCID.
+        const summaryTable = `<div class="report-section"><h3>बैठकगत सारांश</h3><div class="tablewrap"><table><thead><tr><th>मिति</th><th>बैठक</th><th>सहभागी हुनुपर्ने</th><th>उपस्थित</th><th>अनुपस्थित</th><th>उपस्थिति %</th></tr></thead><tbody>${r.meetings.map(x=>`<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${reportCell(x.invited)}</td><td>${reportCell(x.present)}</td><td>${reportCell(x.absent)}</td><td>${x.percentage===null?'—':safe(x.percentage)+'%'}</td></tr>`).join('') || '<tr><td colspan="6">प्रतिवेदन उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
         const isExtra = x => /अतिरिक्त|क्रियाशील|अन्य|extra|active/i.test(String(x.Group || '')) && !/अनिवार्य/i.test(String(x.Group || ''));
-        const extraRecords = r.records.filter(isExtra);
-        const mainRecords = r.records.filter(x => !isExtra(x));
+        const extraRecords = (r.records || []).filter(isExtra);
+        const mainRecords = (r.records || []).filter(x => !isExtra(x));
         const memberSection = (title, rows) => `<div class="report-section"><h3>${title} (${rows.length} जना)</h3><div class="tablewrap"><table><thead><tr><th>क्र.स.</th><th>NCID</th><th>सदस्यको नाम</th><th>स्थिति</th></tr></thead><tbody>${rows.map((x,i)=>`<tr><td>${i+1}</td><td>${safe(x.NCID)}</td><td>${safe(x.Name)}</td><td>${safe(statusLabel(x.Attendance))}</td></tr>`).join('') || '<tr><td colspan="4">विवरण उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
         const memberTable = memberSection('अनिवार्य / अन्य अभिलेखित सदस्य विवरण', mainRecords)
             + memberSection('अतिरिक्त क्रियाशील सदस्य उपस्थिति विवरण', extraRecords);
-        el('reportSummary').innerHTML = '<p><strong>कुल बैठक:</strong> ' + reportCell(s.meetings) + '</p>' + stats + noteHtml;
-        el('reportTable').innerHTML = summaryTable;
-        el('officialReportBody').innerHTML = metadata + '<p><strong>कुल बैठक:</strong> ' + reportCell(s.meetings) + '</p>' + stats + noteHtml + summaryTable + memberTable;
+        if (ncid) {
+            const personalHeading = `<div class="personal-identity"><div class="personal-identity-label">व्यक्तिगत बैठक उपस्थिति प्रतिवेदन</div><h3>${personalName ? safe(personalName) : 'सदस्यको नाम उपलब्ध छैन'}</h3><p><strong>NCID:</strong> ${safe(ncid)}</p></div>`;
+            const personalHistory = `<div class="report-section personal-history"><h3>बैठकअनुसार उपस्थिति विवरण</h3><div class="tablewrap"><table><thead><tr><th>मिति (BS)</th><th>बैठकको विषय</th><th>सहभागिताको प्रकार</th><th>स्थिति</th></tr></thead><tbody>${r.meetings.map(x => {
+                const attendance = (r.records || []).find(y => String(y.MeetingID) === String(x.id) && String(y.NCID).trim() === ncid);
+                return `<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${safe(attendance ? attendance.Group : 'अभिलेखित')}</td><td>${safe(attendance ? statusLabel(attendance.Attendance) : (x.present ? 'उपस्थित' : 'अनुपस्थित'))}</td></tr>`;
+            }).join('') || '<tr><td colspan="4">यस अवधिमा व्यक्तिगत बैठक अभिलेख भेटिएन ।</td></tr>'}</tbody></table></div></div>`;
+            const personalBody = personalHeading + periodHtml + stats + personalHistory;
+            el('reportSummary').innerHTML = personalHeading + periodHtml + stats;
+            el('reportTable').innerHTML = personalHistory;
+            el('officialReportBody').innerHTML = personalBody;
+            el('officialReport').querySelector('.report-title').textContent = 'व्यक्तिगत बैठक उपस्थिति प्रतिवेदन';
+        } else {
+            el('reportSummary').innerHTML = '<p><strong>कुल बैठक:</strong> ' + reportCell(s.meetings) + '</p>' + stats;
+            el('reportTable').innerHTML = summaryTable;
+            el('officialReportBody').innerHTML = metadata + '<p><strong>कुल बैठक:</strong> ' + reportCell(s.meetings) + '</p>' + stats + summaryTable + memberTable;
+            el('officialReport').querySelector('.report-title').textContent = 'बैठक उपस्थिति प्रतिवेदन';
+        }
         el('officialReportBody').dataset.ready = 'yes';
         feedback('प्रतिवेदन सफलतापूर्वक तयार भयो । तल विवरण हेर्नुहोस् ।', 'success');
         note('प्रतिवेदन तयार छ । Print / PDF बाट A4 प्रतिवेदन निकाल्न सक्नुहुन्छ ।');
