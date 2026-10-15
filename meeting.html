@@ -644,12 +644,12 @@ async function loadReport(button) {
         status.className = 'report-action-status' + (kind ? ' is-' + kind : '');
         status.textContent = message;
     }
-    if (from && !/^\\d{4}-\\d{2}-\\d{2}$/.test(from)) {
+    if (from && !/^\d{4}-\d{2}-\d{2}$/.test(from)) {
         feedback('मिति देखि (BS) YYYY-MM-DD ढाँचामा लेख्नुहोस् ।', 'error');
         el('from').focus();
         return;
     }
-    if (to && !/^\\d{4}-\\d{2}-\\d{2}$/.test(to)) {
+    if (to && !/^\d{4}-\d{2}-\d{2}$/.test(to)) {
         feedback('मिति सम्म (BS) YYYY-MM-DD ढाँचामा लेख्नुहोस् ।', 'error');
         el('to').focus();
         return;
@@ -659,7 +659,7 @@ async function loadReport(button) {
         el('from').focus();
         return;
     }
-    if (ncid && !/^\\d+$/.test(ncid)) {
+    if (ncid && !/^\d+$/.test(ncid)) {
         feedback('NCID मा अंक मात्र लेख्नुहोस् ।', 'error');
         el('reportNcid').focus();
         return;
