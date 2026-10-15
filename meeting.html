@@ -234,7 +234,7 @@ th {
 }
 </style></head>
 <body>
-<div class="app-shell"><aside class="app-sidebar no-print"><div class="sidebar-brand"><div class="brand-mark">🌳</div><strong>नेपाली कांग्रेस</strong><small>वडा नं. १ कार्यसमिति</small></div><nav aria-label="बैठक व्यवस्थापन"><button class="nav-link active" data-view="dashboard">▦ <span>ड्यासबोर्ड</span></button><button class="nav-link" data-view="registration">▣ <span>बैठक दर्ता / सम्पादन</span></button><button class="nav-link" data-view="appointments">♧ <span>कार्यसमिति मनोनयन</span></button><button class="nav-link" data-view="meetings">▤ <span>बैठकहरू</span></button><button class="nav-link" data-view="attendance">♙ <span>उपस्थिति</span></button><button class="nav-link" data-view="official">▧ <span>आधिकारिक प्रतिवेदन</span></button><button class="nav-link" data-view="reports">▥ <span>रिपोर्ट</span></button></nav><div class="sidebar-bottom"><a href="admin.html">← Admin Panel</a></div></aside><div class="app-content">
+<div class="app-shell"><aside class="app-sidebar no-print"><div class="sidebar-brand"><div class="brand-mark">🌳</div><strong>नेपाली कांग्रेस</strong><small>वडा नं. १ कार्यसमिति</small></div><nav aria-label="बैठक व्यवस्थापन"><button class="nav-link active" data-view="dashboard">▦ <span>ड्यासबोर्ड</span></button><button class="nav-link" data-view="registration">▣ <span>बैठक दर्ता / सम्पादन</span></button><button class="nav-link" data-view="meetings">▤ <span>बैठकहरू</span></button><button class="nav-link" data-view="attendance">♙ <span>उपस्थिति</span></button><button class="nav-link" data-view="official">▧ <span>आधिकारिक प्रतिवेदन</span></button><button class="nav-link" data-view="reports">▥ <span>रिपोर्ट</span></button></nav><div class="sidebar-bottom"><a href="admin.html">← Admin Panel</a></div></aside><div class="app-content">
 <header>
 <div>
 <h1>नेपाली कांग्रेस — वडा नं. १</h1>
@@ -304,21 +304,7 @@ th {
  <button id="cancelEditBtn" class="hidden" onclick="cancelMeetingEdit()">✕ सम्पादन बन्द गर्नुहोस्</button>
 <button onclick="clearMeeting()">नयाँ बैठक</button>
 </section>
-<section class="panel no-print view-section" data-section="appointments">
-<h2>कार्यसमिति मनोनयन व्यवस्थापन</h2>
-<p class="muted">सदस्य खोजेर मनोनयन दर्ता / सम्पादन गर्नुहोस् । विवरण स्वतः Database मा सुरक्षित हुन्छ ।</p>
-<div class="grid">
-<div class="wide"><label>सदस्य (नाम / NCID / T-ID)</label><input id="apSearch" placeholder="खोज्नुहोस्" oninput="apMembers()"><select id="apMember"></select></div>
-<div><label>मनोनीत पद</label><input id="apRole" placeholder="संगठन प्रमुख"></div>
-<div><label>लागू मिति (BS YYYY-MM-DD)</label><input id="apFrom" placeholder="2083-06-15"></div>
-<div><label>समाप्त मिति (वैकल्पिक)</label><input id="apTo" placeholder="2083-12-30"></div>
-<div><label>Protocol क्रम</label><input id="apOrder" type="number" min="1" value="99"></div>
-<div class="wide"><label>निर्णय / टिप्पणी</label><textarea id="apRemarks"></textarea></div>
-</div>
-<div class="tools"><button id="apSaveBtn" class="success" onclick="apSave()">मनोनयन सुरक्षित गर्नुहोस्</button><button onclick="apReset()">नयाँ मनोनयन</button><button id="apRefreshBtn" onclick="apLoad()">↻ Refresh</button></div>
-<p id="apNotice" role="status" aria-live="polite"></p>
-<h3>कार्यसमिति मनोनयन विवरण</h3><div id="apList" class="tablewrap"></div>
-</section><section class="panel no-print view-section" data-section="meetings">
+<section class="panel no-print view-section" data-section="meetings">
 <h2>बैठकहरू</h2>
 <div id="meetingList">
 </div>
@@ -436,68 +422,6 @@ async function api(action, data = {}) {
 }
 
 
-let apRows=[], apEdit='', apBusy=false;
-function apNote(t){el('apNotice').textContent=t;note(t);}
-function apMembers(){
- const q=el('apSearch').value.trim().toLowerCase(), old=el('apMember').value;
- const rows=members.filter(m=>!q||String(m.Name).toLowerCase().includes(q)||String(m.NCID).toLowerCase().includes(q));
- el('apMember').innerHTML='<option value="">सदस्य छान्नुहोस्</option>'+rows.map(m=>`<option value="${safe(m.NCID)}">${safe(m.Name)} — ${safe(m.NCID)}</option>`).join('');
- if(rows.some(m=>m.NCID===old))el('apMember').value=old;
-}
-function apReset(){
- apEdit='';
- ['apSearch','apRole','apFrom','apTo','apRemarks'].forEach(k=>el(k).value='');
- el('apOrder').value=99;apMembers();el('apSaveBtn').textContent='मनोनयन सुरक्षित गर्नुहोस्';
-}
-function apValidDate(x){return /^\d{4}-\d{2}-\d{2}$/.test(x);}
-async function apLoad(){
- if(apBusy)return;
- const btn=el('apRefreshBtn');setBusy(btn,true,'⏳ लोड हुँदैछ...');apNote('सूची लोड हुँदैछ...');
- try{
-  const [p,m]=await Promise.all([api('adminListProtocol'),api('meetingMembers')]);
-  apRows=p.rows.filter(x=>String(x.Category)==='वर्तमान वडा कार्यसमिति');
-  members=m.rows;apMembers();
-  el('apList').innerHTML='<table><thead><tr><th>सदस्य</th><th>पद</th><th>लागू</th><th>समाप्त</th><th>कार्य</th></tr></thead><tbody>'+
-  apRows.map(r=>`<tr><td>${safe(r.Name)} — ${safe(r.NCID)}</td><td>${safe(r.Designation)}</td><td>${safe(r.From)}</td><td>${safe(r.To||'—')}</td><td><button type="button" data-apedit="${safe(r.ID)}">Edit</button> <button type="button" data-apclose="${safe(r.ID)}">पदमुक्त</button></td></tr>`).join('')+'</tbody></table>';
-  el('apList').querySelectorAll('[data-apedit]').forEach(x=>x.onclick=()=>apOpen(x.dataset.apedit));
-  el('apList').querySelectorAll('[data-apclose]').forEach(x=>x.onclick=()=>apClose(x.dataset.apclose,x));
-  apNote(apRows.length+' वटा विवरण लोड भयो ।');
- }catch(e){apNote('त्रुटि: '+e.message);}finally{setBusy(btn,false);}
-}
-function apOpen(id){
- const r=apRows.find(x=>String(x.ID)===id);if(!r)return;
- apEdit=id;el('apSearch').value=String(r.Name||'');apMembers();el('apMember').value=String(r.NCID);
- for(const [k,v] of [['apRole',r.Designation],['apFrom',r.From],['apTo',r.To],['apOrder',r['Protocol Order']],['apRemarks',r.Remarks]])el(k).value=String(v||'');
- el('apSaveBtn').textContent='मनोनयन अपडेट गर्नुहोस्';apNote('सम्पादनका लागि खुल्यो: '+r.Name);el('apRole').focus();
-}
-async function apSave(){
- if(apBusy)return;
- const ncid=el('apMember').value,m=members.find(x=>x.NCID===ncid);
- const role=el('apRole').value.trim(),from=el('apFrom').value.trim(),to=el('apTo').value.trim(),order=Number(el('apOrder').value);
- if(!m||!role||!apValidDate(from)||(to&&(!apValidDate(to)||to<from))||!Number.isInteger(order)||order<1)return apNote('सदस्य, पद, लागू मिति र क्रम सही राख्नुहोस् ।');
- apBusy=true;const btn=el('apSaveBtn');setBusy(btn,true,'⏳ सुरक्षित हुँदैछ...');
- try{
-  const r=await api('adminSaveProtocol',{record:{ID:apEdit,Category:'वर्तमान वडा कार्यसमिति',NCID:ncid,Name:m.Name,Designation:role,From:from,To:to,'Protocol Order':order,Active:true,Remarks:el('apRemarks').value.trim()}});
-  apNote(r.message||'सुरक्षित भयो ।');apReset();
- }catch(e){apNote('Save असफल: '+e.message);}finally{apBusy=false;setBusy(btn,false);}
- await apLoad();
-}
-async function apClose(id,btn){
- if(apBusy)return;
- const r=apRows.find(x=>String(x.ID)===id);if(!r)return;
- const to=prompt(r.Name+' को पद समाप्त मिति (BS YYYY-MM-DD):');
- if(to===null)return;
- if(!apValidDate(to)||to<String(r.From||''))return apNote('मिति अमान्य छ ।');
- if(!confirm(r.Name+' लाई '+to+' मा पदमुक्त गर्ने हो?'))return;
- apBusy=true;setBusy(btn,true,'⏳ अपडेट हुँदैछ...');
- try{
-  const record={};for(const k of ['ID','Category','NCID','Name','Designation','From','Protocol Order','Remarks'])record[k]=r[k];
-  record.To=to;record.Active=true;
-  const response=await api('adminSaveProtocol',{record});apNote(response.message||'पदमुक्त विवरण सुरक्षित भयो ।');
- }catch(e){apNote('त्रुटि: '+e.message);}finally{apBusy=false;setBusy(btn,false);}
- await apLoad();
-}
-
 let currentView = 'dashboard';
 function showView(view) {
     currentView = view;
@@ -514,7 +438,6 @@ function showView(view) {
         showView('meetings');
         return;
     }
-    if (view === 'appointments') apLoad();
     if (view === 'reports' || view === 'official') {
         if (token && meetings.length && !el('officialReportBody').dataset.ready && !reportLoading) loadReport();
     }
