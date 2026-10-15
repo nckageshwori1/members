@@ -3065,6 +3065,82 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   }
   .greeting-slides .ward-birthday-card img.ward-birthday-photo { width:43.15%; height:43.15%; object-fit:cover; border-radius:50%; }
   .greeting-slides .ward-birthday-card img.ward-birthday-template { width:100%; height:100%; border-radius:0; object-fit:fill; }
+
+    /* Member meeting attendance: preserve on-screen card/table in Print and PDF. */
+    .memberMeetingHistory {
+      display:block !important;
+      margin-top:16px;
+      padding:14px;
+      background:#f7fbff;
+      border:1px solid #d9e7f2;
+      border-radius:12px;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+    .memberMeetingHistory h4 {
+      margin:0 0 12px;
+      color:#0d315d;
+      font-size:17px;
+      font-weight:800;
+    }
+    .memberMeetingCards {
+      display:grid !important;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:7px;
+      margin:8px 0 12px;
+    }
+    .memberMeetingCard {
+      background:#fff;
+      border:1px solid #dce7f2;
+      border-radius:8px;
+      text-align:center;
+      padding:9px 4px;
+      min-width:0;
+    }
+    .memberMeetingCard b {
+      display:block;
+      color:#0b548d;
+      font-size:18px;
+      font-weight:800;
+      line-height:1.4;
+    }
+    .memberMeetingCard span {
+      display:block;
+      color:#52677d;
+      font-size:10px;
+      font-weight:700;
+      line-height:1.5;
+    }
+    .memberMeetingTableWrap { width:100%; overflow:visible; }
+    .memberMeetingTable {
+      width:100%;
+      border-collapse:collapse;
+      table-layout:auto;
+      font-size:11px;
+      margin-top:10px;
+    }
+    .memberMeetingTable th,.memberMeetingTable td {
+      border:1px solid #dce7f2;
+      padding:7px 8px;
+      text-align:left;
+      vertical-align:top;
+      overflow-wrap:anywhere;
+    }
+    .memberMeetingTable th {
+      background:#eaf2fa;
+      color:#123c64;
+      font-weight:800;
+    }
+    .memberMeetingTable tr { break-inside:avoid; page-break-inside:avoid; }
+    @media print {
+      .memberMeetingHistory {
+        background:#f7fbff !important;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+      }
+      .memberMeetingCards { grid-template-columns:repeat(5,minmax(0,1fr)) !important; }
+      .memberMeetingTable th { background:#eaf2fa !important; }
+    }
 </style>
 
 <script id="wardMenuOnlyScript">
