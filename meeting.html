@@ -683,18 +683,18 @@ async function loadReport(button) {
             ncid: el('reportNcid').value.trim()
         });
         const s = r.summary;
-        if (el('dashPresent')) {
+        if (!ncid && el('dashPresent')) {
             el('dashPresent').textContent = s.present ?? '—';
             el('dashAbsent').textContent = s.absent ?? '—';
             el('dashPercent').textContent = s.percentage == null ? '—' : s.percentage + '%';
         }
-        const noteHtml = ''; // No warning in report.
-        const stats = `<div class="report-stats">${reportStat(s.invited,'सहभागी हुनुपर्ने')}${reportStat(s.present,'जम्मा उपस्थित')}${reportStat(s.absent,'अनुपस्थित')}${reportStat(s.percentage + '%','उपस्थिति प्रतिशत')}</div>`;
+        const noteHtml = ncid ? '<p class="personal-report-context"><strong>व्यक्तिगत NCID:</strong> ' + safe(ncid) + ' — तलको हिसाब यस सदस्यको मात्र हो ।</p>' : '';
+        const stats = `<div class="report-stats">${reportStat(s.invited,ncid ? 'सहभागी हुनुपर्ने बैठक' : 'सहभागी हुनुपर्ने')}${reportStat(s.present,ncid ? 'उपस्थित बैठक' : 'जम्मा उपस्थित')}${reportStat(s.absent,'अनुपस्थित')}${reportStat(s.percentage + '%','उपस्थिति प्रतिशत')}</div>`;
         const selectedMeeting = r.meetings.length === 1 ? r.meetings[0] : null;
         const metadata = selectedMeeting
             ? `<div class="report-meta"><strong>बैठक:</strong> ${safe(selectedMeeting.title)}<br><strong>मिति:</strong> ${safe(selectedMeeting.date)}${selectedMeeting.time ? '<br><strong>समय:</strong> '+safe(selectedMeeting.time) : ''}${selectedMeeting.venue ? '<br><strong>स्थान:</strong> '+safe(selectedMeeting.venue) : ''}${selectedMeeting.agenda ? '<br><strong>एजेन्डा:</strong> '+safe(selectedMeeting.agenda) : ''}${selectedMeeting.decisions ? '<br><strong>निर्णय:</strong> '+safe(selectedMeeting.decisions) : ''}</div>`
             : `<p><strong>प्रतिवेदन अवधि:</strong> ${safe(el('from').value || 'सुरुदेखि')} — ${safe(el('to').value || 'अहिलेसम्म')}</p>`;
-        const summaryTable = `<div class="report-section"><h3>बैठकगत सारांश</h3><div class="tablewrap"><table><thead><tr><th>मिति</th><th>बैठक</th><th>सहभागी हुनुपर्ने</th><th>उपस्थित</th><th>अनुपस्थित</th><th>उपस्थिति %</th></tr></thead><tbody>${r.meetings.map(x=>`<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${reportCell(x.invited)}</td><td>${reportCell(x.present)}</td><td>${reportCell(x.absent)}</td><td>${x.percentage===null?'—':safe(x.percentage)+'%'}</td></tr>`).join('') || '<tr><td colspan="6">प्रतिवेदन उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
+        const summaryTable = `<div class="report-section"><h3>${ncid ? 'व्यक्तिगत बैठक उपस्थिति इतिहास' : 'बैठकगत सारांश'}</h3><div class="tablewrap"><table><thead><tr><th>मिति</th><th>बैठक</th><th>${ncid ? 'सहभागिता' : 'सहभागी हुनुपर्ने'}</th><th>उपस्थित</th><th>अनुपस्थित</th><th>उपस्थिति %</th></tr></thead><tbody>${r.meetings.map(x=>`<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${reportCell(x.invited)}</td><td>${reportCell(x.present)}</td><td>${reportCell(x.absent)}</td><td>${x.percentage===null?'—':safe(x.percentage)+'%'}</td></tr>`).join('') || '<tr><td colspan="6">प्रतिवेदन उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
         const statusLabel = x => ({Present:'उपस्थित',Absent:'अनुपस्थित',Pending:'मिलान बाँकी'})[x] || x;
         // Group is sourced from the saved meeting attendance records; never guess by NCID.
         const isExtra = x => /अतिरिक्त|क्रियाशील|अन्य|extra|active/i.test(String(x.Group || '')) && !/अनिवार्य/i.test(String(x.Group || ''));
