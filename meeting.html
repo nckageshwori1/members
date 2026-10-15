@@ -212,6 +212,10 @@ th {
 @media(max-width:900px){.app-sidebar{width:210px}.dashboard-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-columns{grid-template-columns:1fr}}
 @media(max-width:650px){.app-shell{display:block}.app-sidebar{position:relative;width:100%;height:auto;padding:8px}.sidebar-brand,.sidebar-bottom{display:none}.app-sidebar nav{display:flex;flex-direction:row;overflow-x:auto;margin:0;gap:5px}.app-sidebar .nav-link{flex:0 0 auto;width:auto;white-space:nowrap;padding:11px 12px}.dashboard-metrics{gap:8px}.metric{padding:13px 9px}.metric strong{font-size:24px}}
 @media print{.app-sidebar,.dashboard{display:none!important}.app-content{width:100%}.view-hidden#officialReport{display:block!important}}
+.report-action-status{margin:10px 0 14px;padding:11px 14px;border-radius:9px;border:1px solid #bed5eb;background:#eff7ff;color:#174e79;font-weight:600}
+.report-action-status.is-error{background:#fff0f0;border-color:#edb8b8;color:#a12229}
+.report-action-status.is-success{background:#eaf8ef;border-color:#b5dfc4;color:#12633d}
+#viewReportBtn:disabled{opacity:.65;cursor:wait}
 </style></head>
 <body>
 <div class="app-shell"><aside class="app-sidebar no-print"><div class="sidebar-brand"><div class="brand-mark">🌳</div><strong>नेपाली कांग्रेस</strong><small>वडा नं. १ कार्यसमिति</small></div><nav aria-label="बैठक व्यवस्थापन"><button class="nav-link active" data-view="dashboard">▦ <span>ड्यासबोर्ड</span></button><button class="nav-link" data-view="registration">▣ <span>बैठक दर्ता / सम्पादन</span></button><button class="nav-link" data-view="meetings">▤ <span>बैठकहरू</span></button><button class="nav-link" data-view="attendance">♙ <span>उपस्थिति</span></button><button class="nav-link" data-view="official">▧ <span>आधिकारिक प्रतिवेदन</span></button><button class="nav-link" data-view="reports">▥ <span>रिपोर्ट</span></button></nav><div class="sidebar-bottom"><a href="admin.html">← Admin Panel</a></div></aside><div class="app-content">
@@ -323,7 +327,8 @@ th {
 </select>
 </div>
 </div>
-<button class="no-print" onclick="loadReport()">प्रतिवेदन हेर्नुहोस्</button>
+<button id="viewReportBtn" type="button" class="no-print" onclick="loadReport(this)">प्रतिवेदन हेर्नुहोस्</button>
+<div id="reportActionStatus" class="report-action-status no-print" role="status" aria-live="polite" hidden></div>
 <div id="reportSummary">
 </div>
 <div id="reportTable" class="tablewrap">
@@ -416,7 +421,7 @@ function showView(view) {
         return;
     }
     if (view === 'reports' || view === 'official') {
-        if (token && meetings.length) loadReport();
+        if (token && meetings.length && !el('officialReportBody').dataset.ready && !reportLoading) loadReport();
     }
     window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -626,7 +631,48 @@ function printMeetingReport() {
     if (!el('officialReportBody').dataset.ready) { note('पहिले प्रतिवेदन हेर्नुहोस् बटन थिच्नुहोस् ।'); return; }
     window.print();
 }
-async function loadReport() {
+let reportLoading = false;
+async function loadReport(button) {
+    if (reportLoading) return;
+    const reportButton = el('viewReportBtn');
+    const status = el('reportActionStatus');
+    const from = el('from').value.trim();
+    const to = el('to').value.trim();
+    const ncid = el('reportNcid').value.trim();
+    function feedback(message, kind = '') {
+        status.hidden = false;
+        status.className = 'report-action-status' + (kind ? ' is-' + kind : '');
+        status.textContent = message;
+    }
+    if (from && !/^\\d{4}-\\d{2}-\\d{2}$/.test(from)) {
+        feedback('मिति देखि (BS) YYYY-MM-DD ढाँचामा लेख्नुहोस् ।', 'error');
+        el('from').focus();
+        return;
+    }
+    if (to && !/^\\d{4}-\\d{2}-\\d{2}$/.test(to)) {
+        feedback('मिति सम्म (BS) YYYY-MM-DD ढाँचामा लेख्नुहोस् ।', 'error');
+        el('to').focus();
+        return;
+    }
+    if (from && to && from > to) {
+        feedback('मिति देखि, मिति सम्मभन्दा पछिको हुन सक्दैन ।', 'error');
+        el('from').focus();
+        return;
+    }
+    if (ncid && !/^\\d+$/.test(ncid)) {
+        feedback('NCID मा अंक मात्र लेख्नुहोस् ।', 'error');
+        el('reportNcid').focus();
+        return;
+    }
+    if (!token) {
+        feedback('पहिले Admin Login गर्नुहोस् ।', 'error');
+        loginVisibility(true);
+        return;
+    }
+    reportLoading = true;
+    setBusy(reportButton, true, '⏳ प्रतिवेदन तयार हुँदैछ...');
+    feedback('प्रतिवेदन तयार हुँदैछ । कृपया प्रतीक्षा गर्नुहोस्...');
+
     note('प्रतिवेदन लोड हुँदैछ...');
     el('officialReportBody').dataset.ready = '';
     try {
@@ -661,12 +707,21 @@ async function loadReport() {
         el('reportTable').innerHTML = summaryTable;
         el('officialReportBody').innerHTML = metadata + '<p><strong>कुल बैठक:</strong> ' + reportCell(s.meetings) + '</p>' + stats + noteHtml + summaryTable + memberTable;
         el('officialReportBody').dataset.ready = 'yes';
+        feedback('प्रतिवेदन सफलतापूर्वक तयार भयो । तल विवरण हेर्नुहोस् ।', 'success');
         note('प्रतिवेदन तयार छ । Print / PDF बाट A4 प्रतिवेदन निकाल्न सक्नुहुन्छ ।');
+        if (button) {
+            el('reportSummary').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     } catch (e) {
         el('reportSummary').textContent = e.message;
         el('reportTable').textContent = '';
         el('officialReportBody').textContent = 'प्रतिवेदन लोड हुन सकेन: ' + e.message;
+        feedback('प्रतिवेदन तयार हुन सकेन: ' + e.message, 'error');
         note('प्रतिवेदन असफल: ' + e.message);
+    }
+ finally {
+        reportLoading = false;
+        setBusy(reportButton, false);
     }
 }
 document.querySelectorAll('#date,#time,#title,#venue,#agenda,#decisions,#memberChecks').forEach(x => x.addEventListener('input', () => { if (!meetingSaving) meetingRequestId = ''; }));
