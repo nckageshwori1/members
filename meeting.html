@@ -232,9 +232,14 @@ th {
  .personal-period span{min-width:0}
  .personal-history table{font-size:10pt}
 }
+
+/* Compact navigation: keep existing actions and responsive layout. */
+.tools.no-print > .btn, .tools.no-print > button { width:auto; flex:0 1 auto; padding:10px 15px; font-size:13px; }
+.tools.no-print > [hidden] { display:none !important; }
+@media(max-width:640px) { .tools.no-print > .btn, .tools.no-print > button { flex:1 1 auto; } }
 </style></head>
 <body>
-<div class="app-shell"><aside class="app-sidebar no-print"><div class="sidebar-brand"><div class="brand-mark">🌳</div><strong>नेपाली कांग्रेस</strong><small>वडा नं. १ कार्यसमिति</small></div><nav aria-label="बैठक व्यवस्थापन"><button class="nav-link active" data-view="dashboard">▦ <span>ड्यासबोर्ड</span></button><button class="nav-link" data-view="registration">▣ <span>बैठक दर्ता / सम्पादन</span></button><button class="nav-link" data-view="appointments">♧ <span>कार्यसमिति मनोनयन</span></button><button class="nav-link" data-view="meetings">▤ <span>बैठकहरू</span></button><button class="nav-link" data-view="attendance">♙ <span>उपस्थिति</span></button><button class="nav-link" data-view="official">▧ <span>आधिकारिक प्रतिवेदन</span></button><button class="nav-link" data-view="reports">▥ <span>रिपोर्ट</span></button></nav><div class="sidebar-bottom"><a href="admin.html">← Admin Panel</a></div></aside><div class="app-content">
+<div class="app-shell"><aside class="app-sidebar no-print"><div class="sidebar-brand"><div class="brand-mark">🌳</div><strong>नेपाली कांग्रेस</strong><small>वडा नं. १ कार्यसमिति</small></div><nav aria-label="बैठक व्यवस्थापन"><button class="nav-link active" data-view="dashboard">▦ <span>ड्यासबोर्ड</span></button><button class="nav-link" data-view="registration">▣ <span>बैठक दर्ता / सम्पादन</span></button><button class="nav-link" data-view="meetings">▤ <span>बैठकहरू</span></button><button class="nav-link" data-view="attendance">♙ <span>उपस्थिति</span></button><button class="nav-link" data-view="official">▧ <span>आधिकारिक प्रतिवेदन</span></button><button class="nav-link" data-view="reports">▥ <span>रिपोर्ट</span></button></nav><div class="sidebar-bottom"><a href="admin.html">← Admin Panel</a></div></aside><div class="app-content">
 <header>
 <div>
 <h1>नेपाली कांग्रेस — वडा नं. १</h1>
@@ -243,8 +248,9 @@ th {
 </header>
 <main>
 <div class="tools no-print">
+<a class="btn" href="https://nckageshwori1.github.io/members/index.html">⌂ गृहपृष्ठ</a>
 <a class="btn" href="admin.html">← Admin Panel</a>
-<button onclick="init()">↻ Refresh</button>
+<button id="meetingBackButton" type="button" onclick="meetingBack()" hidden>← अघिल्लो पृष्ठ</button><button onclick="init()">↻ Refresh</button>
 <button onclick="printMeetingReport()">🖨 Print / PDF</button>
 </div>
 <div id="notice" class="muted" role="status" aria-live="polite">Admin Login Session जाँच हुँदैछ...</div>
@@ -304,30 +310,13 @@ th {
  <button id="cancelEditBtn" class="hidden" onclick="cancelMeetingEdit()">✕ सम्पादन बन्द गर्नुहोस्</button>
 <button onclick="clearMeeting()">नयाँ बैठक</button>
 </section>
-<section class="panel no-print view-section" data-section="appointments">
-<div class="tools no-print"><button type="button" onclick="showView('dashboard')">← ड्यासबोर्डमा फर्कनुहोस्</button></div>
-<h2>कार्यसमिति मनोनयन व्यवस्थापन</h2>
-<p class="muted">सदस्य खोजेर मनोनयन दर्ता / सम्पादन गर्नुहोस् । विवरण स्वतः Database मा सुरक्षित हुन्छ ।</p>
-<div class="grid">
-<div class="wide"><label>सदस्य (नाम / NCID / T-ID)</label><input id="apSearch" placeholder="खोज्नुहोस्" oninput="apMembers()"><select id="apMember"></select></div>
-<div><label>मनोनीत पद</label><input id="apRole" placeholder="संगठन प्रमुख"></div>
-<div><label>लागू मिति (BS YYYY-MM-DD)</label><input id="apFrom" placeholder="2083-06-15"></div>
-<div><label>समाप्त मिति (वैकल्पिक)</label><input id="apTo" placeholder="2083-12-30"></div>
-<div><label>Protocol क्रम</label><input id="apOrder" type="number" min="1" value="99"></div>
-<div class="wide"><label>निर्णय / टिप्पणी</label><textarea id="apRemarks"></textarea></div>
-</div>
-<div class="tools"><button id="apSaveBtn" class="success" onclick="apSave()">मनोनयन सुरक्षित गर्नुहोस्</button><button onclick="apReset()">नयाँ मनोनयन</button><button id="apRefreshBtn" onclick="apLoad()">↻ Refresh</button></div>
-<p id="apNotice" role="status" aria-live="polite"></p>
-<h3>कार्यसमिति मनोनयन विवरण</h3><div id="apList" class="tablewrap"></div>
-</section><section class="panel no-print view-section" data-section="meetings">
-<div class="tools no-print"><button type="button" onclick="showView('dashboard')">← ड्यासबोर्डमा फर्कनुहोस्</button></div>
+<section class="panel no-print view-section" data-section="meetings">
 <h2>बैठकहरू</h2>
 <div id="meetingList">
 </div>
 </section>
 <section id="attendancePanel" class="panel hidden view-section" data-section="attendance">
 <h2 id="meetingTitle">उपस्थिति</h2>
-<div class="tools no-print"><button type="button" onclick="closeAttendanceView()">← बैठक सूचीमा फर्कनुहोस् / बन्द गर्नुहोस्</button></div>
 <p class="muted" id="attendanceCorrectionNotice">उपस्थिति सच्याउन सदस्य छान्नुहोस् ।</p>
 <div id="attendanceAddTools" class="tools no-print" style="display:none"><input id="attendanceSearch" placeholder="छुटेका सदस्यको नाम, NCID वा T-ID खोज्नुहोस्" oninput="renderAttendanceCandidates()"><select id="attendanceCandidate"><option value="">सदस्य छान्नुहोस्</option></select><button type="button" onclick="addAttendanceMember()">+ उपस्थित सदस्य थप्नुहोस्</button></div><div id="attendanceTable" class="tablewrap">
 </div>
@@ -339,7 +328,6 @@ th {
 </div>
 </section>
 <section class="panel view-section" data-section="reports">
-<div class="tools no-print"><button type="button" onclick="showView('dashboard')">← ड्यासबोर्डमा फर्कनुहोस्</button></div>
 <h2>रिपोर्ट तथा फिल्टर</h2>
 <div class="grid no-print">
 <div>
@@ -369,7 +357,6 @@ th {
 </div>
 </section>
 <section class="panel view-section" id="officialReport" data-section="official">
-<div class="tools no-print"><button type="button" onclick="showView('dashboard')">← ड्यासबोर्डमा फर्कनुहोस्</button></div>
 <div class="report-letterhead">
 <img class="report-flag" src="flag-logo.png" alt="नेपाली कांग्रेसको चारतारे झण्डा" onerror="this.style.visibility='hidden'">
 <div><h2>नेपाली कांग्रेस</h2><p><strong>कागेश्वरी मनोहरा नगरपालिका, वडा नं. १ कार्यसमिति</strong></p><p>गागलफेदी, काठमाडौं</p></div>
@@ -504,8 +491,19 @@ async function apClose(id,btn){
 }
 
 let currentView = 'dashboard';
-function showView(view) {
+const meetingViewHistory = [];
+function meetingBack() {
+    if (meetingViewHistory.length) showView(meetingViewHistory.pop(), true);
+    else showView('dashboard', true);
+}
+
+
+function showView(view, fromBack = false) {
+    if (view === 'appointments') view = 'dashboard';
+    if (!fromBack && view !== currentView) meetingViewHistory.push(currentView);
     currentView = view;
+    const backButton = document.getElementById('meetingBackButton');
+    if (backButton) backButton.hidden = view === 'dashboard';
     document.querySelectorAll('.view-section').forEach(section => {
         const match = section.dataset.section === view;
         section.classList.toggle('view-hidden', !match);
@@ -519,7 +517,7 @@ function showView(view) {
         showView('meetings');
         return;
     }
-    if (view === 'appointments') apLoad();
+
     if (view === 'reports' || view === 'official') {
         if (token && meetings.length && !el('officialReportBody').dataset.ready && !reportLoading) loadReport();
     }
@@ -699,7 +697,7 @@ async function openAttendance(id, button) {
         // for typed meetings. Legacy meetings retain their original view.
         const modern = r.meeting.MeetingType === 'regular' || r.meeting.MeetingType === 'all';
         attendanceAllRows = r.rows;
-        attendees = r.rows;
+        attendees = modern ? r.rows.filter(x => x.Attendance === 'Present') : r.rows;
         el('attendancePanel').classList.remove('hidden');
     showView('attendance');
         el('meetingTitle').textContent = '३. उपस्थिति — ' + r.meeting['शीर्षक'] + ' (' + r.meeting['मिति BS'] + ')';
@@ -719,7 +717,6 @@ async function openAttendance(id, button) {
         alert(e.message);
     } finally { if (button) setBusy(button, false); }
 }
-function closeAttendanceView() { el('attendancePanel').classList.add('hidden'); currentId=''; showView('meetings'); }
 function renderAttendanceCandidates() {
     const q = String(el('attendanceSearch').value || '').trim().toLocaleLowerCase();
     const used = new Set(attendees.map(x => String(x.NCID).toUpperCase()));
