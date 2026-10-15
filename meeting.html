@@ -312,7 +312,7 @@ th {
 <section id="attendancePanel" class="panel hidden view-section" data-section="attendance">
 <h2 id="meetingTitle">उपस्थिति</h2>
 <p class="muted">केवल आमन्त्रित सदस्यलाई Present वा Absent चिन्ह लगाउनुहोस् ।</p>
-<div id="attendanceTable" class="tablewrap">
+<div id="attendanceAddTools" class="tools no-print" style="display:none"><input id="attendanceSearch" placeholder="छुटेका सदस्यको नाम, NCID वा T-ID खोज्नुहोस्" oninput="renderAttendanceCandidates()"><select id="attendanceCandidate"><option value="">सदस्य छान्नुहोस्</option></select><button type="button" onclick="addAttendanceMember()">+ उपस्थित सदस्य थप्नुहोस्</button></div><div id="attendanceTable" class="tablewrap">
 </div>
 <div class="tools no-print">
 <button onclick="markAll('Present')">सबै Present</button>
@@ -366,7 +366,8 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2
 let token = sessionStorage.getItem('nc_admin_token') || '';
 const el = id => document.getElementById(id);
 let members = [], meetings = [], currentId = '', editingId = '', attendees = [];
-let meetingSaving = false, meetingDeleting = false, attendanceSaving = false, finalizing = false;
+let meetingSaving = false, meetingDeleting = false, attendanceSaving = false, finalizing = false, attendanceAdding = false;
+let attendanceAllRows = [];
 let meetingRequestId = '';
 let legacyEditing = false;
 function meetingTypeValue() { return document.querySelector('input[name="meetingType"]:checked').value; }
@@ -610,18 +611,50 @@ async function openAttendance(id) {
         // The attendance screen shows only manually ticked (Present) members
         // for typed meetings. Legacy meetings retain their original view.
         const modern = r.meeting.MeetingType === 'regular' || r.meeting.MeetingType === 'all';
+        attendanceAllRows = r.rows;
         attendees = modern ? r.rows.filter(x => x.Attendance === 'Present') : r.rows;
         el('attendancePanel').classList.remove('hidden');
     showView('attendance');
         el('meetingTitle').textContent = '३. उपस्थिति — ' + r.meeting['शीर्षक'] + ' (' + r.meeting['मिति BS'] + ')';
         const locked = r.meeting.Status === 'Finalized';
         el('attendanceTable').innerHTML = (modern && !attendees.length ? '<p class="muted">यस बैठकमा उपस्थित सदस्य चयन गरिएको छैन । बैठक सम्पादनमा गएर माइनटअनुसार टिक लगाउनुहोस् ।</p>' : '') + '<table><tr><th>सदस्य</th><th>NCID</th><th>समूह</th><th>स्थिति</th><th>कैफियत</th></tr>' + attendees.map((x, i) => `<tr><td>${safe(x.Name)}</td><td>${safe(x.NCID)}</td><td>${safe(x.Group)}</td><td><select data-i="${i}" class="att-status" ${locked ? 'disabled' : ''}>${['Pending', 'Present', 'Absent'].map(s => `<option value="${s}" ${x.Attendance === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td><td><input data-i="${i}" class="att-remark" value="${safe(x.Remarks)}" ${locked ? 'readonly' : ''}></td></tr>`).join('') + '</table>';
+        el('attendanceAddTools').style.display = locked ? 'none' : 'flex';
+        if (!locked) renderAttendanceCandidates();
         el('attendancePanel').querySelectorAll('.tools button').forEach(b => b.disabled = locked);
         el('attendancePanel').scrollIntoView({ behavior: 'smooth' });
     }
     catch (e) {
         alert(e.message);
     }
+}
+function renderAttendanceCandidates() {
+    const q = String(el('attendanceSearch').value || '').trim().toLocaleLowerCase();
+    const used = new Set(attendees.map(x => String(x.NCID).toUpperCase()));
+    const pool = new Map();
+    attendanceAllRows.forEach(x => pool.set(String(x.NCID).toUpperCase(), x));
+    members.forEach(x => { const id = String(x.NCID || '').toUpperCase(); if (id && !pool.has(id)) pool.set(id, x); });
+    const matches = [...pool.values()].filter(x => !used.has(String(x.NCID).toUpperCase()) &&
+        (!q || String(x.Name || '').toLocaleLowerCase().includes(q) || String(x.NCID).toLocaleLowerCase().includes(q)));
+    el('attendanceCandidate').innerHTML = '<option value="">सदस्य छान्नुहोस्</option>' +
+        matches.map(x => `<option value="${safe(x.NCID)}">${safe(x.Name)} — ${safe(x.NCID)}</option>`).join('');
+}
+async function addAttendanceMember() {
+    if (attendanceAdding || attendanceSaving) return;
+    const id = el('attendanceCandidate').value;
+    if (!id) { note('पहिले सदस्य छान्नुहोस् ।'); return; }
+    const person = attendanceAllRows.find(x => String(x.NCID) === id) || members.find(x => String(x.NCID) === id);
+    if (!person || attendees.some(x => String(x.NCID) === id)) { note('सदस्य भेटिएन वा पहिले नै उपस्थित छन् ।'); return; }
+    attendanceAdding = true;
+    const button = [...el('attendanceAddTools').querySelectorAll('button')][0];
+    setBusy(button, true, '⏳ थपिँदैछ...');
+    try {
+        // Persist immediately to avoid losing the correction when navigating away.
+        const result = await api('meetingSaveAttendance', {id: currentId, entries:[{NCID:id,status:'Present',remarks:''}]});
+        if (result.ok === false) throw new Error(result.message || 'सुरक्षित हुन सकेन ।');
+        note('उपस्थित सदस्य थपियो र सुरक्षित भयो ।');
+        await openAttendance(currentId);
+    } catch(e) { note('सदस्य थप्न सकिएन: '+e.message); alert(e.message); }
+    finally { attendanceAdding = false; setBusy(button, false); }
 }
 function markAll(status) {
     const inputs = el('attendanceTable').querySelectorAll('.att-status:not(:disabled)');
