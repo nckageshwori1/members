@@ -2363,14 +2363,21 @@ function buildMemberDocumentHtml(pdfPhotoDataUrl) {
     ${clone.innerHTML}
   </main>
   <script>
-  // The preview remains HTML; PDF is generated as selectable Unicode text.
+  // Use the exact same document and print CSS for PDF and paper printing.
   function saveMemberDocumentPdf(button) {
-    if (!window.opener || window.opener.closed ||
-        typeof window.opener.generateMemberTextPdf !== 'function') {
-      alert('मूल सदस्य पेज खुला राखेर PDF डाउनलोड गर्नुहोस् ।');
-      return;
+    if (button && button.disabled) return;
+    if (button) {
+      button.disabled = true;
+      button.textContent = '⏳ Save as PDF खुल्दैछ...';
     }
-    window.opener.generateMemberTextPdf(button);
+    window.focus();
+    setTimeout(function () {
+      window.print();
+      if (button) {
+        button.disabled = false;
+        button.textContent = '📄 PDF डाउनलोड / Save as PDF';
+      }
+    }, 150);
   }
   <\/script>
 
@@ -2412,8 +2419,8 @@ async function generateMemberTextPdf(button) {
 
 async function openMemberDocument(autoPrint) {
   let pdfPhotoDataUrl = '';
-  // PDF preview only: retrieve the verified member's photo as base64.
-  if (!autoPrint && verifiedPdfPhotoFileID) {
+  // Both Print and Save as PDF use the same photo and document HTML.
+  if (verifiedPdfPhotoFileID) {
     try {
       const result = await api('memberPdfPhoto', {
         ncid: currentNCID,
@@ -2423,8 +2430,8 @@ async function openMemberDocument(autoPrint) {
       if (!result.ok) throw new Error(result.message || 'फोटो उपलब्ध भएन ।');
       pdfPhotoDataUrl = result.dataUrl;
     } catch (error) {
-      alert('PDF फोटो प्राप्त गर्न सकिएन: ' + error.message);
-      return;
+      console.warn('सदस्य फोटो लोड हुन सकेन:', error);
+      // Preserve the rest of the print/PDF document when photo is unavailable.
     }
   }
   const documentHtml = buildMemberDocumentHtml(pdfPhotoDataUrl);
@@ -2475,10 +2482,25 @@ async function printMemberProfile() {
   }
 }
 
-function downloadMemberPdf() {
-  // Direct download. Does not open print preview or a new window.
+async function downloadMemberPdf() {
+  // Opens the SAME print-preview HTML. Choose "Save as PDF" in Destination.
   const button = document.querySelector('#profile .memberPdfBtn');
-  generateMemberTextPdf(button);
+  if (button && button.disabled) return;
+  const previous = button ? button.textContent : '';
+  if (button) {
+    button.disabled = true;
+    button.textContent = '⏳ PDF Preview खुल्दैछ...';
+    button.setAttribute('aria-busy', 'true');
+  }
+  try {
+    await openMemberDocument(false);
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = previous;
+      button.removeAttribute('aria-busy');
+    }
+  }
 }
 
 function openAdmin() {
