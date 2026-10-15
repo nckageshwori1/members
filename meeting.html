@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="ne">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>बैठक तथा उपस्थिति | वडा नं. १</title>
+<style>
+:root {
+    font-family:"Noto Sans Devanagari","Nirmala UI",sans-serif;
+    color:#17344d;
+    background:#f3f7fb
+}
+* {
+    box-sizing:border-box
+}
+body {
+    margin:0
+}
+header {
+    background:linear-gradient(110deg,#0d6d43,#12446d);
+    color:white;
+    padding:20px
+}
+header>div,main {
+    max-width:1150px;
+    margin:auto
+}
+h1 {
+    font-size:23px;
+    margin:0 0 6px
+}
+main {
+    padding:20px 12px
+}
+.panel {
+    background:white;
+    border:1px solid #dce5ec;
+    border-radius:15px;
+    padding:18px;
+    margin:14px 0;
+    box-shadow:0 5px 20px #1231
+}
+.grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px
+}
+.wide {
+    grid-column:1/-1
+}
+label {
+    display:block;
+    font-weight:700;
+    font-size:13px;
+    margin-bottom:5px
+}
+input,textarea,select {
+    width:100%;
+    padding:10px;
+    border:1px solid #c7d6e3;
+    border-radius:8px;
+    font:inherit
+}
+textarea {
+    min-height:65px
+}
+button,.btn {
+    background:#12588d;
+    color:white;
+    border:0;
+    border-radius:9px;
+    padding:10px 13px;
+    cursor:pointer;
+    text-decoration:none;
+    font:600 14px inherit;
+    display:inline-block;
+    margin:3px
+}
+.danger {
+    background:#b12f35
+}
+.success {
+    background:#087a49
+}
+.muted {
+    color:#61788a;
+    font-size:13px
+}
+.tablewrap {
+    overflow:auto
+}
+table {
+    border-collapse:collapse;
+    width:100%;
+    min-width:630px
+}
+td,th {
+    border-bottom:1px solid #e1e7ef;
+    padding:10px;
+    text-align:left
+}
+th {
+    background:#edf3f8
+}
+.tools {
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin:12px 0
+}
+.tools>* {
+    flex:1 1 150px
+}
+.checklist {
+    max-height:260px;
+    overflow:auto;
+    border:1px solid #dce5ee;
+    padding:10px;
+    border-radius:9px
+}
+.checklist label {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:5px
+}
+.checklist input {
+    width:auto
+}
+.pill {
+    background:#eaf3f9;
+    padding:6px 9px;
+    border-radius:7px
+}
+.hidden {
+    display:none
+}
+@media(max-width:650px) {
+    .grid {
+        grid-template-columns:1fr
+    }
+    .wide {
+        grid-column:auto
+    }
+}
+@media print {
+    header,.no-print,button,.tools {
+        display:none!important
+    }
+    .panel {
+        box-shadow:none;
+        break-inside:avoid
+    }
+    body {
+        background:white
+    }
+}
+
+/* Official report: separate from admin forms; no historical guesses. */
+.report-letterhead{display:flex;align-items:center;justify-content:center;gap:16px;text-align:center;border-bottom:3px double #b71c1c;padding:12px 0 16px;margin-bottom:18px}
+.report-letterhead img{width:86px;height:86px;object-fit:contain;flex-shrink:0}.report-letterhead>div{flex:1;min-width:0}.report-letterhead{justify-content:space-between}.report-flag,.report-tree{display:block}
+.report-letterhead h2{color:#b21f29;margin:0;font-size:24px}
+.report-letterhead p{margin:3px 0}
+.report-title{text-align:center;margin:12px 0 20px;text-decoration:underline;text-underline-offset:6px}
+.report-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}
+.report-stat{background:#f0f6fa;border:1px solid #d7e3ed;border-radius:10px;padding:14px 7px;text-align:center}
+.report-stat strong{display:block;font-size:25px;color:#134d79}
+.report-stat span{font-size:12px}
+.report-note{background:#fff8e9;border-left:4px solid #d29c24;padding:10px 12px;margin:12px 0}
+.report-meta{line-height:1.9;margin:10px 0 18px}
+.report-signatures{display:flex;justify-content:space-between;gap:30px;margin-top:65px;text-align:center}
+.report-signatures div{min-width:150px;border-top:1px solid #333;padding-top:7px}
+.report-section{margin-top:25px}
+.report-section table{min-width:0;font-size:13px}
+.report-section td,.report-section th{padding:8px;border:1px solid #ccd7e1}
+@media(max-width:650px){.report-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.report-letterhead img{width:55px;height:55px}.report-letterhead h2{font-size:20px}}
+@media print{
+ @page{size:A4;margin:15mm 13mm}
+ body{background:#fff;color:#111;font-size:11pt}
+ main{padding:0;max-width:none}
+ main>.panel:not(#officialReport),main>.tools,main>#notice,header{display:none!important}
+ #officialReport{display:block!important;border:0;box-shadow:none;padding:0;margin:0}
+ .report-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .report-stat{background:#f5f5f5!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .report-section{break-inside:auto}
+ tr{break-inside:avoid}
+ .report-letterhead{break-inside:avoid}
+ .report-signatures{break-inside:avoid}
+}
+
+/* Professional responsive sidebar/dashboard; original functional panels preserved */
+.app-shell{display:flex;min-height:100vh}
+.app-sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:auto;width:250px;flex-shrink:0;background:linear-gradient(180deg,#142b45,#102138);color:white;padding:22px 12px;box-sizing:border-box}
+.sidebar-brand{text-align:center;padding:15px 5px 25px;border-bottom:1px solid #456079;display:flex;flex-direction:column;gap:5px}
+.brand-mark{font-size:45px}.sidebar-brand strong{font-size:21px}.sidebar-brand small{color:#d1dce9}
+.app-sidebar nav{display:flex;flex-direction:column;gap:8px;margin-top:22px}
+.app-sidebar .nav-link{width:100%;text-align:left;background:transparent;border:0;color:#eef4fc;padding:13px 12px;border-radius:10px;display:flex;gap:11px;align-items:center;font-size:15px;cursor:pointer}
+.app-sidebar .nav-link:hover{background:#2a4764}.app-sidebar .nav-link.active{background:#dc2635;color:white}
+.sidebar-bottom{margin-top:35px;border-top:1px solid #456079;padding:20px 12px}.sidebar-bottom a{color:#e3eaf5}
+.app-content{flex:1;min-width:0}.app-content main{max-width:1250px}
+.view-hidden{display:none!important}
+.dashboard-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.dashboard-heading h2{margin:0}.dashboard-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:24px 0}
+.metric{border:1px solid #d9e5f2;border-radius:13px;padding:22px 16px;display:flex;flex-direction:column;gap:9px;background:#eef6ff}
+.metric strong{font-size:32px;color:#123d70}.metric small{font-weight:700}.metric span{font-size:12px;color:#536477}
+.metric.green{background:#edfbf4}.metric.green strong{color:#08794e}
+.metric.red{background:#fff1f3}.metric.red strong{color:#bb2941}
+.metric.amber{background:#fff8eb}.metric.amber strong{color:#995307}
+.dashboard-columns{display:grid;grid-template-columns:minmax(0,2fr) minmax(230px,1fr);gap:15px}
+.dashboard-box{border:1px solid #e1e9f2;border-radius:12px;padding:15px;min-width:0}
+.quick-links{display:grid;gap:10px}.quick-links button{text-align:left;background:#f2f7fd;color:#164e83;border:1px solid #dbe7f4;padding:13px}
+@media(max-width:900px){.app-sidebar{width:210px}.dashboard-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-columns{grid-template-columns:1fr}}
+@media(max-width:650px){.app-shell{display:block}.app-sidebar{position:relative;width:100%;height:auto;padding:8px}.sidebar-brand,.sidebar-bottom{display:none}.app-sidebar nav{display:flex;flex-direction:row;overflow-x:auto;margin:0;gap:5px}.app-sidebar .nav-link{flex:0 0 auto;width:auto;white-space:nowrap;padding:11px 12px}.dashboard-metrics{gap:8px}.metric{padding:13px 9px}.metric strong{font-size:24px}}
+@media print{.app-sidebar,.dashboard{display:none!important}.app-content{width:100%}.view-hidden#officialReport{display:block!important}}
+.report-action-status{margin:10px 0 14px;padding:11px 14px;border-radius:9px;border:1px solid #bed5eb;background:#eff7ff;color:#174e79;font-weight:600}
+.report-action-status.is-error{background:#fff0f0;border-color:#edb8b8;color:#a12229}
+.report-action-status.is-success{background:#eaf8ef;border-color:#b5dfc4;color:#12633d}
+#viewReportBtn:disabled{opacity:.65;cursor:wait}
+
+/* Targeted personal NCID report design: screen + existing A4 print/PDF. */
+.personal-identity{padding:14px 16px;border:1px solid #d6e3ee;border-radius:10px;background:#f4f9fd;margin:12px 0}
+.personal-identity-label{font-size:12px;color:#43617a;font-weight:700}
+.personal-identity h3{font-size:23px;margin:5px 0;color:#153c62}
+.personal-identity p{margin:0;font-size:13px}
+.personal-period{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 16px}
+.personal-period span{flex:1;min-width:190px;border:1px solid #dce6f0;padding:11px 13px;border-radius:8px;background:white}
+.personal-history table{min-width:0;width:100%;table-layout:auto}
+.personal-history th,.personal-history td{overflow-wrap:anywhere}
+@media print{
+ .personal-identity,.personal-period{break-inside:avoid}
+ .personal-identity{background:#f4f9fd!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .personal-period span{min-width:0}
+ .personal-history table{font-size:10pt}
+}
+</style></head>
+<body>
+<div class="app-shell"><aside class="app-sidebar no-print"><div class="sidebar-brand"><div class="brand-mark">🌳</div><strong>नेपाली कांग्रेस</strong><small>वडा नं. १ कार्यसमिति</small></div><nav aria-label="बैठक व्यवस्थापन"><button class="nav-link active" data-view="dashboard">▦ <span>ड्यासबोर्ड</span></button><button class="nav-link" data-view="registration">▣ <span>बैठक दर्ता / सम्पादन</span></button><button class="nav-link" data-view="appointments">♧ <span>कार्यसमिति मनोनयन</span></button><button class="nav-link" data-view="meetings">▤ <span>बैठकहरू</span></button><button class="nav-link" data-view="attendance">♙ <span>उपस्थिति</span></button><button class="nav-link" data-view="official">▧ <span>आधिकारिक प्रतिवेदन</span></button><button class="nav-link" data-view="reports">▥ <span>रिपोर्ट</span></button></nav><div class="sidebar-bottom"><a href="admin.html">← Admin Panel</a></div></aside><div class="app-content">
+<header>
+<div>
+<h1>नेपाली कांग्रेस — वडा नं. १</h1>
+<div>बैठक व्यवस्थापन तथा उपस्थिति प्रतिवेदन</div>
+</div>
+</header>
+<main>
+<div class="tools no-print">
+<a class="btn" href="admin.html">← Admin Panel</a>
+<button onclick="init()">↻ Refresh</button>
+<button onclick="printMeetingReport()">🖨 Print / PDF</button>
+</div>
+<div id="notice" class="muted" role="status" aria-live="polite">Admin Login Session जाँच हुँदैछ...</div>
+<section id="meetingLoginPanel" class="panel hidden no-print">
+  <h2>बैठक व्यवस्थापन — Admin Login</h2>
+  <p class="muted">Session उपलब्ध नभए यहाँबाट Login गर्नुहोस् ।</p>
+  <div class="grid">
+    <div><label for="meetingUsername">Username</label><input id="meetingUsername" autocomplete="username"></div>
+    <div><label for="meetingPassword">Password</label><input id="meetingPassword" type="password" autocomplete="current-password"></div>
+  </div>
+  <button id="meetingLoginBtn" type="button" onclick="meetingLogin()">Login गर्नुहोस्</button>
+</section>
+<section class="panel view-section dashboard" data-section="dashboard" id="meetingDashboard">
+<div class="dashboard-heading"><div><h2>बैठक व्यवस्थापन ड्यासबोर्ड</h2><p class="muted">वडा कार्यसमितिको बैठक र उपस्थिति एकै ठाउँमा</p></div><button class="success" type="button" onclick="showView('registration')">＋ नयाँ बैठक दर्ता</button></div>
+<div class="dashboard-metrics"><div class="metric blue"><small>कुल बैठक</small><strong id="dashMeetings">—</strong><span>दर्ता भएका बैठक</span></div><div class="metric green"><small>जम्मा उपस्थित</small><strong id="dashPresent">—</strong><span>Finalized बैठकहरूबाट</span></div><div class="metric red"><small>जम्मा अनुपस्थित</small><strong id="dashAbsent">—</strong><span>Finalized बैठकहरूबाट</span></div><div class="metric amber"><small>उपस्थिति दर</small><strong id="dashPercent">—</strong><span>समग्र उपस्थिति प्रतिशत</span></div></div>
+<div class="dashboard-columns"><div class="dashboard-box"><h3>हालका बैठकहरू</h3><div id="dashboardRecent" class="tablewrap"><p class="muted">बैठकहरू लोड हुँदैछन्...</p></div></div><div class="dashboard-box"><h3>छिटो पहुँच</h3><div class="quick-links"><button onclick="showView('meetings')">▤ बैठकहरूको सूची हेर्नुहोस् →</button><button onclick="showView('attendance')">♙ उपस्थिति हेर्नुहोस् →</button><button onclick="showView('official')">▧ आधिकारिक प्रतिवेदन →</button><button onclick="showView('reports')">▥ समग्र रिपोर्ट →</button></div></div></div>
+</section><section class="panel no-print view-section" data-section="registration">
+<h2>बैठक दर्ता / सम्पादन</h2>
+<div class="grid">
+<div>
+<label>मिति (वि.सं. YYYY-MM-DD)</label>
+<input id="date" placeholder="2083-06-23">
+</div>
+<div>
+<label>समय</label>
+<input id="time" type="time">
+</div>
+<div>
+<label>बैठक शीर्षक</label>
+<input id="title">
+</div>
+<div>
+<label>स्थान</label>
+<input id="venue">
+</div>
+<div class="wide">
+<label>एजेन्डा</label>
+<textarea id="agenda">
+</textarea>
+</div>
+<div class="wide">
+<label>निर्णय / विवरण</label>
+<textarea id="decisions">
+</textarea>
+</div>
+</div>
+<h3>बैठकको प्रकार र उपस्थिति</h3>
+<div class="tools"><label><input type="radio" name="meetingType" value="regular" checked onchange="onMeetingTypeChange()"> नियमित बैठक</label>
+<label><input type="radio" name="meetingType" value="all" onchange="onMeetingTypeChange()"> सम्पूर्ण क्रियाशील सदस्य आमन्त्रित</label></div>
+<p class="muted">Sheet मा NCID वा T बाट सुरु हुने Temporary ID भएका सबै सदस्य यहाँ देखिन्छन् । माइनटमा दस्तखत भएका सदस्यलाई मात्र टिक गर्नुहोस् ।</p>
+<div class="tools"><input id="filter" placeholder="NCID, T-ID वा नामबाट सदस्य खोज्नुहोस्" oninput="renderMembers()"><button type="button" onclick="refreshMeetingMembers()">↻ Sheet बाट सदस्य Refresh</button></div>
+<p id="selectedCount" class="muted">
+</p>
+<div id="memberChecks" class="checklist">
+</div>
+<button id="saveMeetingBtn" class="success" onclick="saveMeeting()">बैठक सुरक्षित गर्नुहोस्</button>
+ <button id="cancelEditBtn" class="hidden" onclick="cancelMeetingEdit()">✕ सम्पादन बन्द गर्नुहोस्</button>
+<button onclick="clearMeeting()">नयाँ बैठक</button>
+</section>
+<section class="panel no-print view-section" data-section="appointments">
+<div class="tools no-print"><button type="button" onclick="showView('dashboard')">← ड्यासबोर्डमा फर्कनुहोस्</button></div>
+<h2>कार्यसमिति मनोनयन व्यवस्थापन</h2>
+<p class="muted">सदस्य खोजेर मनोनयन दर्ता / सम्पादन गर्नुहोस् । विवरण स्वतः Database मा सुरक्षित हुन्छ ।</p>
+<div class="grid">
+<div class="wide"><label>सदस्य (नाम / NCID / T-ID)</label><input id="apSearch" placeholder="खोज्नुहोस्" oninput="apMembers()"><select id="apMember"></select></div>
+<div><label>मनोनीत पद</label><input id="apRole" placeholder="संगठन प्रमुख"></div>
+<div><label>लागू मिति (BS YYYY-MM-DD)</label><input id="apFrom" placeholder="2083-06-15"></div>
+<div><label>समाप्त मिति (वैकल्पिक)</label><input id="apTo" placeholder="2083-12-30"></div>
+<div><label>Protocol क्रम</label><input id="apOrder" type="number" min="1" value="99"></div>
+<div class="wide"><label>निर्णय / टिप्पणी</label><textarea id="apRemarks"></textarea></div>
+</div>
+<div class="tools"><button id="apSaveBtn" class="success" onclick="apSave()">मनोनयन सुरक्षित गर्नुहोस्</button><button onclick="apReset()">नयाँ मनोनयन</button><button id="apRefreshBtn" onclick="apLoad()">↻ Refresh</button></div>
+<p id="apNotice" role="status" aria-live="polite"></p>
+<h3>कार्यसमिति मनोनयन विवरण</h3><div id="apList" class="tablewrap"></div>
+</section><section class="panel no-print view-section" data-section="meetings">
+<div class="tools no-print"><button type="button" onclick="showView('dashboard')">← ड्यासबोर्डमा फर्कनुहोस्</button></div>
+<h2>बैठकहरू</h2>
+<div id="meetingList">
+</div>
+</section>
+<section id="attendancePanel" class="panel hidden view-section" data-section="attendance">
+<h2 id="meetingTitle">उपस्थिति</h2>
+<div class="tools no-print"><button type="button" onclick="closeAttendanceView()">← बैठक सूचीमा फर्कनुहोस् / बन्द गर्नुहोस्</button></div>
+<p class="muted" id="attendanceCorrectionNotice">उपस्थिति सच्याउन सदस्य छान्नुहोस् ।</p>
+<div id="attendanceAddTools" class="tools no-print" style="display:none"><input id="attendanceSearch" placeholder="छुटेका सदस्यको नाम, NCID वा T-ID खोज्नुहोस्" oninput="renderAttendanceCandidates()"><select id="attendanceCandidate"><option value="">सदस्य छान्नुहोस्</option></select><button type="button" onclick="addAttendanceMember()">+ उपस्थित सदस्य थप्नुहोस्</button></div><div id="attendanceTable" class="tablewrap">
+</div>
+<div class="tools no-print">
+<button data-draft-only onclick="markAll('Present')">सबै Present</button>
+<button data-draft-only onclick="markAll('Absent')">सबै Absent</button>
+<button class="success" onclick="saveAttendance()">उपस्थिति सुरक्षित गर्नुहोस्</button>
+<button data-finalize-only class="danger" onclick="finalizeMeeting()">बैठक Finalize</button>
+</div>
+</section>
+<section class="panel view-section" data-section="reports">
+<div class="tools no-print"><button type="button" onclick="showView('dashboard')">← ड्यासबोर्डमा फर्कनुहोस्</button></div>
+<h2>रिपोर्ट तथा फिल्टर</h2>
+<div class="grid no-print">
+<div>
+<label>मिति देखि (BS)</label>
+<input id="from" placeholder="2083-01-01">
+</div>
+<div>
+<label>मिति सम्म (BS)</label>
+<input id="to" placeholder="2083-12-30">
+</div>
+<div>
+<label>NCID (वैकल्पिक)</label>
+<input id="reportNcid" placeholder="व्यक्तिगत इतिहास">
+</div>
+<div>
+<label>बैठक</label>
+<select id="reportMeeting">
+<option value="">सबै बैठक</option>
+</select>
+</div>
+</div>
+<button id="viewReportBtn" type="button" class="no-print" onclick="loadReport(this)">प्रतिवेदन हेर्नुहोस्</button>
+<div id="reportActionStatus" class="report-action-status no-print" role="status" aria-live="polite" hidden></div>
+<div id="reportSummary">
+</div>
+<div id="reportTable" class="tablewrap">
+</div>
+</section>
+<section class="panel view-section" id="officialReport" data-section="official">
+<div class="tools no-print"><button type="button" onclick="showView('dashboard')">← ड्यासबोर्डमा फर्कनुहोस्</button></div>
+<div class="report-letterhead">
+<img class="report-flag" src="flag-logo.png" alt="नेपाली कांग्रेसको चारतारे झण्डा" onerror="this.style.visibility='hidden'">
+<div><h2>नेपाली कांग्रेस</h2><p><strong>कागेश्वरी मनोहरा नगरपालिका, वडा नं. १ कार्यसमिति</strong></p><p>गागलफेदी, काठमाडौं</p></div>
+<img class="report-tree" src="tree-logo.png" alt="नेपाली कांग्रेसको रुख चिन्ह" onerror="this.style.visibility='hidden'">
+</div>
+<h2 class="report-title">बैठक उपस्थिति प्रतिवेदन</h2>
+<div id="officialReportBody"><p class="muted">प्रतिवेदन हेर्नुहोस् थिचेर विवरण लोड गर्नुहोस् ।</p></div>
+<div class="report-signatures"><div>प्रतिवेदन तयार गर्ने<br>नाम / हस्ताक्षर</div><div>प्रमाणित गर्ने<br>नाम / हस्ताक्षर</div></div>
+</section>
+</main><script>
+'use strict';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
+let token = sessionStorage.getItem('nc_admin_token') || '';
+const el = id => document.getElementById(id);
+let members = [], meetings = [], currentId = '', editingId = '', attendees = [];
+let meetingSaving = false, meetingDeleting = false, attendanceSaving = false, finalizing = false, attendanceAdding = false;
+let attendanceAllRows = [], attendanceFinalized = false;
+let meetingRequestId = '';
+let legacyEditing = false;
+function meetingTypeValue() { return document.querySelector('input[name="meetingType"]:checked').value; }
+function onMeetingTypeChange() { if (!legacyEditing) { selected.clear(); renderMembers(); } meetingRequestId=''; }
+function setBusy(button, busy, text) {
+    if (!button) return;
+    if (busy) { button.dataset.originalText = button.textContent; button.textContent = text; }
+    else { button.textContent = button.dataset.originalText || button.textContent; }
+    button.disabled = busy;
+}
+function updateEditControls() {
+    el('cancelEditBtn').classList.toggle('hidden', !editingId);
+    el('saveMeetingBtn').textContent = editingId ? 'बैठक अपडेट गर्नुहोस्' : 'बैठक सुरक्षित गर्नुहोस्';
+}
+function cancelMeetingEdit() { clearMeeting(); note('सम्पादन बन्द गरियो । कुनै परिवर्तन सुरक्षित गरिएको छैन ।'); }
+const selected = new Set();
+function note(s) { el('notice').textContent = s; }
+function loginVisibility(show) {
+    el('meetingLoginPanel').classList.toggle('hidden', !show);
+}
+async function meetingLogin() {
+    const username = el('meetingUsername').value.trim();
+    const password = el('meetingPassword').value;
+    if (!username || !password) { note('Username र Password आवश्यक छन् ।'); return; }
+    const button = el('meetingLoginBtn');
+    setBusy(button, true, 'Login हुँदैछ...');
+    try {
+        const r = await api('adminLogin', {username, password});
+        token = r.token;
+        sessionStorage.setItem('nc_admin_token', token);
+        sessionStorage.setItem('nc_admin_name', r.name || username);
+        el('meetingPassword').value = '';
+        loginVisibility(false);
+        await init();
+    } catch (e) {
+        note('Login असफल: ' + e.message);
+    } finally { setBusy(button, false); }
+}
+window.addEventListener('error', e => note('JavaScript समस्या: ' + e.message));
+window.addEventListener('unhandledrejection', e => note('अनुरोध असफल: ' + (e.reason?.message || e.reason)));
+function safe(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+async function api(action, data = {}) {
+    const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, token, ...data }), redirect: 'follow' });
+    if (!r.ok)
+        throw Error('सर्भरमा सम्पर्क हुन सकेन (HTTP ' + r.status + ') ।');
+    let j;
+    try { j = await r.json(); }
+    catch (_) { throw Error('API बाट JSON आएन । Apps Script deployment / access जाँच्नुहोस् ।'); }
+    if (!j.ok)
+        throw Error(j.message || 'Error');
+    return j;
+}
+
+
+let apRows=[], apEdit='', apBusy=false;
+function apNote(t){el('apNotice').textContent=t;note(t);}
+function apMembers(){
+ const q=el('apSearch').value.trim().toLowerCase(), old=el('apMember').value;
+ const rows=members.filter(m=>!q||String(m.Name).toLowerCase().includes(q)||String(m.NCID).toLowerCase().includes(q));
+ el('apMember').innerHTML='<option value="">सदस्य छान्नुहोस्</option>'+rows.map(m=>`<option value="${safe(m.NCID)}">${safe(m.Name)} — ${safe(m.NCID)}</option>`).join('');
+ if(rows.some(m=>m.NCID===old))el('apMember').value=old;
+}
+function apReset(){
+ apEdit='';
+ ['apSearch','apRole','apFrom','apTo','apRemarks'].forEach(k=>el(k).value='');
+ el('apOrder').value=99;apMembers();el('apSaveBtn').textContent='मनोनयन सुरक्षित गर्नुहोस्';
+}
+function apValidDate(x){return /^\d{4}-\d{2}-\d{2}$/.test(x);}
+async function apLoad(){
+ if(apBusy)return;
+ const btn=el('apRefreshBtn');setBusy(btn,true,'⏳ लोड हुँदैछ...');apNote('सूची लोड हुँदैछ...');
+ try{
+  const [p,m]=await Promise.all([api('adminListProtocol'),api('meetingMembers')]);
+  apRows=p.rows.filter(x=>String(x.Category)==='वर्तमान वडा कार्यसमिति');
+  members=m.rows;apMembers();
+  el('apList').innerHTML='<table><thead><tr><th>सदस्य</th><th>पद</th><th>लागू</th><th>समाप्त</th><th>कार्य</th></tr></thead><tbody>'+
+  apRows.map(r=>`<tr><td>${safe(r.Name)} — ${safe(r.NCID)}</td><td>${safe(r.Designation)}</td><td>${safe(r.From)}</td><td>${safe(r.To||'—')}</td><td><button type="button" data-apedit="${safe(r.ID)}">Edit</button> <button type="button" data-apclose="${safe(r.ID)}">पदमुक्त</button></td></tr>`).join('')+'</tbody></table>';
+  el('apList').querySelectorAll('[data-apedit]').forEach(x=>x.onclick=()=>apOpen(x.dataset.apedit));
+  el('apList').querySelectorAll('[data-apclose]').forEach(x=>x.onclick=()=>apClose(x.dataset.apclose,x));
+  apNote(apRows.length+' वटा विवरण लोड भयो ।');
+ }catch(e){apNote('त्रुटि: '+e.message);}finally{setBusy(btn,false);}
+}
+function apOpen(id){
+ const r=apRows.find(x=>String(x.ID)===id);if(!r)return;
+ apEdit=id;el('apSearch').value=String(r.Name||'');apMembers();el('apMember').value=String(r.NCID);
+ for(const [k,v] of [['apRole',r.Designation],['apFrom',r.From],['apTo',r.To],['apOrder',r['Protocol Order']],['apRemarks',r.Remarks]])el(k).value=String(v||'');
+ el('apSaveBtn').textContent='मनोनयन अपडेट गर्नुहोस्';apNote('सम्पादनका लागि खुल्यो: '+r.Name);el('apRole').focus();
+}
+async function apSave(){
+ if(apBusy)return;
+ const ncid=el('apMember').value,m=members.find(x=>x.NCID===ncid);
+ const role=el('apRole').value.trim(),from=el('apFrom').value.trim(),to=el('apTo').value.trim(),order=Number(el('apOrder').value);
+ if(!m||!role||!apValidDate(from)||(to&&(!apValidDate(to)||to<from))||!Number.isInteger(order)||order<1)return apNote('सदस्य, पद, लागू मिति र क्रम सही राख्नुहोस् ।');
+ apBusy=true;const btn=el('apSaveBtn');setBusy(btn,true,'⏳ सुरक्षित हुँदैछ...');
+ try{
+  const r=await api('adminSaveProtocol',{record:{ID:apEdit,Category:'वर्तमान वडा कार्यसमिति',NCID:ncid,Name:m.Name,Designation:role,From:from,To:to,'Protocol Order':order,Active:true,Remarks:el('apRemarks').value.trim()}});
+  apNote(r.message||'सुरक्षित भयो ।');apReset();
+ }catch(e){apNote('Save असफल: '+e.message);}finally{apBusy=false;setBusy(btn,false);}
+ await apLoad();
+}
+async function apClose(id,btn){
+ if(apBusy)return;
+ const r=apRows.find(x=>String(x.ID)===id);if(!r)return;
+ const to=prompt(r.Name+' को पद समाप्त मिति (BS YYYY-MM-DD):');
+ if(to===null)return;
+ if(!apValidDate(to)||to<String(r.From||''))return apNote('मिति अमान्य छ ।');
+ if(!confirm(r.Name+' लाई '+to+' मा पदमुक्त गर्ने हो?'))return;
+ apBusy=true;setBusy(btn,true,'⏳ अपडेट हुँदैछ...');
+ try{
+  const record={};for(const k of ['ID','Category','NCID','Name','Designation','From','Protocol Order','Remarks'])record[k]=r[k];
+  record.To=to;record.Active=true;
+  const response=await api('adminSaveProtocol',{record});apNote(response.message||'पदमुक्त विवरण सुरक्षित भयो ।');
+ }catch(e){apNote('त्रुटि: '+e.message);}finally{apBusy=false;setBusy(btn,false);}
+ await apLoad();
+}
+
+let currentView = 'dashboard';
+function showView(view) {
+    currentView = view;
+    document.querySelectorAll('.view-section').forEach(section => {
+        const match = section.dataset.section === view;
+        section.classList.toggle('view-hidden', !match);
+    });
+    document.querySelectorAll('.nav-link').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+        btn.setAttribute('aria-current', btn.dataset.view === view ? 'page' : 'false');
+    });
+    if (view === 'attendance' && el('attendancePanel').classList.contains('hidden')) {
+        note('उपस्थिति हेर्न बैठकहरूको सूचीबाट सम्बन्धित बैठकको “उपस्थिति” बटन थिच्नुहोस् ।');
+        showView('meetings');
+        return;
+    }
+    if (view === 'appointments') apLoad();
+    if (view === 'reports' || view === 'official') {
+        if (token && meetings.length && !el('officialReportBody').dataset.ready && !reportLoading) loadReport();
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateDashboard() {
+    el('dashMeetings').textContent = meetings.length;
+    const recent = meetings.slice(0,8);
+    el('dashboardRecent').innerHTML = recent.length
+      ? '<table><thead><tr><th>मिति</th><th>बैठक</th><th>स्थिति</th><th>कार्य</th></tr></thead><tbody>'
+        + recent.map(m => '<tr><td>'+safe(m['मिति BS'])+'</td><td>'+safe(m['शीर्षक'])+'</td><td>'+safe(m.Status)+'</td><td><button type="button" data-dash-open="'+safe(m.ID)+'">हेर्नुहोस्</button></td></tr>').join('')
+        + '</tbody></table>'
+      : '<p class="muted">अहिलेसम्म बैठक दर्ता भएको छैन ।</p>';
+    el('dashboardRecent').querySelectorAll('[data-dash-open]').forEach(b => b.addEventListener('click',()=>openAttendance(b.dataset.dashOpen)));
+}
+document.querySelectorAll('.nav-link').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
+
+async function init() {
+    if (!token) {
+        loginVisibility(true);
+        note('बैठकका बटन प्रयोग गर्न Admin Login गर्नुहोस् ।');
+        return;
+    }
+    loginVisibility(false);
+    note('बैठकको विवरण लोड हुँदैछ...');
+    try {
+        await api('meetingSetup');
+        const [m, list] = await Promise.all([api('meetingMembers'), api('meetingList')]);
+        members = m.rows;
+        meetings = list.rows;
+        renderMembers();
+        renderMeetings();
+        updateDashboard();
+        note('डेटा तयार छ ।');
+        await loadReport();
+    }
+    catch (e) {
+        note('डेटा लोड हुन सकेन: ' + e.message);
+        if (/token|session|login|unauthor|अधिकार|समाप्त/i.test(e.message)) loginVisibility(true);
+    }
+}
+async function refreshMeetingMembers() {
+    note('Google Sheet बाट सदस्य सूची Refresh हुँदैछ...');
+    try {
+        const result = await api('meetingMembers');
+        members = Array.isArray(result.rows) ? result.rows : [];
+        renderMembers();
+        note('सदस्य सूची अपडेट भयो: ' + members.length + ' जना ।');
+    } catch (error) {
+        note('सदस्य सूची Refresh हुन सकेन: ' + error.message);
+    }
+}
+function selectGroup(g) {
+    if (g === 'none')
+        selected.clear();
+    else
+        members.forEach(m => { if ((g === 'all' && m.active) || (g === 'committee' && m.committee) || (g === 'representative' && m.representative))
+            selected.add(m.NCID); });
+    renderMembers();
+}
+function renderMembers() {
+    const q = el('filter').value.trim().toLocaleLowerCase();
+    const all = meetingTypeValue()==='all';
+    // Always show the complete live Sheet member list, including mandatory members.
+    // The checkbox of a mandatory member is checked and locked because they
+    // are automatically included in regular meetings.
+    const rows = members.filter(m => !q ||
+        String(m.Name || '').toLocaleLowerCase().includes(q) ||
+        String(m.NCID || '').toLocaleLowerCase().includes(q));
+    el('memberChecks').innerHTML = rows.length ? rows.map(m => {
+        const auto = false; // No automatic attendance selection; only manual ticks.
+        const checked = selected.has(m.NCID);
+        const type = m.mandatory ? 'अनिवार्य सदस्य' :
+            (m.representative ? 'प्रतिनिधि' : 'क्रियाशील सदस्य');
+        return `<label><input type="checkbox" data-ncid="${safe(m.NCID)}" ${checked ? 'checked' : ''} ><span>${safe(m.Name)} — ${safe(m.NCID)} <small>(${safe(type)})</small></span></label>`;
+    }).join('') : '<p class="muted">खोजिएको सदस्य सूचीमा भेटिएन । Sheet मा NCID र नाम जाँचेर Refresh गर्नुहोस् ।</p>';
+    el('memberChecks').querySelectorAll('input:not(:disabled)').forEach(i =>
+        i.addEventListener('change', () => {
+            i.checked ? selected.add(i.dataset.ncid) : selected.delete(i.dataset.ncid);
+            renderCount();
+        }));
+    renderCount();
+}
+function renderCount() {
+    const count = members.filter(m=>m.mandatory).length;
+    el('selectedCount').textContent = legacyEditing ? selected.size+' जना (पुरानो बैठकको सूची)' : selected.size+' जना उपस्थित टिक गरिएको; '+(meetingTypeValue()==='all' ? members.filter(m=>m.active).length+' जना क्रियाशील सहभागी आधार' : count+' जना अनिवार्य सहभागी आधार');
+}
+function clearMeeting() { note('नयाँ बैठकको फारम तयार छ ।'); editingId = ''; legacyEditing=false; meetingRequestId = ''; ['date', 'time', 'title', 'venue', 'agenda', 'decisions'].forEach(x => el(x).value = ''); selected.clear(); document.querySelector('input[name="meetingType"][value="regular"]').checked=true; renderMembers(); updateEditControls(); }
+async function saveMeeting() {
+    if (meetingSaving) return;
+    const button = el('saveMeetingBtn');
+    meetingSaving = true;
+    setBusy(button, true, '⏳ सुरक्षित हुँदैछ...');
+    note('बैठक सुरक्षित हुँदैछ । कृपया प्रतीक्षा गर्नुहोस् ।');
+    try {
+        if (!meetingRequestId) meetingRequestId = (globalThis.crypto && typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random());
+        const meeting = { id: editingId, requestId: meetingRequestId, date: el('date').value.trim(), time: el('time').value, venue: el('venue').value, title: el('title').value, agenda: el('agenda').value, decisions: el('decisions').value, meetingType: meetingTypeValue(), ncids: [...selected] };
+        const r = await api('meetingSave', { meeting });
+        editingId = r.id;
+        meetingRequestId = '';
+        note(r.message);
+        alert(r.message);
+        await init();
+    } catch (e) {
+        note('बैठक सुरक्षित हुन सकेन: ' + e.message);
+        alert(e.message);
+        // Keep requestId on retry: if server saved before network failed,
+        // retry safely returns the existing meeting instead of adding another.
+    } finally {
+        meetingSaving = false;
+        setBusy(button, false);
+        updateEditControls();
+    }
+}
+function renderMeetings() {
+    el('meetingList').innerHTML = meetings.length ? '<div class="tablewrap"><table><tr><th>मिति</th><th>शीर्षक</th><th>स्थिति</th><th>कार्य</th></tr>' + meetings.map(m => `<tr><td>${safe(m['मिति BS'])}</td><td>${safe(m['शीर्षक'])}</td><td>${safe(m.Status)}</td><td><button data-open="${safe(m.ID)}">उपस्थिति</button> ${m.Status === 'Finalized' ? `<button data-correct="${safe(m.ID)}">उपस्थिति सच्याउनुहोस्</button>` : `<button data-edit="${safe(m.ID)}">Edit</button> <button class="danger" data-delete="${safe(m.ID)}">Delete</button>`}</td></tr>`).join('') + '</table></div>' : 'बैठक दर्ता भएको छैन ।';
+    el('meetingList').querySelectorAll('[data-open]').forEach(b => b.onclick = () => openAttendance(b.dataset.open, b));
+    el('meetingList').querySelectorAll('[data-correct]').forEach(b => b.onclick = () => openAttendance(b.dataset.correct, b));
+    el('meetingList').querySelectorAll('[data-edit]').forEach(b => b.onclick = () => editMeeting(b.dataset.edit));
+    el('meetingList').querySelectorAll('[data-delete]').forEach(b => b.onclick = () => deleteMeeting(b.dataset.delete, b));
+    el('reportMeeting').innerHTML = '<option value="">सबै बैठक</option>' + meetings.map(m => `<option value="${safe(m.ID)}">${safe(m['मिति BS'])} — ${safe(m['शीर्षक'])}</option>`).join('');
+}
+async function deleteMeeting(id, button) {
+    if (meetingDeleting) return;
+    const m = meetings.find(x => String(x.ID) === String(id));
+    if (!m || !confirm('यो Draft बैठक हटाउने हो?\n' + (m['शीर्षक'] || '') + '\n\nयसको आमन्त्रित सूची पनि हट्नेछ ।')) return;
+    meetingDeleting = true;
+    setBusy(button, true, '⏳ हटाउँदै...');
+    note('बैठक हटाउँदैछ ।');
+    try {
+        const r = await api('meetingDelete', { id });
+        if (editingId === id) clearMeeting();
+        if (currentId === id) { currentId = ''; el('attendancePanel').classList.add('hidden'); }
+        note(r.message);
+        await init();
+    } catch (e) { note(e.message); alert(e.message); }
+    finally { meetingDeleting = false; setBusy(button, false); }
+}
+async function editMeeting(id) {
+    try {
+        const r = await api('meetingAttendance', { id });
+        const m = r.meeting;
+        editingId = id;
+        legacyEditing = !m.MeetingType || m.MeetingType==='Legacy';
+        document.querySelector('input[name="meetingType"][value="'+(m.MeetingType==='all'?'all':'regular')+'"]').checked=true;
+        meetingRequestId = '';
+        updateEditControls();
+        el('date').value = m['मिति BS'] || '';
+        el('time').value = m['समय'] || '';
+        el('venue').value = m['स्थान'] || '';
+        el('title').value = m['शीर्षक'] || '';
+        el('agenda').value = m['एजेन्डा'] || '';
+        el('decisions').value = m['निर्णय'] || '';
+        selected.clear();
+        r.rows.forEach(x => { if (legacyEditing || x.Attendance === 'Present') selected.add(x.NCID); });
+        renderMembers();
+        // Editing was loaded but the meetings view remained visible.
+        // Open the registration/edit form after loading the saved meeting.
+        showView('registration');
+        note('बैठक सम्पादनका लागि खुल्यो । आवश्यक परिवर्तन गरी “बैठक अपडेट गर्नुहोस्” थिच्नुहोस् ।');
+    }
+    catch (e) {
+        note('बैठक सम्पादन खोल्न सकिएन: ' + e.message);
+        alert(e.message);
+    }
+}
+async function openAttendance(id, button) {
+    if (button?.disabled) return;
+    if (button) setBusy(button, true, '⏳ खुल्दैछ...');
+    note('उपस्थिति विवरण लोड हुँदैछ ।');
+    currentView='attendance';
+    try {
+        const r = await api('meetingAttendance', { id });
+        currentId = id;
+        // Keep the full saved roster on the server for correct absence reports.
+        // The attendance screen shows only manually ticked (Present) members
+        // for typed meetings. Legacy meetings retain their original view.
+        const modern = r.meeting.MeetingType === 'regular' || r.meeting.MeetingType === 'all';
+        attendanceAllRows = r.rows;
+        attendees = r.rows;
+        el('attendancePanel').classList.remove('hidden');
+    showView('attendance');
+        el('meetingTitle').textContent = '३. उपस्थिति — ' + r.meeting['शीर्षक'] + ' (' + r.meeting['मिति BS'] + ')';
+        const locked = r.meeting.Status === 'Finalized';
+        attendanceFinalized = locked;
+        el('attendanceTable').innerHTML = (modern && !attendees.length ? '<p class="muted">यस बैठकमा उपस्थित सदस्य चयन गरिएको छैन । बैठक सम्पादनमा गएर माइनटअनुसार टिक लगाउनुहोस् ।</p>' : '') + '<table><tr><th>सदस्य</th><th>NCID</th><th>समूह</th><th>स्थिति</th><th>कैफियत</th><th>सच्याउने</th></tr>' + attendees.map((x, i) => `<tr><td>${safe(x.Name)}</td><td>${safe(x.NCID)}</td><td>${safe(x.Group)}</td><td><select data-i="${i}" class="att-status" ${locked ? 'disabled' : ''}>${['Pending', 'Present', 'Absent'].map(s => `<option value="${s}" ${x.Attendance === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td><td><input data-i="${i}" class="att-remark" value="${safe(x.Remarks)}" ${locked ? 'readonly' : ''}></td><td><button type="button" class="danger" onclick="removeMistakenPresent(${i},this)">गलत टिक हटाउनुहोस्</button></td></tr>`).join('') + '</table>';
+        el('attendanceAddTools').style.display = 'flex';
+        renderAttendanceCandidates();
+        el('attendancePanel').querySelectorAll('[data-draft-only]').forEach(b => b.disabled = locked);
+        el('attendancePanel').querySelectorAll('[data-finalize-only]').forEach(b => b.style.display = locked ? 'none' : '');
+        el('attendanceCorrectionNotice').textContent = locked ? 'Finalized बैठकको उपस्थिति सच्याउँदा कारण अनिवार्य छ र Audit Log मा सुरक्षित हुन्छ ।' : 'छुटेका सदस्य थप्नुहोस् वा गलत टिक सच्याउनुहोस् ।';
+        note('उपस्थिति विवरण खुल्यो ।');
+        el('attendancePanel').scrollIntoView({ behavior: 'smooth' });
+    }
+    catch (e) {
+        note('उपस्थिति खोल्न सकिएन: '+e.message);
+        alert(e.message);
+    } finally { if (button) setBusy(button, false); }
+}
+function closeAttendanceView() { el('attendancePanel').classList.add('hidden'); currentId=''; showView('meetings'); }
+function renderAttendanceCandidates() {
+    const q = String(el('attendanceSearch').value || '').trim().toLocaleLowerCase();
+    const used = new Set(attendees.map(x => String(x.NCID).toUpperCase()));
+    const pool = new Map();
+    attendanceAllRows.forEach(x => pool.set(String(x.NCID).toUpperCase(), x));
+    members.forEach(x => { const id = String(x.NCID || '').toUpperCase(); if (id && !pool.has(id)) pool.set(id, x); });
+    const matches = [...pool.values()].filter(x => !used.has(String(x.NCID).toUpperCase()) &&
+        (!q || String(x.Name || '').toLocaleLowerCase().includes(q) || String(x.NCID).toLocaleLowerCase().includes(q)));
+    el('attendanceCandidate').innerHTML = '<option value="">सदस्य छान्नुहोस्</option>' +
+        matches.map(x => `<option value="${safe(x.NCID)}">${safe(x.Name)} — ${safe(x.NCID)}</option>`).join('');
+}
+async function addAttendanceMember() {
+    if (attendanceAdding || attendanceSaving) return;
+    const id = el('attendanceCandidate').value;
+    if (!id) { note('पहिले सदस्य छान्नुहोस् ।'); return; }
+    const person = attendanceAllRows.find(x => String(x.NCID) === id) || members.find(x => String(x.NCID) === id);
+    if (!person || attendees.some(x => String(x.NCID) === id)) { note('सदस्य भेटिएन वा पहिले नै उपस्थित छन् ।'); return; }
+    const reason = attendanceFinalized ? prompt('Finalized बैठक सच्याउनुको कारण लेख्नुहोस्:') : '';
+    if (attendanceFinalized && !String(reason || '').trim()) { note('कारण आवश्यक छ ।'); return; }
+    attendanceAdding = true;
+    const button = [...el('attendanceAddTools').querySelectorAll('button')][0];
+    setBusy(button, true, '⏳ थपिँदैछ...');
+    try {
+        // Persist immediately to avoid losing the correction when navigating away.
+        const result = await api('meetingSaveAttendance', {id: currentId, entries:[{NCID:id,status:'Present',remarks:''}], correctionReason:reason});
+        if (result.ok === false) throw new Error(result.message || 'सुरक्षित हुन सकेन ।');
+        note('उपस्थित सदस्य थपियो र सुरक्षित भयो ।');
+        await openAttendance(currentId);
+    } catch(e) { note('सदस्य थप्न सकिएन: '+e.message); alert(e.message); }
+    finally { attendanceAdding = false; setBusy(button, false); }
+}
+async function removeMistakenPresent(i, button) {
+    if (attendanceSaving || attendanceAdding) return;
+    const member = attendees[i];
+    if (!member || !confirm(member.Name + ' को गलत टिक हटाएर Absent बनाउने हो?')) return;
+    const reason = attendanceFinalized ? prompt('Finalized बैठक सच्याउनुको कारण लेख्नुहोस्:') : '';
+    if (attendanceFinalized && !String(reason || '').trim()) { note('कारण आवश्यक छ ।'); return; }
+    attendanceSaving = true;
+    setBusy(button, true, '⏳ सच्याउँदै...');
+    note('उपस्थिति सच्याउँदैछ...');
+    try {
+        const result = await api('meetingSaveAttendance', {
+            id:currentId, entries:[{NCID:member.NCID,status:'Absent',remarks:'गलत टिक सच्याइएको'}],
+            correctionReason:reason
+        });
+        if (!result.ok) throw Error(result.message || 'उपस्थिति सच्याउन सकिएन ।');
+        note(member.Name + ' को उपस्थिति Absent बनाइयो ।');
+        await openAttendance(currentId);
+    } catch(e) { note('त्रुटि: '+e.message); alert(e.message); }
+    finally { attendanceSaving = false; setBusy(button, false); }
+}
+function markAll(status) {
+    const inputs = el('attendanceTable').querySelectorAll('.att-status:not(:disabled)');
+    inputs.forEach(x => x.value = status);
+    note(inputs.length ? inputs.length + ' सदस्यको स्थिति ' + status + ' चयन भयो । सुरक्षित गर्न बटन थिच्नुहोस् ।' : 'पहिले Draft बैठकको उपस्थिति खोल्नुहोस् ।');
+}
+async function saveAttendance() {
+    if (attendanceSaving) return false;
+    attendanceSaving = true;
+    const button = [...el('attendancePanel').querySelectorAll('button')].find(b => b.getAttribute('onclick') === 'saveAttendance()');
+    setBusy(button, true, '⏳ सुरक्षित हुँदैछ...');
+    try {
+        const entries = attendees.map((a, i) => ({ NCID: a.NCID, status: el('attendanceTable').querySelector(`.att-status[data-i="${i}"]`).value, remarks: el('attendanceTable').querySelector(`.att-remark[data-i="${i}"]`).value }));
+        const r = await api('meetingSaveAttendance', { id: currentId, entries });
+        alert(r.message);
+        await openAttendance(currentId);
+        return true;
+    }
+    catch (e) {
+        alert(e.message);
+        return false;
+    } finally {
+        attendanceSaving = false;
+        setBusy(button, false);
+    }
+}
+async function finalizeMeeting() {
+    if (finalizing) return;
+    if (!confirm('सबै उपस्थिति जाँचिसक्नुभयो? Finalize पछि Edit हुँदैन ।'))
+        return;
+    finalizing = true;
+    const button = [...el('attendancePanel').querySelectorAll('button')].find(b => b.getAttribute('onclick') === 'finalizeMeeting()');
+    setBusy(button, true, '⏳ Finalize हुँदैछ...');
+    try {
+        const saved = await saveAttendance();
+        if (!saved) return;
+        const r = await api('meetingFinalize', { id: currentId });
+        alert(r.message);
+        await init();
+        await openAttendance(currentId);
+    }
+    catch (e) {
+        alert(e.message);
+    } finally {
+        finalizing = false;
+        setBusy(button, false);
+    }
+}
+function reportCell(v) { return v === null || v === undefined ? '—' : safe(v); }
+function reportStat(number, label) {
+    return `<div class="report-stat"><strong>${reportCell(number)}</strong><span>${safe(label)}</span></div>`;
+}
+function printMeetingReport() {
+    if (currentView !== 'official') showView('official');
+    if (!el('officialReportBody').dataset.ready) { note('पहिले प्रतिवेदन हेर्नुहोस् बटन थिच्नुहोस् ।'); return; }
+    window.print();
+}
+let reportLoading = false;
+async function loadReport(button) {
+    if (reportLoading) return;
+    const reportButton = el('viewReportBtn');
+    const status = el('reportActionStatus');
+    const from = el('from').value.trim();
+    const to = el('to').value.trim();
+    const ncid = el('reportNcid').value.trim();
+    function feedback(message, kind = '') {
+        status.hidden = false;
+        status.className = 'report-action-status' + (kind ? ' is-' + kind : '');
+        status.textContent = message;
+    }
+    if (from && !/^\d{4}-\d{2}-\d{2}$/.test(from)) {
+        feedback('मिति देखि (BS) YYYY-MM-DD ढाँचामा लेख्नुहोस् ।', 'error');
+        el('from').focus();
+        return;
+    }
+    if (to && !/^\d{4}-\d{2}-\d{2}$/.test(to)) {
+        feedback('मिति सम्म (BS) YYYY-MM-DD ढाँचामा लेख्नुहोस् ।', 'error');
+        el('to').focus();
+        return;
+    }
+    if (from && to && from > to) {
+        feedback('मिति देखि, मिति सम्मभन्दा पछिको हुन सक्दैन ।', 'error');
+        el('from').focus();
+        return;
+    }
+    if (ncid && !/^\d+$/.test(ncid)) {
+        feedback('NCID मा अंक मात्र लेख्नुहोस् ।', 'error');
+        el('reportNcid').focus();
+        return;
+    }
+    if (!token) {
+        feedback('पहिले Admin Login गर्नुहोस् ।', 'error');
+        loginVisibility(true);
+        return;
+    }
+    reportLoading = true;
+    setBusy(reportButton, true, '⏳ प्रतिवेदन तयार हुँदैछ...');
+    feedback('प्रतिवेदन तयार हुँदैछ । कृपया प्रतीक्षा गर्नुहोस्...');
+
+    note('प्रतिवेदन लोड हुँदैछ...');
+    el('officialReportBody').dataset.ready = '';
+    try {
+        const r = await api('meetingReport', {
+            id: el('reportMeeting').value,
+            from: el('from').value,
+            to: el('to').value,
+            ncid: el('reportNcid').value.trim()
+        });
+        const s = r.summary;
+        if (!ncid && el('dashPresent')) {
+            el('dashPresent').textContent = s.present ?? '—';
+            el('dashAbsent').textContent = s.absent ?? '—';
+            el('dashPercent').textContent = s.percentage == null ? '—' : s.percentage + '%';
+        }
+        // Only the personal report is changed. General report remains intact.
+        const personalRecord = ncid ? (r.records || []).find(x => String(x.NCID).trim() === ncid) : null;
+        const rosterMember = ncid ? members.find(x => String(x.NCID).trim() === ncid) : null;
+        const personalName = ncid ? String(
+            (personalRecord && personalRecord.Name) ||
+            (rosterMember && rosterMember.Name) ||
+            ''
+        ).trim() : '';
+        const periodFrom = from || (r.meetings.length ? r.meetings.map(x => x.date).sort()[0] : 'सुरुदेखि');
+        const periodTo = to || (r.meetings.length ? r.meetings.map(x => x.date).sort().slice(-1)[0] : 'अहिलेसम्म');
+        const periodHtml = `<div class="personal-period"><span><strong>मिति देखि (BS):</strong> ${safe(periodFrom)}</span><span><strong>मिति सम्म (BS):</strong> ${safe(periodTo)}</span></div>`;
+        const statusLabel = x => ({Present:'उपस्थित',Absent:'अनुपस्थित',Pending:'मिलान बाँकी'})[x] || x;
+        const stats = `<div class="report-stats">${reportStat(s.invited,ncid ? 'सहभागी हुनुपर्ने बैठक' : 'सहभागी हुनुपर्ने')}${reportStat(s.present,ncid ? 'उपस्थित बैठक' : 'जम्मा उपस्थित')}${reportStat(s.absent,'अनुपस्थित')}${reportStat(s.percentage + '%','उपस्थिति प्रतिशत')}</div>`;
+        const selectedMeeting = r.meetings.length === 1 ? r.meetings[0] : null;
+        const metadata = selectedMeeting
+            ? `<div class="report-meta"><strong>बैठक:</strong> ${safe(selectedMeeting.title)}<br><strong>मिति:</strong> ${safe(selectedMeeting.date)}${selectedMeeting.time ? '<br><strong>समय:</strong> '+safe(selectedMeeting.time) : ''}${selectedMeeting.venue ? '<br><strong>स्थान:</strong> '+safe(selectedMeeting.venue) : ''}${selectedMeeting.agenda ? '<br><strong>एजेन्डा:</strong> '+safe(selectedMeeting.agenda) : ''}${selectedMeeting.decisions ? '<br><strong>निर्णय:</strong> '+safe(selectedMeeting.decisions) : ''}</div>`
+            : `<p><strong>प्रतिवेदन अवधि:</strong> ${safe(el('from').value || 'सुरुदेखि')} — ${safe(el('to').value || 'अहिलेसम्म')}</p>`;
+        const summaryTable = `<div class="report-section"><h3>बैठकगत सारांश</h3><div class="tablewrap"><table><thead><tr><th>मिति</th><th>बैठक</th><th>सहभागी हुनुपर्ने</th><th>उपस्थित</th><th>अनुपस्थित</th><th>उपस्थिति %</th></tr></thead><tbody>${r.meetings.map(x=>`<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${reportCell(x.invited)}</td><td>${reportCell(x.present)}</td><td>${reportCell(x.absent)}</td><td>${x.percentage===null?'—':safe(x.percentage)+'%'}</td></tr>`).join('') || '<tr><td colspan="6">प्रतिवेदन उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
+        const isExtra = x => /अतिरिक्त|क्रियाशील|अन्य|extra|active/i.test(String(x.Group || '')) && !/अनिवार्य/i.test(String(x.Group || ''));
+        const extraRecords = (r.records || []).filter(isExtra);
+        const mainRecords = (r.records || []).filter(x => !isExtra(x));
+        const memberSection = (title, rows) => `<div class="report-section"><h3>${title} (${rows.length} जना)</h3><div class="tablewrap"><table><thead><tr><th>क्र.स.</th><th>NCID</th><th>सदस्यको नाम</th><th>स्थिति</th></tr></thead><tbody>${rows.map((x,i)=>`<tr><td>${i+1}</td><td>${safe(x.NCID)}</td><td>${safe(x.Name)}</td><td>${safe(statusLabel(x.Attendance))}</td></tr>`).join('') || '<tr><td colspan="4">विवरण उपलब्ध छैन ।</td></tr>'}</tbody></table></div></div>`;
+        const memberTable = memberSection('अनिवार्य / अन्य अभिलेखित सदस्य विवरण', mainRecords)
+            + memberSection('अतिरिक्त क्रियाशील सदस्य उपस्थिति विवरण', extraRecords);
+        if (ncid) {
+            const personalHeading = `<div class="personal-identity"><div class="personal-identity-label">व्यक्तिगत बैठक उपस्थिति प्रतिवेदन</div><h3>${personalName ? safe(personalName) : 'सदस्यको नाम उपलब्ध छैन'}</h3><p><strong>NCID:</strong> ${safe(ncid)}</p></div>`;
+            const personalHistory = `<div class="report-section personal-history"><h3>बैठकअनुसार उपस्थिति विवरण</h3><div class="tablewrap"><table><thead><tr><th>मिति (BS)</th><th>बैठकको विषय</th><th>सहभागिताको प्रकार</th><th>स्थिति</th></tr></thead><tbody>${r.meetings.map(x => {
+                const attendance = (r.records || []).find(y => String(y.MeetingID) === String(x.id) && String(y.NCID).trim() === ncid);
+                return `<tr><td>${safe(x.date)}</td><td>${safe(x.title)}</td><td>${safe(attendance ? (attendance.Designation || attendance.Group) : 'अभिलेखित')}</td><td>${safe(attendance ? statusLabel(attendance.Attendance) : (x.present ? 'उपस्थित' : 'अनुपस्थित'))}</td></tr>`;
+            }).join('') || '<tr><td colspan="4">यस अवधिमा व्यक्तिगत बैठक अभिलेख भेटिएन ।</td></tr>'}</tbody></table></div></div>`;
+            const personalBody = personalHeading + periodHtml + stats + personalHistory;
+            el('reportSummary').innerHTML = personalHeading + periodHtml + stats;
+            el('reportTable').innerHTML = personalHistory;
+            el('officialReportBody').innerHTML = personalBody;
+            el('officialReport').querySelector('.report-title').textContent = 'व्यक्तिगत बैठक उपस्थिति प्रतिवेदन';
+        } else {
+            el('reportSummary').innerHTML = '<p><strong>कुल बैठक:</strong> ' + reportCell(s.meetings) + '</p>' + stats;
+            el('reportTable').innerHTML = summaryTable;
+            el('officialReportBody').innerHTML = metadata + '<p><strong>कुल बैठक:</strong> ' + reportCell(s.meetings) + '</p>' + stats + summaryTable + memberTable;
+            el('officialReport').querySelector('.report-title').textContent = 'बैठक उपस्थिति प्रतिवेदन';
+        }
+        el('officialReportBody').dataset.ready = 'yes';
+        feedback('प्रतिवेदन सफलतापूर्वक तयार भयो । तल विवरण हेर्नुहोस् ।', 'success');
+        note('प्रतिवेदन तयार छ । Print / PDF बाट A4 प्रतिवेदन निकाल्न सक्नुहुन्छ ।');
+        if (button) {
+            el('reportSummary').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    } catch (e) {
+        el('reportSummary').textContent = e.message;
+        el('reportTable').textContent = '';
+        el('officialReportBody').textContent = 'प्रतिवेदन लोड हुन सकेन: ' + e.message;
+        feedback('प्रतिवेदन तयार हुन सकेन: ' + e.message, 'error');
+        note('प्रतिवेदन असफल: ' + e.message);
+    }
+ finally {
+        reportLoading = false;
+        setBusy(reportButton, false);
+    }
+}
+document.querySelectorAll('#date,#time,#title,#venue,#agenda,#decisions,#memberChecks').forEach(x => x.addEventListener('input', () => { if (!meetingSaving) meetingRequestId = ''; }));
+init();
+</script></div></div></body>
+</html>
