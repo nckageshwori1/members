@@ -446,6 +446,7 @@
         </div>
 
         <div id="notice" class="notice" role="status">डिजाइन लोड हुँदैछन्...</div>
+        <button id="retryLoad" class="button hidden" type="button">↻ पुनः प्रयास गर्नुहोस्</button>
 
         <!-- 07. FESTIVAL CATEGORY GALLERY -->
         <section id="festivals">
@@ -597,11 +598,43 @@
             );
         }
 
-        function setStatus(message) {
+        function setStatus(message, allowRetry = false) {
             const notice = $('notice');
 
             notice.textContent = message;
             notice.classList.toggle('hidden', !message);
+            $('retryLoad').classList.toggle('hidden', !allowRetry);
+        }
+
+        function showLoadError() {
+            setStatus(
+                'अहिले डिजाइन लोड हुन सकेन। कृपया पुनः प्रयास गर्नुहोस्।',
+                true
+            );
+        }
+
+        function waitBeforeRetry(milliseconds) {
+            return new Promise((resolve) => setTimeout(resolve, milliseconds));
+        }
+
+        async function requestWithRetry(action, params = {}) {
+            // अस्थायी नेटवर्क वा मोबाइल ब्राउजरको त्रुटिमा सीमित Retry।
+            const attempts = action === 'image' ? 2 : 3;
+            let lastError;
+
+            for (let attempt = 0; attempt < attempts; attempt += 1) {
+                try {
+                    return await jsonp(action, params);
+                } catch (error) {
+                    lastError = error;
+
+                    if (attempt + 1 < attempts) {
+                        await waitBeforeRetry(700 * (attempt + 1));
+                    }
+                }
+            }
+
+            throw lastError;
         }
 
         function setMessage(message) {
@@ -619,7 +652,7 @@
                     'greetingCb' + Math.random().toString(36).slice(2);
 
                 const script = document.createElement('script');
-                const timeoutMs = action === 'image' ? 90000 : 25000;
+                const timeoutMs = action === 'image' ? 90000 : 18000;
 
                 let completed = false;
 
@@ -651,6 +684,7 @@
                 url.searchParams.set('greetingApi', '1');
                 url.searchParams.set('action', action);
                 url.searchParams.set('callback', callbackName);
+                url.searchParams.set('_request', Date.now().toString());
 
                 Object.entries(params).forEach(([key, value]) => {
                     url.searchParams.set(key, value);
@@ -663,7 +697,7 @@
 
         function getTemplateImageData(fileId) {
             if (!imageCache.has(fileId)) {
-                const promise = jsonp('image', { fileId }).then((response) => {
+                const promise = requestWithRetry('image', { fileId }).then((response) => {
                     if (!response.ok) {
                         throw new Error(response.error || 'Image unavailable');
                     }
@@ -770,7 +804,7 @@
             setStatus('डिजाइन लोड हुँदैछन्...');
 
             try {
-                const response = await jsonp('folders');
+                const response = await requestWithRetry('folders');
 
                 if (!response.ok) {
                     throw new Error(response.error || 'Folders unavailable');
@@ -794,7 +828,8 @@
 
                 setStatus(folders.length ? '' : 'कुनै चाडपर्व Folder भेटिएन।');
             } catch (error) {
-                setStatus('डिजाइन लोड हुन सकेन: ' + error.message);
+                console.warn('Greeting gallery request failed:', error);
+                showLoadError();
             }
         }
 
@@ -806,7 +841,7 @@
             setStatus('डिजाइन लोड हुँदैछन्...');
 
             try {
-                const response = await jsonp('templates', {
+                const response = await requestWithRetry('templates', {
                     folderId: item.id
                 });
 
@@ -832,7 +867,8 @@
 
                 setStatus(templates.length ? '' : 'यस Folder मा Template छैन।');
             } catch (error) {
-                setStatus('डिजाइन लोड हुन सकेन: ' + error.message);
+                console.warn('Greeting gallery request failed:', error);
+                showLoadError();
             }
         }
 
@@ -915,7 +951,8 @@
                 navigate('edit');
                 setStatus('');
             } catch (error) {
-                setStatus('Template खोल्न सकिएन: ' + error.message);
+                console.warn('Greeting template request failed:', error);
+                showLoadError();
             } finally {
                 openingTemplate = false;
             }
@@ -1487,10 +1524,26 @@
            19. APPLICATION START
            ============================================================ */
 
+        $('retryLoad').addEventListener('click', () => {
+            if (stage === 'templates' && selectedFolder) {
+                openFestival(selectedFolder);
+            } else if (stage === 'edit' && selectedTemplate) {
+                openTemplate(selectedTemplate);
+            } else {
+                loadFestivals();
+            }
+        });
+
+        window.addEventListener('online', () => {
+            if (!$('retryLoad').classList.contains('hidden')) {
+                $('retryLoad').click();
+            }
+        });
+
         if (apiConfigured()) {
             loadFestivals();
         } else {
-            setStatus('Apps Script Web App URL सेट गरिएको छैन।');
+            showLoadError();
         }
     </script>
 </body>
