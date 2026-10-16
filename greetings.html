@@ -551,6 +551,12 @@
                         <input id="designation" type="text" maxlength="100" placeholder="पद लेख्नुहोस्">
                     </div>
 
+                    <div class="form-field">
+                        <label for="organization">संस्था / कार्यालय (ऐच्छिक)</label>
+                        <input id="organization" type="text" maxlength="120"
+                               placeholder="संस्था वा कार्यालयको नाम">
+                    </div>
+
                     <div class="editor-actions">
                         <button id="remove" class="button" type="button">फोटो हटाउनुहोस्</button>
                         <button id="download" class="button button-primary" type="button">⬇ PNG डाउनलोड</button>
@@ -604,8 +610,15 @@
             },
             designation: {
                 x: 0.5,
-                y: 0.95,
+                y: 0.93,
                 size: 0.027,
+                font: 'Mukta',
+                color: '#ffffff'
+            },
+            organization: {
+                x: 0.5,
+                y: 0.975,
+                size: 0.022,
                 font: 'Mukta',
                 color: '#ffffff'
             }
@@ -654,8 +667,8 @@
            MOBILE RECOVERY: ONLY GREETING PAGE STATE, NEVER BROWSER DATA
            ============================================================ */
 
-        const GREETING_BUILD_VERSION = '20261016-mobile-recovery-2';
-        const RECOVERY_SESSION_KEY = 'greeting_page_recovery_v2';
+        const GREETING_BUILD_VERSION = '20261016-mobile-stable-3';
+        const RECOVERY_SESSION_KEY = 'greeting_page_recovery_v3';
         let lastAutoRetryAt = 0;
         let loadingFestivals = false;
         let latestLoadFailure = null;
@@ -780,7 +793,7 @@
                     'greetingCb' + Math.random().toString(36).slice(2);
 
                 const script = document.createElement('script');
-                const timeoutMs = action === 'image' ? 90000 : 18000;
+                const timeoutMs = action === 'image' ? 90000 : 30000;
 
                 let completed = false;
 
@@ -950,20 +963,9 @@
                     return;
                 }
 
-                if (fallbackUsed) {
-                    return;
-                }
-
-                fallbackUsed = true;
-
-                try {
-                    const dataUrl = await getTemplateImageData(imageId);
-                    image.src = dataUrl;
-                } catch (error) {
-                    // Cover may be unavailable without public image access;
-                    // keep the gallery functional and log technical details only.
-                    console.warn('Greeting cover unavailable:', title, error);
-                }
+                // Cover thumbnail could not load; retain the placeholder.
+                // Do not fetch multi-megabyte originals for gallery cards.
+                console.warn('Greeting cover thumbnail unavailable:', title);
             };
 
             image.src = sources[0];
@@ -1098,9 +1100,8 @@
                 setStatus(folders.length ? '' : 'कुनै चाडपर्व Folder भेटिएन।');
             } catch (error) {
                 console.warn('Greeting gallery request failed:', error);
-                if (!requestRecovery('folders', error)) {
-                    showLoadError();
-                }
+                rememberLoadFailure(error, 'folders');
+                showLoadError();
             } finally {
                 loadingFestivals = false;
             }
@@ -1155,7 +1156,8 @@
         async function loadAllEditorFonts() {
             await Promise.all([
                 loadFont(textObjects.name.font),
-                loadFont(textObjects.designation.font)
+                loadFont(textObjects.designation.font),
+                loadFont(textObjects.organization.font)
             ]);
         }
 
@@ -1201,9 +1203,16 @@
                 textObjects.designation.font = 'Mukta';
                 textObjects.designation.color = '#ffffff';
 
+                textObjects.organization.x = 0.5;
+                textObjects.organization.y = 0.975;
+                textObjects.organization.size = 0.022;
+                textObjects.organization.font = 'Mukta';
+                textObjects.organization.color = '#ffffff';
+
                 $('photo').value = '';
                 $('name').value = '';
                 $('designation').value = '';
+                $('organization').value = '';
                 setMessage('');
 
                 await loadAllEditorFonts();
@@ -1307,10 +1316,30 @@
 
             paintText('name');
             paintText('designation');
+            paintText('organization');
+
+            if (showSelection && (!userImage || !$('name').value.trim())) {
+                paintPreviewWatermark();
+            }
 
             if (showSelection && selectedObject) {
                 paintSelection();
             }
+        }
+
+        function paintPreviewWatermark() {
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(-Math.PI / 7);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = '800 ' + Math.max(36, canvas.width * 0.13) + 'px sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.62)';
+            ctx.strokeStyle = 'rgba(35, 45, 55, 0.48)';
+            ctx.lineWidth = Math.max(2, canvas.width * 0.004);
+            ctx.strokeText('PREVIEW', 0, 0);
+            ctx.fillText('PREVIEW', 0, 0);
+            ctx.restore();
         }
 
         /* ============================================================
@@ -1342,7 +1371,7 @@
         }
 
         function hitTestText(point) {
-            for (const key of ['designation', 'name']) {
+            for (const key of ['organization', 'designation', 'name']) {
                 const bounds = textBounds(key);
 
                 if (!bounds) {
@@ -1401,7 +1430,7 @@
 
         function updateToolbar() {
             const isText = selectedObject === 'name' ||
-                selectedObject === 'designation';
+                selectedObject === 'designation' || selectedObject === 'organization';
 
             $('textToolbar').classList.toggle('hidden', !isText);
 
@@ -1414,7 +1443,9 @@
             $('selectionCaption').textContent =
                 selectedObject === 'name'
                     ? 'नाम चयन गरिएको छ · तान्नुहोस् वा Pinch Zoom गर्नुहोस्'
-                    : 'पद चयन गरिएको छ · तान्नुहोस् वा Pinch Zoom गर्नुहोस्';
+                    : selectedObject === 'designation'
+                        ? 'पद चयन गरिएको छ · तान्नुहोस् वा Pinch Zoom गर्नुहोस्'
+                        : 'संस्था चयन गरिएको छ · तान्नुहोस् वा Pinch Zoom गर्नुहोस्';
 
             $('fontFamily').value = item.font;
             $('fontColor').value = item.color;
@@ -1653,7 +1684,7 @@
             selectObject(null);
         });
 
-        ['name', 'designation'].forEach((key) => {
+        ['name', 'designation', 'organization'].forEach((key) => {
             $(key).addEventListener('input', () => {
                 if (selectedObject === key && !$(key).value.trim()) {
                     selectObject(null);
@@ -1720,14 +1751,15 @@
             return blob;
         }
 
-        function recordUsage(name, designation) {
+        function recordUsage(name, designation, organization) {
             const form = new URLSearchParams({
                 greetingApi: '1',
                 action: 'usage',
                 folderId: selectedFolder.id,
                 templateId: selectedTemplate.id,
                 name,
-                designation
+                designation,
+                organization
             });
 
             // Existing backend को POST interface यथावत् राखिएको छ।
@@ -1743,13 +1775,14 @@
         $('download').addEventListener('click', async () => {
             const name = $('name').value.trim();
             const designation = $('designation').value.trim();
+            const organization = $('organization').value.trim();
 
             if (!templateImage || !selectedFolder || !selectedTemplate) {
                 return;
             }
 
-            if (!userImage || !name || !designation) {
-                setMessage('फोटो, नाम र पद अनिवार्य छन्।');
+            if (!userImage || !name) {
+                setMessage('फोटो र नाम अनिवार्य छन्।');
                 return;
             }
 
@@ -1773,7 +1806,7 @@
                 setTimeout(() => URL.revokeObjectURL(url), 15000);
 
                 // डाउनलोडको सफल क्लिकपछि मात्र प्रयोग अभिलेख पठाउने।
-                recordUsage(name, designation).catch(() => {
+                recordUsage(name, designation, organization).catch(() => {
                     // अभिलेख पठाउन असफल भए पनि PNG डाउनलोड रोकिँदैन।
                 });
             } catch (error) {
