@@ -495,7 +495,7 @@
 
                 const timer = setTimeout(() => {
                     finish(new Error('Server response timeout'));
-                }, 25000);
+                }, action === 'image' ? 90000 : 25000);
 
                 function finish(error, data) {
                     if (done) {
@@ -623,14 +623,25 @@
             button.firstChild.replaceWith(image);
         }
 
-        async function imageData(fileId) {
-            const result = await jsonp('image', { fileId });
+        // Cache completed requests so revisiting a template does not download it again.
+        // Store the pending Promise as well to avoid duplicate simultaneous requests.
+        const templateImageCache = new Map();
 
-            if (!result.ok) {
-                throw new Error(result.error || 'Image unavailable');
+        async function imageData(fileId) {
+            if (!templateImageCache.has(fileId)) {
+                const request = jsonp('image', { fileId }).then((result) => {
+                    if (!result.ok) {
+                        throw new Error(result.error || 'Image unavailable');
+                    }
+
+                    return 'data:' + result.mime + ';base64,' + result.data;
+                });
+
+                templateImageCache.set(fileId, request);
+                request.catch(() => templateImageCache.delete(fileId));
             }
 
-            return 'data:' + result.mime + ';base64,' + result.data;
+            return templateImageCache.get(fileId);
         }
 
 
@@ -745,7 +756,7 @@
 
         async function openTemplate(selectedTemplate) {
             template = selectedTemplate;
-            status('Template तयार हुँदैछ...');
+            status('डिजाइन खोलिँदैछ, कृपया पर्खनुहोस्...');
 
             try {
                 frame = await loadImg(await imageData(selectedTemplate.id));
