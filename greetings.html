@@ -1,25 +1,46 @@
 <!DOCTYPE html>
 <html lang="ne">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <title>
-   शुभकामना डिजाइन केन्द्र
-  </title>
-  <style>
-   
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b8150">
+    <title>शुभकामना डिजाइन केन्द्र</title>
+
+    <!-- नेपाली वेब फन्ट: प्रयोगकर्ताको फोनमा इन्स्टल हुनु आवश्यक छैन। -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700;800&family=Tiro+Devanagari+Hindi&family=Yatra+One&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           01. DESIGN TOKENS AND BASE STYLES
+           ============================================================ */
+
+        :root {
+            --brand: #087d4b;
+            --brand-dark: #065f3a;
+            --ink: #173650;
+            --muted: #64788e;
+            --line: #dbe5ef;
+            --page: #f3f7fc;
+            --surface: #ffffff;
+            --shadow: 0 6px 22px rgba(20, 45, 75, 0.07);
+        }
+
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            background: #f3f7fc;
-            color: #173653;
-            font-family: "Noto Sans Devanagari","Nirmala UI",Mangal,Arial,sans-serif;
+            background: var(--page);
+            color: var(--ink);
+            font-family: "Mukta", "Noto Sans Devanagari", sans-serif;
         }
 
-        button,input,select {
+        button,
+        input,
+        select {
             font: inherit;
         }
 
@@ -27,417 +48,494 @@
             cursor: pointer;
         }
 
-        header {
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 3px solid #69bfa0;
+            outline-offset: 2px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ============================================================
+           02. HEADER, NAVIGATION AND FOOTER
+           ============================================================ */
+
+        .site-header {
+            padding: 17px 12px 15px;
             text-align: center;
-            padding: 21px 12px;
-            background: white;
-            border-bottom: 5px solid #07874d;
+            background: var(--surface);
+            border-bottom: 4px solid var(--brand);
         }
 
-        header h1 {
+        .site-header h1 {
             margin: 0;
-            color: #bc2432;
-            font-size: 25px;
+            color: #b82435;
+            font-size: clamp(22px, 4vw, 29px);
+            line-height: 1.3;
         }
 
-        header p {
-            margin: 7px 0;
-            color: #5d7087;
+        .site-header p {
+            margin: 5px 0 0;
+            color: var(--muted);
         }
 
-        .logo {
-            width: 62px;
-            height: 62px;
+        .site-logo {
+            width: 52px;
+            height: 52px;
             object-fit: contain;
             vertical-align: middle;
         }
 
-        .wrap {
-            max-width: 1050px;
-            margin: auto;
-            padding: 16px 13px 45px;
+        .container {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+            padding: 17px 14px 42px;
         }
 
-        .top {
+        .nav-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            gap: 12px;
+            margin-bottom: 14px;
         }
 
-        .btn {
-            border: 1px solid #d2e0ed;
-            background: white;
+        .button {
+            border: 1px solid #d1e0ed;
+            border-radius: 11px;
+            padding: 10px 15px;
+            background: #ffffff;
             color: #17446b;
-            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .button-primary {
+            border-color: var(--brand);
+            background: var(--brand);
+            color: #ffffff;
+        }
+
+        .button-primary:disabled {
+            opacity: 0.55;
+            cursor: wait;
+        }
+
+        .notice {
+            margin: 12px 0 18px;
             padding: 11px 14px;
+            border: 1px solid #ecd7a5;
+            border-radius: 10px;
+            background: #fff9e8;
+            font-size: 14px;
+        }
+
+        .page-title {
+            margin: 13px 0;
+            font-size: clamp(20px, 3vw, 25px);
+        }
+
+        .site-footer {
+            padding: 20px 10px;
+            background: #ffffff;
+            border-top: 1px solid var(--line);
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .site-footer a {
+            color: var(--brand);
             font-weight: 800;
+            text-decoration: none;
         }
 
-        .primary {
-            background: #078c4a;
-            color: white;
-            border: 0;
-        }
+        /* ============================================================
+           03. FESTIVAL AND TEMPLATE GALLERY
+           ============================================================ */
 
-        .grid {
+        .gallery {
             display: grid;
-            grid-template-columns: repeat(3,minmax(0,1fr));
-            gap: 14px;
-            margin-top: 15px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
         }
 
-        .card {
-            background: white;
-            border: 1px solid #dbe6f1;
-            border-radius: 15px;
+        .gallery-card {
+            min-width: 0;
             overflow: hidden;
-            text-align: left;
             padding: 0;
-            box-shadow: 0 5px 16px #18365312;
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            background: #ffffff;
+            text-align: left;
+            box-shadow: var(--shadow);
         }
 
-        .card img {
+        .gallery-cover {
             display: block;
             width: 100%;
             height: 300px;
             object-fit: cover;
             object-position: center top;
-            background: #e7edf4;
+            background: #e8eef5;
         }
 
-        .card .detail {
-            padding: 13px;
-        }
-
-        .card b {
-            font-size: 17px;
-            color: #15385c;
-        }
-
-        .card p {
-            font-size: 12px;
-            color: #697d91;
-        }
-
-        .emptyCover {
+        .gallery-placeholder {
+            display: grid;
             height: 300px;
-            background: linear-gradient(135deg,#af2634,#f4b54b);
-            display: grid;
             place-items: center;
-            font-size: 65px;
+            background: linear-gradient(135deg, #b52736, #f1b14b);
+            font-size: 60px;
         }
 
-        .hidden {
-            display: none;
-        }
-
-        .note {
+        .gallery-detail {
             padding: 12px 14px;
-            border: 1px solid #e9d7a0;
-            background: #fff9e8;
-            border-radius: 11px;
-            margin-top: 15px;
-            font-size: 13px;
-            line-height: 1.7;
         }
 
-        .editor {
+        .gallery-detail strong {
+            display: block;
+            overflow-wrap: anywhere;
+            font-size: 17px;
+        }
+
+        .gallery-detail small {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+        }
+
+        /* ============================================================
+           04. MOBILE-FIRST EDITOR
+           ============================================================ */
+
+        .editor-layout {
             display: grid;
-            grid-template-columns: 1.15fr .85fr;
-            gap: 17px;
-            margin-top: 16px;
+            grid-template-columns: minmax(0, 1fr) 295px;
+            gap: 18px;
+            align-items: start;
         }
 
-        .panel {
+        .editor-card,
+        .details-card {
+            min-width: 0;
             padding: 15px;
-            background: #fff;
-            border: 1px solid #dbe6f1;
+            border: 1px solid var(--line);
             border-radius: 15px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
         }
 
-        .panel h3 {
-            margin: 0 0 12px;
+        .editor-card h3,
+        .details-card h3 {
+            margin: 0 0 10px;
         }
 
-        .field {
+        .canvas-shell {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            padding: 7px;
+            border-radius: 12px;
+            background: #e8eff6;
+        }
+
+        .canvas-wrap {
+            position: relative;
+            width: fit-content;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        #canvas {
+            display: block;
+            width: auto;
+            max-width: 100%;
+            max-height: min(78vh, 900px);
+            height: auto;
+            touch-action: none;
+            background: transparent;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+            cursor: grab;
+        }
+
+        #canvas:active {
+            cursor: grabbing;
+        }
+
+        .help-text {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.55;
+            text-align: center;
+        }
+
+        .form-field {
             display: grid;
             gap: 5px;
-            margin: 12px 0;
+            margin: 11px 0;
         }
 
-        .field label {
-            font-weight: 800;
+        .form-field label {
+            font-weight: 700;
         }
 
-        .field input {
+        .form-field input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #c8d9e7;
+            min-height: 44px;
+            padding: 9px 11px;
+            border: 1px solid #cbd9e8;
             border-radius: 9px;
+            background: #ffffff;
         }
 
-        .canvasBox {
-            background: #edf3f8;
-            padding: 9px;
-            border-radius: 12px;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            max-width: 550px;
-            height: auto;
-            margin: auto;
-            touch-action: none;
-            background: #fff;
-            box-shadow: 0 3px 10px #0002;
-        }
-
-        .actions {
+        .editor-actions {
             display: flex;
-            gap: 8px;
             flex-wrap: wrap;
-            margin-top: 13px;
+            gap: 8px;
+            margin-top: 14px;
         }
 
-        .status {
+        .editor-actions .button-primary {
+            flex: 1;
+        }
+
+        .message {
+            min-height: 20px;
+            margin: 10px 0 0;
+            color: #a32a36;
             font-size: 13px;
-            color: #47627e;
-            line-height: 1.7;
         }
 
-        footer {
-            text-align: center;
-            padding: 20px 10px;
-            background: #fff;
-            border-top: 1px solid #dbe6f1;
-            font-size: 13px;
-            color: #4d6075;
-        }
+        /* ============================================================
+           05. CONTEXTUAL FLOATING TEXT TOOLBAR
+           ============================================================ */
 
-        footer a {
-            color: #078c4a;
-            font-weight: 900;
-            text-decoration: none;
-        }
-
-        @media (max-width:750px) {
-            .grid {
-                grid-template-columns: repeat(2,minmax(0,1fr));
-                gap: 9px;
-            }
-            .card img,.emptyCover {
-                height: 220px;
-            }
-            .editor {
-                grid-template-columns: 1fr;
-            }
-            .card b {
-                font-size: 15px;
-            }
-        }
-
-        @media (max-width:420px) {
-            .card img,.emptyCover {
-                height: 165px;
-            }
-            .card .detail {
-                padding: 9px;
-            }
-        }
-    
-
-        .stepper {
+        .floating-toolbar {
             display: flex;
             align-items: center;
-            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 7px;
+            margin: 12px auto 0;
+            padding: 9px;
+            border: 1px solid #d5e5df;
+            border-radius: 12px;
+            background: #f5fbf8;
         }
 
-        .stepper input[type="range"] {
-            flex: 1;
-            min-width: 0;
-            accent-color: #078c4a;
+        .floating-toolbar label {
+            font-size: 13px;
+            font-weight: 700;
         }
 
-        .zoom-step,
-        .text-step {
-            min-width: 44px;
-            min-height: 44px;
-            padding: 6px;
-            font-size: 24px;
+        .floating-toolbar select {
+            max-width: 195px;
+            min-height: 39px;
+            padding: 5px 7px;
+            border: 1px solid #cbd9e8;
+            border-radius: 8px;
+            background: #ffffff;
         }
 
-        .field select {
+        .floating-toolbar input[type="color"] {
+            width: 43px;
+            height: 39px;
+            padding: 3px;
+            border: 1px solid #cbd9e8;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .selection-caption {
             width: 100%;
-            padding: 11px;
-            border: 1px solid #c8d9e7;
-            border-radius: 9px;
-            background: white;
-            color: #173653;
+            color: var(--brand-dark);
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
         }
 
-  </style>
- </head>
- <body>
-  <header>
-   <img alt="शुभकामना लोगो" class="logo" onerror="this.style.display='none'" src="logo.png"/>
-   <h1>
-    🎉 शुभकामना डिजाइन केन्द्र
-   </h1>
-   <p>
-    चाडपर्व छान्नुहोस् · आफ्नो फोटो राख्नुहोस् · डिजाइन डाउनलोड गर्नुहोस्
-   </p>
-  </header>
-  <div class="wrap">
-   <div class="top">
-    <button class="btn" id="back">
-     ← मुख्य वेबसाइट
-    </button>
-    <strong id="crumb">
-     चाडपर्व छनोट
-    </strong>
-   </div>
-   <div class="note" id="notice">
-    डिजाइन लोड हुँदैछन्...
-   </div>
-   <section id="festivals">
-    <h2>
-     उपलब्ध चाडपर्व
-    </h2>
-    <div class="grid" id="festivalGrid">
-    </div>
-   </section>
-   <section class="hidden" id="templates">
-    <h2 id="festivalHeading">
-    </h2>
-    <div class="grid" id="templateGrid">
-    </div>
-   </section>
-   <section class="hidden" id="edit">
-    <h2 id="editHeading">
-    </h2>
-    <div class="editor">
-     <div class="panel">
-      <h3>
-       डिजाइन Preview
-      </h3>
-      <div class="canvasBox">
-       <canvas height="1200" id="canvas" width="1200">
-       </canvas>
-      </div>
-      <p class="status">
-       फोटो Drag गरी सार्नुहोस्, Zoom बाट आकार मिलाउनुहोस्। मोबाइलमा पनि फोटो सार्न सकिन्छ।
-      </p>
-     </div>
-     <div class="panel">
-      <h3>
-       आफ्नो विवरण
-      </h3>
-      <div class="field">
-       <label for="photo">
-        फोटो
-       </label>
-       <input accept="image/*" id="photo" type="file"/>
-      </div>
-      <div class="field">
-       <label for="name">
-        नाम
-       </label>
-       <input id="name" maxlength="80" placeholder="नाम लेख्नुहोस्"/>
-      </div>
-      <div class="field">
-       <label for="designation">
-        पद / जिम्मेवारी
-       </label>
-       <input id="designation" maxlength="100" placeholder="पद लेख्नुहोस्"/>
-      </div>
-      <div class="field">
-       <label for="zoom">
-        फोटो Zoom
-       </label>
-       <div class="stepper">
-        <button aria-label="फोटो सानो बनाउनुहोस्" class="btn zoom-step" id="zoomMinus" type="button">−</button>
-        <input aria-label="फोटोको आकार" id="zoom" max="5" min="0.1" step="0.02" type="range" value="1"/>
-        <button aria-label="फोटो ठूलो बनाउनुहोस्" class="btn zoom-step" id="zoomPlus" type="button">+</button>
-       </div>
-      </div>
-      <div class="field">
-       <label for="textTarget">सार्ने अक्षर छान्नुहोस्</label>
-       <select id="textTarget">
-        <option value="name">नाम</option>
-        <option value="designation">पद / जिम्मेवारी</option>
-        <option value="photo">फोटो</option>
-       </select>
-       <p class="status">Preview मा नाम वा पदलाई छोएर/क्लिक गरेर पनि सार्न सकिन्छ।</p>
-      </div>
-      <div class="field">
-       <label for="nameSize">नामको अक्षर आकार</label>
-       <div class="stepper">
-        <button class="btn text-step" data-field="name" data-step="-2" type="button">−</button>
-        <input id="nameSize" min="12" max="160" step="1" type="range" value="46"/>
-        <button class="btn text-step" data-field="name" data-step="2" type="button">+</button>
-       </div>
-      </div>
-      <div class="field">
-       <label for="designationSize">पदको अक्षर आकार</label>
-       <div class="stepper">
-        <button class="btn text-step" data-field="designation" data-step="-2" type="button">−</button>
-        <input id="designationSize" min="10" max="130" step="1" type="range" value="31"/>
-        <button class="btn text-step" data-field="designation" data-step="2" type="button">+</button>
-       </div>
-      </div>
-      <div class="field">
-       <label for="nameFont">नामको नेपाली फन्ट</label>
-       <select id="nameFont">
-        <option value="Noto Sans Devanagari">Noto Sans Devanagari</option>
-        <option value="Nirmala UI">Nirmala UI</option>
-        <option value="Mangal">Mangal</option>
-        <option value="Kokila">Kokila</option>
-        <option value="serif">देवनागरी Serif (उपलब्ध फन्ट)</option>
-       </select>
-      </div>
-      <div class="field">
-       <label for="designationFont">पदको नेपाली फन्ट</label>
-       <select id="designationFont">
-        <option value="Noto Sans Devanagari">Noto Sans Devanagari</option>
-        <option value="Nirmala UI">Nirmala UI</option>
-        <option value="Mangal">Mangal</option>
-        <option value="Kokila">Kokila</option>
-        <option value="serif">देवनागरी Serif (उपलब्ध फन्ट)</option>
-       </select>
-      </div>
-      <div class="actions">
-       <button class="btn" id="remove">
-        फोटो हटाउनुहोस्
-       </button>
-       <button class="btn primary" id="download">
-        ⬇ PNG डाउनलोड
-       </button>
-      </div>
-      <p class="status" id="message">
-      </p>
-     </div>
-    </div>
-   </section>
-  </div>
-  <footer>
-   Designed & Developed by
-   <strong>
-    Nirajan Aryal
-   </strong>
-   (
-   <a href="tel:+9779851113811">
-    9851113811
-   </a>
-   )
-  </footer>
-  <script>
-   
+        @media (max-width: 750px) {
+            .gallery {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .gallery-cover,
+            .gallery-placeholder {
+                height: 220px;
+            }
+
+            .editor-layout {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .editor-card,
+            .details-card {
+                width: 100%;
+            }
+
+            .details-card {
+                order: -1;
+            }
+
+            .details-card h3 {
+                display: none;
+            }
+
+            .editor-card {
+                padding: 9px;
+            }
+
+            .form-field {
+                margin: 7px 0;
+            }
+
+            #canvas {
+                max-height: 70vh;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .gallery-cover,
+            .gallery-placeholder {
+                height: 180px;
+            }
+
+            .gallery-detail {
+                padding: 9px;
+            }
+
+            .gallery-detail strong {
+                font-size: 15px;
+            }
+
+            .site-header p {
+                font-size: 13px;
+            }
+
+            .nav-row {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ============================================================
+         06. SITE HEADER
+         ============================================================ -->
+
+    <header class="site-header">
+        <img
+            class="site-logo"
+            src="logo.png"
+            alt="शुभकामना लोगो"
+            onerror="this.style.display='none'"
+        >
+        <h1>🎉 शुभकामना डिजाइन केन्द्र</h1>
+        <p>चाडपर्व छान्नुहोस् · आफ्नो फोटो राख्नुहोस् · डिजाइन डाउनलोड गर्नुहोस्</p>
+    </header>
+
+    <main class="container">
+        <div class="nav-row">
+            <button id="back" class="button" type="button">← मुख्य वेबसाइट</button>
+            <strong id="crumb">चाडपर्व छनोट</strong>
+        </div>
+
+        <div id="notice" class="notice" role="status">डिजाइन लोड हुँदैछन्...</div>
+
+        <!-- 07. FESTIVAL CATEGORY GALLERY -->
+        <section id="festivals">
+            <h2 class="page-title">उपलब्ध चाडपर्व</h2>
+            <div id="festivalGrid" class="gallery"></div>
+        </section>
+
+        <!-- 08. TEMPLATES IN SELECTED FESTIVAL -->
+        <section id="templates" class="hidden">
+            <h2 id="festivalHeading" class="page-title"></h2>
+            <div id="templateGrid" class="gallery"></div>
+        </section>
+
+        <!-- 09. GREETING DESIGN EDITOR -->
+        <section id="edit" class="hidden">
+            <h2 id="editHeading" class="page-title"></h2>
+
+            <div class="editor-layout">
+                <div class="editor-card">
+                    <h3>डिजाइन Preview</h3>
+
+                    <div class="canvas-shell">
+                        <div class="canvas-wrap">
+                            <canvas id="canvas" width="1200" height="1200" aria-label="सम्पादनयोग्य शुभकामना डिजाइन"></canvas>
+                        </div>
+                    </div>
+
+                    <p class="help-text">
+                        फोटो, नाम वा पदमा छुनुहोस् र सार्नुहोस्।
+                        दुई औँलाले Zoom गर्नुहोस्। कम्प्युटरमा Mouse Wheel पनि प्रयोग गर्न सकिन्छ।
+                    </p>
+
+                    <!-- नाम/पद Select हुँदा मात्र Font Toolbar देखिन्छ। -->
+                    <div id="textToolbar" class="floating-toolbar hidden">
+                        <div id="selectionCaption" class="selection-caption"></div>
+
+                        <label for="fontFamily">नेपाली फन्ट</label>
+                        <select id="fontFamily">
+                            <option value="Mukta">Mukta</option>
+                            <option value="Yatra One">Yatra One — डिजाइनिङ</option>
+                            <option value="Tiro Devanagari Hindi">Tiro Devanagari — कलात्मक</option>
+                            <option value="Noto Sans Devanagari">Noto Sans Devanagari</option>
+                        </select>
+
+                        <label for="fontColor">रङ</label>
+                        <input id="fontColor" type="color" value="#ffffff" aria-label="अक्षरको रङ">
+                    </div>
+                </div>
+
+                <div class="details-card">
+                    <h3>आफ्नो विवरण</h3>
+
+                    <div class="form-field">
+                        <label for="photo">फोटो</label>
+                        <input id="photo" type="file" accept="image/*">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="name">नाम</label>
+                        <input id="name" type="text" maxlength="80" placeholder="नाम लेख्नुहोस्">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="designation">पद / जिम्मेवारी</label>
+                        <input id="designation" type="text" maxlength="100" placeholder="पद लेख्नुहोस्">
+                    </div>
+
+                    <div class="editor-actions">
+                        <button id="remove" class="button" type="button">फोटो हटाउनुहोस्</button>
+                        <button id="download" class="button button-primary" type="button">⬇ PNG डाउनलोड</button>
+                    </div>
+
+                    <p id="message" class="message" role="status"></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 10. FOOTER -->
+    <footer class="site-footer">
+        Designed &amp; Developed by
+        <strong>Nirajan Aryal</strong>
+        (<a href="tel:+9779851113811">9851113811</a>)
+    </footer>
+
+    <script>
         'use strict';
 
         /* ============================================================
-           CONFIGURATION
+           11. API CONFIGURATION AND EDITOR STATE
            ============================================================ */
 
         const GREETING_API_URL =
@@ -447,64 +545,96 @@
         const canvas = $('canvas');
         const ctx = canvas.getContext('2d');
 
+        const FONT_FALLBACK = '"Noto Sans Devanagari", sans-serif';
+        const FONT_OPTIONS = new Set([
+            'Mukta',
+            'Yatra One',
+            'Tiro Devanagari Hindi',
+            'Noto Sans Devanagari'
+        ]);
+
+        const imageCache = new Map();
+        const activePointers = new Map();
+
+        const textObjects = {
+            name: {
+                x: 0.5,
+                y: 0.88,
+                size: 0.041,
+                font: 'Yatra One',
+                color: '#ffffff'
+            },
+            designation: {
+                x: 0.5,
+                y: 0.95,
+                size: 0.027,
+                font: 'Mukta',
+                color: '#ffffff'
+            }
+        };
+
         let stage = 'festivals';
         let folders = [];
         let templates = [];
-        let folder = null;
-        let template = null;
-        let frame = null;
+        let selectedFolder = null;
+        let selectedTemplate = null;
+        let templateImage = null;
         let userImage = null;
-        let dx = 0;
-        let dy = 0;
-        let zoom = 1;
-        let drag = false;
-        let px = 0;
-        let py = 0;
-        let dragTarget = null;
-        let namePosition = { x: 0.5, y: 0.912 };
-        let designationPosition = { x: 0.5, y: 0.958 };
-
-        const TEXT_FONT_FALLBACK = '"Noto Sans Devanagari", "Nirmala UI", Mangal, sans-serif';
-
+        let photoX = 0;
+        let photoY = 0;
+        let photoZoom = 1;
+        let selectedObject = null;
+        let gesture = null;
+        let openingTemplate = false;
 
         /* ============================================================
-           API CONNECTION
+           12. SERVER CONNECTION (EXISTING GREETING API)
            ============================================================ */
 
-        function configured() {
-            return /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec/.test(GREETING_API_URL);
+        function apiConfigured() {
+            return /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec/.test(
+                GREETING_API_URL
+            );
         }
 
-        function status(message) {
+        function setStatus(message) {
             const notice = $('notice');
+
             notice.textContent = message;
             notice.classList.toggle('hidden', !message);
         }
 
+        function setMessage(message) {
+            $('message').textContent = message;
+        }
+
         function jsonp(action, params = {}) {
             return new Promise((resolve, reject) => {
-                if (!configured()) {
+                if (!apiConfigured()) {
                     reject(new Error('Apps Script Web App URL सेट गरिएको छैन।'));
                     return;
                 }
 
-                const callback = 'greetingCb' + Math.random().toString(36).slice(2);
+                const callbackName =
+                    'greetingCb' + Math.random().toString(36).slice(2);
+
                 const script = document.createElement('script');
+                const timeoutMs = action === 'image' ? 90000 : 25000;
 
-                let done = false;
+                let completed = false;
 
-                const timer = setTimeout(() => {
-                    finish(new Error('Server response timeout'));
-                }, action === 'image' ? 90000 : 25000);
+                const timeout = setTimeout(() => {
+                    complete(new Error('Server response timeout'));
+                }, timeoutMs);
 
-                function finish(error, data) {
-                    if (done) {
+                function complete(error, data) {
+                    if (completed) {
                         return;
                     }
 
-                    done = true;
-                    clearTimeout(timer);
-                    delete window[callback];
+                    completed = true;
+                    clearTimeout(timeout);
+                    delete window[callbackName];
                     script.remove();
 
                     if (error) {
@@ -514,13 +644,13 @@
                     }
                 }
 
-                window[callback] = (data) => finish(null, data);
-                script.onerror = () => finish(new Error('Data request failed'));
+                window[callbackName] = (data) => complete(null, data);
+                script.onerror = () => complete(new Error('Data request failed'));
 
                 const url = new URL(GREETING_API_URL);
                 url.searchParams.set('greetingApi', '1');
                 url.searchParams.set('action', action);
-                url.searchParams.set('callback', callback);
+                url.searchParams.set('callback', callbackName);
 
                 Object.entries(params).forEach(([key, value]) => {
                     url.searchParams.set(key, value);
@@ -531,220 +661,24 @@
             });
         }
 
-
-        /* ============================================================
-           PAGE NAVIGATION
-           ============================================================ */
-
-        function go(next) {
-            stage = next;
-
-            ['festivals', 'templates', 'edit'].forEach((id) => {
-                $(id).classList.toggle('hidden', id !== next);
-            });
-
-            $('crumb').textContent =
-                next === 'festivals' ? 'चाडपर्व छनोट' : folder?.name || 'डिजाइन';
-
-            $('back').textContent =
-                next === 'festivals' ? '← मुख्य वेबसाइट' : '← पछाडि';
-
-            window.scrollTo(0, 0);
-        }
-
-        $('back').onclick = () => {
-            if (stage === 'edit') {
-                go('templates');
-            } else if (stage === 'templates') {
-                go('festivals');
-            } else {
-                location.href = 'index.html';
-            }
-        };
-
-
-        /* ============================================================
-           FESTIVAL AND TEMPLATE CARDS
-           ============================================================ */
-
-        function card(title, subtitle, id, cover) {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'card';
-            button.dataset.id = id;
-
-            if (cover) {
-                const image = document.createElement('img');
-                image.alt = title;
-                image.loading = 'lazy';
-                image.src = cover;
-                button.appendChild(image);
-            } else {
-                const placeholder = document.createElement('div');
-                placeholder.className = 'emptyCover';
-                placeholder.textContent = '🎉';
-                button.appendChild(placeholder);
-            }
-
-            const detail = document.createElement('div');
-            detail.className = 'detail';
-
-            const heading = document.createElement('b');
-            heading.textContent = title;
-
-            const description = document.createElement('p');
-            description.textContent = subtitle;
-
-            detail.append(heading, description);
-            button.appendChild(detail);
-
-            return button;
-        }
-
-        function showPreview(button, fileId, title) {
-            const image = document.createElement('img');
-            image.alt = title;
-            image.loading = 'lazy';
-            image.src =
-                'https://drive.google.com/thumbnail?id=' +
-                encodeURIComponent(fileId) +
-                '&sz=w1200';
-
-            image.onerror = () => {
-                image.onerror = null;
-
-                imageData(fileId)
-                    .then((source) => {
-                        image.src = source;
-                    })
-                    .catch(() => {});
-            };
-
-            button.firstChild.replaceWith(image);
-        }
-
-        // Cache completed requests so revisiting a template does not download it again.
-        // Store the pending Promise as well to avoid duplicate simultaneous requests.
-        const templateImageCache = new Map();
-
-        async function imageData(fileId) {
-            if (!templateImageCache.has(fileId)) {
-                const request = jsonp('image', { fileId }).then((result) => {
-                    if (!result.ok) {
-                        throw new Error(result.error || 'Image unavailable');
+        function getTemplateImageData(fileId) {
+            if (!imageCache.has(fileId)) {
+                const promise = jsonp('image', { fileId }).then((response) => {
+                    if (!response.ok) {
+                        throw new Error(response.error || 'Image unavailable');
                     }
 
-                    return 'data:' + result.mime + ';base64,' + result.data;
+                    return 'data:' + response.mime + ';base64,' + response.data;
                 });
 
-                templateImageCache.set(fileId, request);
-                request.catch(() => templateImageCache.delete(fileId));
+                imageCache.set(fileId, promise);
+                promise.catch(() => imageCache.delete(fileId));
             }
 
-            return templateImageCache.get(fileId);
+            return imageCache.get(fileId);
         }
 
-
-        /* ============================================================
-           GOOGLE DRIVE FOLDERS AND TEMPLATES
-           ============================================================ */
-
-        async function init() {
-            status('डिजाइन लोड हुँदैछन्...');
-
-            try {
-                const result = await jsonp('folders');
-
-                if (!result.ok) {
-                    throw new Error(result.error);
-                }
-
-                folders = result.folders || [];
-
-                const grid = $('festivalGrid');
-                grid.replaceChildren();
-
-                for (const item of folders) {
-                    const button = card(
-                        item.name,
-                        'डिजाइन हेर्नुहोस् →',
-                        item.id,
-                        null
-                    );
-
-                    button.onclick = () => openFolder(item);
-                    grid.appendChild(button);
-
-                    if (item.coverId) {
-                        showPreview(button, item.coverId, item.name);
-                    }
-                }
-
-                status(
-                    folders.length
-                        ? ''
-                        : 'Drive मा कुनै चाडपर्व Folder भेटिएन।'
-                );
-            } catch (error) {
-                status(
-                    'लोड हुन सकेन: ' +
-                    error.message +
-                    ' — URL र Apps Script Deployment जाँच्नुहोस्।'
-                );
-            }
-        }
-
-        async function openFolder(selectedFolder) {
-            folder = selectedFolder;
-
-            status('डिजाइनहरू लोड हुँदैछन्...');
-            $('festivalHeading').textContent = selectedFolder.name + ' — डिजाइन छनोट';
-
-            go('templates');
-
-            try {
-                const result = await jsonp('templates', {
-                    folderId: selectedFolder.id
-                });
-
-                if (!result.ok) {
-                    throw new Error(result.error);
-                }
-
-                templates = result.templates || [];
-
-                const grid = $('templateGrid');
-                grid.replaceChildren();
-
-                for (const item of templates) {
-                    const button = card(
-                        item.name,
-                        'यो डिजाइन प्रयोग गर्नुहोस् →',
-                        item.id,
-                        null
-                    );
-
-                    button.onclick = () => openTemplate(item);
-                    grid.appendChild(button);
-                    showPreview(button, item.id, item.name);
-                }
-
-                status(
-                    templates.length
-                        ? templates.length + ' वटा डिजाइन उपलब्ध छन्।'
-                        : 'यो Folder मा Image Template छैन।'
-                );
-            } catch (error) {
-                status('डिजाइन लोड हुन सकेन: ' + error.message);
-            }
-        }
-
-
-        /* ============================================================
-           IMAGE LOADING AND CANVAS EDITOR
-           ============================================================ */
-
-        function loadImg(source) {
+        function loadImage(source) {
             return new Promise((resolve, reject) => {
                 const image = new Image();
 
@@ -754,177 +688,633 @@
             });
         }
 
-        async function openTemplate(selectedTemplate) {
-            template = selectedTemplate;
-            status('डिजाइन खोलिँदैछ, कृपया पर्खनुहोस्...');
+        /* ============================================================
+           13. NAVIGATION AND GALLERY
+           ============================================================ */
+
+        function navigate(nextStage) {
+            stage = nextStage;
+
+            ['festivals', 'templates', 'edit'].forEach((sectionId) => {
+                $(sectionId).classList.toggle(
+                    'hidden',
+                    sectionId !== nextStage
+                );
+            });
+
+            $('crumb').textContent = nextStage === 'festivals'
+                ? 'चाडपर्व छनोट'
+                : (selectedFolder?.name || 'डिजाइन');
+
+            $('back').textContent = nextStage === 'festivals'
+                ? '← मुख्य वेबसाइट'
+                : '← पछाडि';
+
+            window.scrollTo(0, 0);
+        }
+
+        $('back').addEventListener('click', () => {
+            if (stage === 'edit') {
+                navigate('templates');
+            } else if (stage === 'templates') {
+                navigate('festivals');
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        function makeGalleryCard(title, subtitle, imageId, onClick) {
+            const card = document.createElement('button');
+            card.className = 'gallery-card';
+            card.type = 'button';
+
+            const placeholder = document.createElement('div');
+            placeholder.className = 'gallery-placeholder';
+            placeholder.textContent = '🎉';
+
+            const detail = document.createElement('div');
+            detail.className = 'gallery-detail';
+
+            const heading = document.createElement('strong');
+            heading.textContent = title;
+
+            const description = document.createElement('small');
+            description.textContent = subtitle;
+
+            detail.append(heading, description);
+            card.append(placeholder, detail);
+            card.addEventListener('click', onClick);
+
+            if (imageId) {
+                const image = document.createElement('img');
+                image.className = 'gallery-cover';
+                image.alt = title;
+                image.loading = 'lazy';
+
+                image.onload = () => placeholder.replaceWith(image);
+                image.onerror = () => {
+                    // Preview असफल भए पनि कार्ड क्लिक गरेर Template खोल्न मिल्छ।
+                    image.onerror = null;
+                };
+
+                image.src =
+                    'https://drive.google.com/thumbnail?id=' +
+                    encodeURIComponent(imageId) +
+                    '&sz=w1200';
+            }
+
+            return card;
+        }
+
+        async function loadFestivals() {
+            setStatus('डिजाइन लोड हुँदैछन्...');
 
             try {
-                frame = await loadImg(await imageData(selectedTemplate.id));
+                const response = await jsonp('folders');
 
-                canvas.width = frame.naturalWidth;
-                canvas.height = frame.naturalHeight;
+                if (!response.ok) {
+                    throw new Error(response.error || 'Folders unavailable');
+                }
 
-                userImage = null;
-                dx = 0;
-                dy = 0;
-                zoom = 1;
+                folders = response.folders || [];
 
-                $('zoom').value = '1';
-                $('photo').value = '';
-                $('message').textContent = '';
-                namePosition = { x: 0.5, y: 0.912 };
-                designationPosition = { x: 0.5, y: 0.958 };
-                $('nameSize').value = '46';
-                $('designationSize').value = '31';
-                $('textTarget').value = 'name';
+                const gallery = $('festivalGrid');
+                gallery.replaceChildren();
 
-                $('editHeading').textContent =
-                    folder.name + ' — ' + selectedTemplate.name;
+                folders.forEach((item) => {
+                    gallery.appendChild(
+                        makeGalleryCard(
+                            item.name,
+                            'डिजाइन हेर्नुहोस् →',
+                            item.coverId,
+                            () => openFestival(item)
+                        )
+                    );
+                });
 
-                draw();
-                go('edit');
-                status('Template तयार भयो।');
+                setStatus(folders.length ? '' : 'कुनै चाडपर्व Folder भेटिएन।');
             } catch (error) {
-                status('Template खोल्न सकिएन: ' + error.message);
+                setStatus('डिजाइन लोड हुन सकेन: ' + error.message);
             }
         }
 
-        function getTextStyle(target) {
-            const width = canvas.width;
-            const sizePercent = Number($(target + 'Size').value) / 1200;
-            const fontName = $(target + 'Font').value;
-            const fontFamily = fontName === 'serif'
-                ? 'serif'
-                : '"' + fontName.replace(/"/g, '') + '", ' + TEXT_FONT_FALLBACK;
+        async function openFestival(item) {
+            selectedFolder = item;
+            $('festivalHeading').textContent = item.name + ' — डिजाइन छनोट';
 
-            return {
-                font: 'bold ' + Math.max(8, Math.round(width * sizePercent)) + 'px ' + fontFamily,
-                position: target === 'name' ? namePosition : designationPosition
-            };
+            navigate('templates');
+            setStatus('डिजाइन लोड हुँदैछन्...');
+
+            try {
+                const response = await jsonp('templates', {
+                    folderId: item.id
+                });
+
+                if (!response.ok) {
+                    throw new Error(response.error || 'Templates unavailable');
+                }
+
+                templates = response.templates || [];
+
+                const gallery = $('templateGrid');
+                gallery.replaceChildren();
+
+                templates.forEach((entry) => {
+                    gallery.appendChild(
+                        makeGalleryCard(
+                            entry.name,
+                            'यो डिजाइन प्रयोग गर्नुहोस् →',
+                            entry.id,
+                            () => openTemplate(entry)
+                        )
+                    );
+                });
+
+                setStatus(templates.length ? '' : 'यस Folder मा Template छैन।');
+            } catch (error) {
+                setStatus('डिजाइन लोड हुन सकेन: ' + error.message);
+            }
         }
 
-        function paintText(target, text) {
-            if (!text) {
+        /* ============================================================
+           14. ORIGINAL IMAGE RESOLUTION AND FONT RENDERING
+           ============================================================ */
+
+        async function loadFont(fontFamily, sizePx = 40) {
+            const safeFamily = FONT_OPTIONS.has(fontFamily)
+                ? fontFamily
+                : 'Mukta';
+
+            await document.fonts.load(
+                '700 ' + Math.max(12, sizePx) + 'px "' + safeFamily + '"',
+                'नेपाली शुभकामना नाम पद'
+            );
+        }
+
+        async function loadAllEditorFonts() {
+            await Promise.all([
+                loadFont(textObjects.name.font),
+                loadFont(textObjects.designation.font)
+            ]);
+        }
+
+        async function openTemplate(item) {
+            if (openingTemplate) {
                 return;
             }
 
-            const style = getTextStyle(target);
-            ctx.font = style.font;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowColor = '#000a';
-            ctx.shadowBlur = Math.max(2, canvas.width * 0.006);
-            ctx.fillStyle = '#fff';
-            ctx.fillText(
-                text,
-                style.position.x * canvas.width,
-                style.position.y * canvas.height,
-                canvas.width * 0.95
-            );
-            ctx.shadowBlur = 0;
+            openingTemplate = true;
+            selectedTemplate = item;
+            setStatus('डिजाइन खोलिँदैछ...');
+
+            try {
+                const dataUrl = await getTemplateImageData(item.id);
+                const image = await loadImage(dataUrl);
+
+                if (!image.naturalWidth || !image.naturalHeight) {
+                    throw new Error('Template image dimensions unavailable');
+                }
+
+                templateImage = image;
+
+                // मूल Template को वास्तविक Width / Height जस्ताको तस्तै।
+                canvas.width = image.naturalWidth;
+                canvas.height = image.naturalHeight;
+
+                userImage = null;
+                photoX = 0;
+                photoY = 0;
+                photoZoom = 1;
+                selectedObject = null;
+                gesture = null;
+
+                textObjects.name.x = 0.5;
+                textObjects.name.y = 0.88;
+                textObjects.name.size = 0.041;
+                textObjects.name.font = 'Yatra One';
+                textObjects.name.color = '#ffffff';
+
+                textObjects.designation.x = 0.5;
+                textObjects.designation.y = 0.95;
+                textObjects.designation.size = 0.027;
+                textObjects.designation.font = 'Mukta';
+                textObjects.designation.color = '#ffffff';
+
+                $('photo').value = '';
+                $('name').value = '';
+                $('designation').value = '';
+                setMessage('');
+
+                await loadAllEditorFonts();
+
+                $('editHeading').textContent =
+                    selectedFolder.name + ' — ' + item.name;
+
+                updateToolbar();
+                drawEditor();
+                navigate('edit');
+                setStatus('');
+            } catch (error) {
+                setStatus('Template खोल्न सकिएन: ' + error.message);
+            } finally {
+                openingTemplate = false;
+            }
         }
 
-        function draw() {
+        function getTextFont(key) {
+            const item = textObjects[key];
+            const fontSize = Math.max(8, canvas.width * item.size);
+
+            return {
+                size: fontSize,
+                css: '700 ' + fontSize + 'px "' + item.font + '", ' + FONT_FALLBACK
+            };
+        }
+
+        function paintText(key) {
+            const value = $(key).value.trim();
+
+            if (!value) {
+                return;
+            }
+
+            const item = textObjects[key];
+            const font = getTextFont(key);
+
+            ctx.save();
+            ctx.font = font.css;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = item.color;
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+            ctx.shadowBlur = Math.max(2, canvas.width * 0.004);
+
+            // Canvas ले अक्षरलाई तेर्सो खुम्च्याउने maxWidth प्रयोग गरिएको छैन।
+            ctx.fillText(
+                value,
+                item.x * canvas.width,
+                item.y * canvas.height
+            );
+
+            ctx.restore();
+        }
+
+        function photoRect() {
+            if (!userImage) {
+                return null;
+            }
+
+            const scale = Math.max(
+                canvas.width / userImage.naturalWidth,
+                canvas.height / userImage.naturalHeight
+            ) * photoZoom;
+
+            const width = userImage.naturalWidth * scale;
+            const height = userImage.naturalHeight * scale;
+
+            return {
+                x: (canvas.width - width) / 2 + photoX,
+                y: (canvas.height - height) / 2 + photoY,
+                width,
+                height
+            };
+        }
+
+        function drawEditor(showSelection = true) {
             const width = canvas.width;
             const height = canvas.height;
 
             ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = '#f1f4f7';
-            ctx.fillRect(0, 0, width, height);
 
             if (userImage) {
-                const fit = Math.max(
-                    width / userImage.width,
-                    height / userImage.height
-                ) * zoom;
-
-                const imageWidth = userImage.width * fit;
-                const imageHeight = userImage.height * fit;
+                const rect = photoRect();
 
                 ctx.drawImage(
                     userImage,
-                    (width - imageWidth) / 2 + dx,
-                    (height - imageHeight) / 2 + dy,
-                    imageWidth,
-                    imageHeight
+                    rect.x,
+                    rect.y,
+                    rect.width,
+                    rect.height
                 );
             }
 
-            if (frame) {
-                ctx.drawImage(frame, 0, 0, width, height);
+            if (templateImage) {
+                // Original Image: कुनै stretching / distortion हुँदैन।
+                ctx.drawImage(templateImage, 0, 0);
             }
 
-            paintText('name', $('name').value.trim());
-            paintText('designation', $('designation').value.trim());
+            paintText('name');
+            paintText('designation');
+
+            if (showSelection && selectedObject) {
+                paintSelection();
+            }
         }
 
-        function textAt(x, y) {
-            const candidates = ['designation', 'name'];
+        /* ============================================================
+           15. DIRECT OBJECT SELECTION AND VISUAL OUTLINE
+           ============================================================ */
 
-            for (const target of candidates) {
-                const text = $(target).value.trim();
+        function textBounds(key) {
+            const value = $(key).value.trim();
 
-                if (!text) {
+            if (!value) {
+                return null;
+            }
+
+            const item = textObjects[key];
+            const font = getTextFont(key);
+
+            ctx.save();
+            ctx.font = font.css;
+
+            const measuredWidth = ctx.measureText(value).width;
+            ctx.restore();
+
+            return {
+                x: item.x * canvas.width,
+                y: item.y * canvas.height,
+                width: measuredWidth,
+                height: font.size * 1.25
+            };
+        }
+
+        function hitTestText(point) {
+            for (const key of ['designation', 'name']) {
+                const bounds = textBounds(key);
+
+                if (!bounds) {
                     continue;
                 }
 
-                const style = getTextStyle(target);
-                ctx.font = style.font;
-                const metrics = ctx.measureText(text);
-                const textWidth = Math.min(metrics.width, canvas.width * 0.95);
-                const textHeight = Math.max(24, parseFloat(style.font.match(/(\d+)px/)[1]));
-                const centerX = style.position.x * canvas.width;
-                const centerY = style.position.y * canvas.height;
+                const padding = Math.max(12, canvas.width * 0.015);
 
                 if (
-                    Math.abs(x - centerX) <= textWidth / 2 + 20 &&
-                    Math.abs(y - centerY) <= textHeight / 2 + 20
+                    Math.abs(point.x - bounds.x) <= bounds.width / 2 + padding &&
+                    Math.abs(point.y - bounds.y) <= bounds.height / 2 + padding
                 ) {
-                    return target;
+                    return key;
                 }
             }
 
             return null;
         }
 
+        function paintSelection() {
+            if (selectedObject === 'photo') {
+                return;
+            }
 
-        /* ============================================================
-           PHOTO CONTROLS
-           ============================================================ */
+            const bounds = textBounds(selectedObject);
 
-        $('name').oninput = draw;
-        $('designation').oninput = draw;
+            if (!bounds) {
+                return;
+            }
 
-        $('zoom').oninput = () => {
-            zoom = Number($('zoom').value);
-            draw();
-        };
+            const padding = Math.max(10, canvas.width * 0.01);
 
-        function adjustZoom(delta) {
-            const slider = $('zoom');
-            zoom = Math.max(Number(slider.min), Math.min(Number(slider.max), zoom + delta));
-            slider.value = String(zoom);
-            draw();
+            ctx.save();
+            ctx.strokeStyle = '#04bff1';
+            ctx.lineWidth = Math.max(2, canvas.width * 0.002);
+            ctx.setLineDash([
+                Math.max(5, canvas.width * 0.008),
+                Math.max(3, canvas.width * 0.005)
+            ]);
+
+            ctx.strokeRect(
+                bounds.x - bounds.width / 2 - padding,
+                bounds.y - bounds.height / 2 - padding,
+                bounds.width + 2 * padding,
+                bounds.height + 2 * padding
+            );
+
+            ctx.restore();
         }
 
-        $('zoomMinus').onclick = () => adjustZoom(-0.1);
-        $('zoomPlus').onclick = () => adjustZoom(0.1);
+        function selectObject(key) {
+            selectedObject = key;
+            updateToolbar();
+            drawEditor();
+        }
 
-        ['name', 'designation'].forEach((target) => {
-            $(target + 'Size').oninput = draw;
-            $(target + 'Font').onchange = draw;
-        });
+        function updateToolbar() {
+            const isText = selectedObject === 'name' ||
+                selectedObject === 'designation';
 
-        document.querySelectorAll('.text-step').forEach((button) => {
-            button.onclick = () => {
-                const slider = $(button.dataset.field + 'Size');
-                const next = Number(slider.value) + Number(button.dataset.step);
-                slider.value = String(Math.max(Number(slider.min), Math.min(Number(slider.max), next)));
-                draw();
+            $('textToolbar').classList.toggle('hidden', !isText);
+
+            if (!isText) {
+                return;
+            }
+
+            const item = textObjects[selectedObject];
+
+            $('selectionCaption').textContent =
+                selectedObject === 'name'
+                    ? 'नाम चयन गरिएको छ · तान्नुहोस् वा Pinch Zoom गर्नुहोस्'
+                    : 'पद चयन गरिएको छ · तान्नुहोस् वा Pinch Zoom गर्नुहोस्';
+
+            $('fontFamily').value = item.font;
+            $('fontColor').value = item.color;
+        }
+
+        /* ============================================================
+           16. TOUCH, DRAG, PINCH ZOOM AND DESKTOP WHEEL
+           ============================================================ */
+
+        function pointerToCanvas(event) {
+            const bounds = canvas.getBoundingClientRect();
+
+            return {
+                x: (event.clientX - bounds.left) * canvas.width / bounds.width,
+                y: (event.clientY - bounds.top) * canvas.height / bounds.height
             };
+        }
+
+        function getGesturePair() {
+            const points = [...activePointers.values()];
+
+            if (points.length < 2) {
+                return null;
+            }
+
+            return {
+                distance: Math.hypot(
+                    points[1].x - points[0].x,
+                    points[1].y - points[0].y
+                ),
+                center: {
+                    x: (points[0].x + points[1].x) / 2,
+                    y: (points[0].y + points[1].y) / 2
+                }
+            };
+        }
+
+        function applyScale(target, factor) {
+            if (!Number.isFinite(factor) || factor <= 0) {
+                return;
+            }
+
+            if (target === 'photo') {
+                photoZoom = Math.max(
+                    0.05,
+                    Math.min(12, photoZoom * factor)
+                );
+            } else if (textObjects[target]) {
+                const item = textObjects[target];
+
+                item.size = Math.max(
+                    0.008,
+                    Math.min(0.24, item.size * factor)
+                );
+            }
+        }
+
+        canvas.addEventListener('pointerdown', (event) => {
+            event.preventDefault();
+
+            const point = pointerToCanvas(event);
+            activePointers.set(event.pointerId, point);
+
+            if (activePointers.size === 1) {
+                const hitText = hitTestText(point);
+
+                if (hitText) {
+                    selectObject(hitText);
+                } else if (userImage) {
+                    selectObject('photo');
+                } else {
+                    selectObject(null);
+                }
+
+                gesture = {
+                    kind: 'drag',
+                    target: selectedObject,
+                    previous: point
+                };
+            } else if (activePointers.size === 2) {
+                const pair = getGesturePair();
+
+                gesture = {
+                    kind: 'pinch',
+                    target: selectedObject,
+                    distance: pair.distance,
+                    center: pair.center
+                };
+            }
+
+            canvas.setPointerCapture(event.pointerId);
         });
 
-        $('photo').onchange = (event) => {
+        canvas.addEventListener('pointermove', (event) => {
+            if (!activePointers.has(event.pointerId)) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const point = pointerToCanvas(event);
+            activePointers.set(event.pointerId, point);
+
+            if (!gesture || !gesture.target) {
+                return;
+            }
+
+            if (activePointers.size >= 2 && gesture.kind === 'pinch') {
+                const pair = getGesturePair();
+
+                if (!pair) {
+                    return;
+                }
+
+                if (gesture.distance > 0) {
+                    applyScale(
+                        gesture.target,
+                        pair.distance / gesture.distance
+                    );
+                }
+
+                const changeX = pair.center.x - gesture.center.x;
+                const changeY = pair.center.y - gesture.center.y;
+
+                moveObject(gesture.target, changeX, changeY);
+
+                gesture.distance = pair.distance;
+                gesture.center = pair.center;
+                drawEditor();
+                return;
+            }
+
+            if (activePointers.size === 1 && gesture.kind === 'drag') {
+                const changeX = point.x - gesture.previous.x;
+                const changeY = point.y - gesture.previous.y;
+
+                moveObject(gesture.target, changeX, changeY);
+
+                gesture.previous = point;
+                drawEditor();
+            }
+        });
+
+        function moveObject(target, changeX, changeY) {
+            if (target === 'photo') {
+                photoX += changeX;
+                photoY += changeY;
+                return;
+            }
+
+            if (textObjects[target]) {
+                const item = textObjects[target];
+
+                item.x = Math.max(
+                    0,
+                    Math.min(1, item.x + changeX / canvas.width)
+                );
+
+                item.y = Math.max(
+                    0,
+                    Math.min(1, item.y + changeY / canvas.height)
+                );
+            }
+        }
+
+        function releasePointer(event) {
+            activePointers.delete(event.pointerId);
+
+            if (activePointers.size === 1) {
+                gesture = {
+                    kind: 'drag',
+                    target: selectedObject,
+                    previous: [...activePointers.values()][0]
+                };
+            } else {
+                gesture = null;
+            }
+        }
+
+        canvas.addEventListener('pointerup', releasePointer);
+        canvas.addEventListener('pointercancel', releasePointer);
+
+        canvas.addEventListener('wheel', (event) => {
+            if (!selectedObject) {
+                return;
+            }
+
+            event.preventDefault();
+
+            applyScale(
+                selectedObject,
+                event.deltaY < 0 ? 1.06 : 1 / 1.06
+            );
+
+            drawEditor();
+        }, { passive: false });
+
+        /* ============================================================
+           17. PHOTO INPUT AND CONTEXTUAL TEXT SETTINGS
+           ============================================================ */
+
+        $('photo').addEventListener('change', async (event) => {
             const file = event.target.files[0];
 
             if (!file) {
@@ -932,183 +1322,176 @@
             }
 
             if (!file.type.startsWith('image/')) {
-                $('message').textContent = 'फोटो फाइल छान्नुहोस्।';
+                setMessage('कृपया फोटो फाइल छान्नुहोस्।');
                 return;
             }
 
             const url = URL.createObjectURL(file);
 
-            loadImg(url)
-                .then((image) => {
-                    userImage = image;
-                    dx = 0;
-                    dy = 0;
-                    zoom = 1;
+            try {
+                userImage = await loadImage(url);
+                photoX = 0;
+                photoY = 0;
+                photoZoom = 1;
 
-                    $('zoom').value = 1;
-                    draw();
-                    $('message').textContent = '';
-                })
-                .catch(() => {
-                    $('message').textContent = 'फोटो खोल्न सकिएन।';
-                })
-                .finally(() => {
-                    URL.revokeObjectURL(url);
-                });
-        };
+                setMessage('');
+                selectObject('photo');
+            } catch (error) {
+                setMessage('फोटो खोल्न सकिएन।');
+            } finally {
+                URL.revokeObjectURL(url);
+            }
+        });
 
-        $('remove').onclick = () => {
+        $('remove').addEventListener('click', () => {
             userImage = null;
             $('photo').value = '';
-            draw();
-        };
 
-        function canvasPoint(event) {
-            const rect = canvas.getBoundingClientRect();
-
-            return {
-                x: (event.clientX - rect.left) * canvas.width / rect.width,
-                y: (event.clientY - rect.top) * canvas.height / rect.height
-            };
-        }
-
-        canvas.addEventListener('pointerdown', (event) => {
-            const point = canvasPoint(event);
-            dragTarget = textAt(point.x, point.y) || $('textTarget').value;
-
-            if (dragTarget === 'photo' && !userImage) {
-                dragTarget = null;
-                return;
-            }
-
-            if (dragTarget !== 'photo' && !$(dragTarget).value.trim()) {
-                dragTarget = userImage ? 'photo' : null;
-            }
-
-            if (!dragTarget) {
-                return;
-            }
-
-            drag = true;
-            px = point.x;
-            py = point.y;
-            $('textTarget').value = dragTarget;
-            canvas.setPointerCapture(event.pointerId);
+            setMessage('');
+            selectObject(null);
         });
 
-        canvas.addEventListener('pointermove', (event) => {
-            if (!drag || !dragTarget) {
+        ['name', 'designation'].forEach((key) => {
+            $(key).addEventListener('input', () => {
+                if (selectedObject === key && !$(key).value.trim()) {
+                    selectObject(null);
+                } else {
+                    drawEditor();
+                }
+            });
+        });
+
+        $('fontFamily').addEventListener('change', async (event) => {
+            if (!textObjects[selectedObject]) {
                 return;
             }
 
-            const point = canvasPoint(event);
-            const changeX = point.x - px;
-            const changeY = point.y - py;
+            const fontName = event.target.value;
 
-            if (dragTarget === 'photo') {
-                dx += changeX;
-                dy += changeY;
-            } else {
-                const position = dragTarget === 'name'
-                    ? namePosition
-                    : designationPosition;
-
-                position.x = Math.max(0, Math.min(1, position.x + changeX / canvas.width));
-                position.y = Math.max(0, Math.min(1, position.y + changeY / canvas.height));
+            if (!FONT_OPTIONS.has(fontName)) {
+                return;
             }
 
-            px = point.x;
-            py = point.y;
-            draw();
+            const target = selectedObject;
+
+            try {
+                await loadFont(fontName);
+
+                textObjects[target].font = fontName;
+                drawEditor();
+            } catch (error) {
+                setMessage('फन्ट लोड हुन सकेन। इन्टरनेट जाँच्नुहोस्।');
+            }
         });
 
-        function stopDragging() {
-            drag = false;
-            dragTarget = null;
-        }
+        $('fontColor').addEventListener('input', (event) => {
+            if (!textObjects[selectedObject]) {
+                return;
+            }
 
-        canvas.addEventListener('pointerup', stopDragging);
-        canvas.addEventListener('pointercancel', stopDragging);
-
+            textObjects[selectedObject].color = event.target.value;
+            drawEditor();
+        });
 
         /* ============================================================
-           PNG DOWNLOAD AND USAGE TRACKING
+           18. LOSSLESS PNG EXPORT AND SHEET USAGE REQUEST
            ============================================================ */
 
-        $('download').onclick = () => {
+        async function makePngBlob() {
+            await loadAllEditorFonts();
+
+            // Selection border अन्तिम PNG मा नराख्ने।
+            drawEditor(false);
+
+            const blob = await new Promise((resolve, reject) => {
+                canvas.toBlob((result) => {
+                    if (result) {
+                        resolve(result);
+                    } else {
+                        reject(new Error('PNG बनाउन सकिएन।'));
+                    }
+                }, 'image/png');
+            });
+
+            // Export पछि सम्पादनको Selection फेरि देखाउने।
+            drawEditor(true);
+            return blob;
+        }
+
+        function recordUsage(name, designation) {
+            const form = new URLSearchParams({
+                greetingApi: '1',
+                action: 'usage',
+                folderId: selectedFolder.id,
+                templateId: selectedTemplate.id,
+                name,
+                designation
+            });
+
+            // Existing backend को POST interface यथावत् राखिएको छ।
+            // no-cors response पढ्न नमिल्ने भएकाले Sheet लेखिएको पुष्टि हुँदैन।
+            return fetch(GREETING_API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: form,
+                keepalive: true
+            });
+        }
+
+        $('download').addEventListener('click', async () => {
             const name = $('name').value.trim();
             const designation = $('designation').value.trim();
 
+            if (!templateImage || !selectedFolder || !selectedTemplate) {
+                return;
+            }
+
             if (!userImage || !name || !designation) {
-                $('message').textContent = 'फोटो, नाम र पद अनिवार्य छन्।';
+                setMessage('फोटो, नाम र पद अनिवार्य छन्।');
                 return;
             }
 
-            if (!frame || !folder || !template) {
-                return;
-            }
+            const button = $('download');
+            button.disabled = true;
+            button.textContent = 'PNG तयार हुँदैछ...';
+            setMessage('');
 
-            draw();
-
-            canvas.toBlob((blob) => {
-                if (!blob) {
-                    $('message').textContent = 'PNG तयार हुन सकेन।';
-                    return;
-                }
-
+            try {
+                const blob = await makePngBlob();
                 const url = URL.createObjectURL(blob);
-                const anchor = document.createElement('a');
+                const link = document.createElement('a');
 
-                anchor.href = url;
-                anchor.download = 'Greeting_' + Date.now() + '.png';
+                link.href = url;
+                link.download = 'Greeting_' + Date.now() + '.png';
 
-                document.body.appendChild(anchor);
-                anchor.click();
-                anchor.remove();
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
 
-                setTimeout(() => {
-                    URL.revokeObjectURL(url);
-                }, 15000);
+                setTimeout(() => URL.revokeObjectURL(url), 15000);
 
-                // no-cors ले Google Sheet मा लेखिएको पुष्टि गर्न सक्दैन।
-                const form = new URLSearchParams({
-                    greetingApi: '1',
-                    action: 'usage',
-                    folderId: folder.id,
-                    templateId: template.id,
-                    name,
-                    designation
+                // डाउनलोडको सफल क्लिकपछि मात्र प्रयोग अभिलेख पठाउने।
+                recordUsage(name, designation).catch(() => {
+                    // अभिलेख पठाउन असफल भए पनि PNG डाउनलोड रोकिँदैन।
                 });
-
-                fetch(GREETING_API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: form,
-                    keepalive: true
-                })
-                    .then(() => {
-                        $('message').textContent =
-                            'PNG डाउनलोड सुरु भयो। प्रयोग विवरण सर्भरमा पठाइएको छ ' +
-                            '(Sheet पुष्टि उपलब्ध छैन)।';
-                    })
-                    .catch(() => {
-                        $('message').textContent =
-                            'PNG डाउनलोड सुरु भयो, तर प्रयोग विवरण पठाउन सकिएन।';
-                    });
-            }, 'image/png');
-        };
-
+            } catch (error) {
+                drawEditor(true);
+                setMessage('डाउनलोड गर्न सकिएन: ' + error.message);
+            } finally {
+                button.disabled = false;
+                button.textContent = '⬇ PNG डाउनलोड';
+            }
+        });
 
         /* ============================================================
-           APPLICATION STARTUP
+           19. APPLICATION START
            ============================================================ */
 
-        if (!configured()) {
-            status('Setup आवश्यक: greetings.html मा Apps Script Web App /exec URL राख्नुहोस्।');
+        if (apiConfigured()) {
+            loadFestivals();
         } else {
-            init();
+            setStatus('Apps Script Web App URL सेट गरिएको छैन।');
         }
-    
-  </script>
- </body>
+    </script>
+</body>
 </html>
