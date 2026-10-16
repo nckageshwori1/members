@@ -761,6 +761,7 @@
             .template-loading-spinner { animation-duration: 2s; }
         }
 
+        .face-fit-message { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.5; }
     </style>
 </head>
 
@@ -892,6 +893,8 @@
                         <label for="photo">फोटो</label>
                         <input id="photo" type="file" accept="image/*">
                         <button id="resetPhotoFit" class="button hidden" type="button" style="margin-top:6px;">↺ फोटो Auto Fit / Reset</button>
+                        <button id="smartFaceFit" class="button hidden" type="button" style="margin-top:6px;">☺ Smart Face Fit</button>
+                        <small id="faceFitMessage" class="face-fit-message" role="status" aria-live="polite"></small>
                     </div>
 
                     <div class="form-field">
@@ -1582,6 +1585,11 @@
                 photoZoom = 1;
                 photoFitRegion = detectPhotoWindow(image);
                 $('resetPhotoFit').classList.add('hidden');
+                $('smartFaceFit').classList.add('hidden');
+                faceFitBounds = null;
+                faceFitMode = false;
+                faceFitRequest += 1;
+                setFaceFitMessage('');
                 selectedObject = null;
                 gesture = null;
 
@@ -1740,8 +1748,104 @@
             return region;
         }
 
+        /* Optional on-device face positioning. No photo is uploaded for detection.
+           Browser FaceDetector is experimental: always retain regular Auto Fit. */
+        let faceFitBounds = null;
+        let faceFitRequest = 0;
+        let faceFitMode = false;
+
+        function setFaceFitMessage(message) {
+            $('faceFitMessage').textContent = message;
+        }
+
+        function positionPhotoAroundFaces(bounds) {
+            if (!userImage || !bounds) return false;
+            const region = photoFitRegion || {
+                x: 0, y: 0, width: canvas.width, height: canvas.height
+            };
+            const imageWidth = userImage.naturalWidth;
+            const imageHeight = userImage.naturalHeight;
+            const baseScale = Math.max(canvas.width / imageWidth, canvas.height / imageHeight);
+
+            // Preserve every detected face, with a margin around the group.
+            const margin = 1.35;
+            const focusWidth = Math.min(imageWidth, Math.max(1, bounds.width * margin));
+            const focusHeight = Math.min(imageHeight, Math.max(1, bounds.height * margin));
+            const fitAllFaces = Math.min(region.width / focusWidth, region.height / focusHeight);
+            const minimumCover = Math.max(region.width / imageWidth, region.height / imageHeight);
+            const targetScale = Math.max(minimumCover, fitAllFaces);
+            const renderedWidth = imageWidth * targetScale;
+            const renderedHeight = imageHeight * targetScale;
+            const centerX = bounds.x + bounds.width / 2;
+            const centerY = bounds.y + bounds.height / 2;
+            const desiredX = region.x + region.width / 2 - centerX * targetScale;
+            const desiredY = region.y + region.height / 2 - centerY * targetScale;
+
+            // Keep the photo covering the template's transparent window.
+            const minX = region.x + region.width - renderedWidth;
+            const maxX = region.x;
+            const minY = region.y + region.height - renderedHeight;
+            const maxY = region.y;
+            const finalX = Math.max(minX, Math.min(maxX, desiredX));
+            const finalY = Math.max(minY, Math.min(maxY, desiredY));
+            photoZoom = targetScale / baseScale;
+            photoX = finalX - (canvas.width - renderedWidth) / 2;
+            photoY = finalY - (canvas.height - renderedHeight) / 2;
+            drawEditor();
+            return true;
+        }
+
+        async function detectFacesOnDevice(image) {
+            if (typeof window.FaceDetector !== 'function') return null;
+            const detector = new window.FaceDetector({ fastMode: true, maxDetectedFaces: 12 });
+            const faces = await detector.detect(image);
+            if (!faces.length) return null;
+            const boxes = faces.map(face => face.boundingBox).filter(Boolean);
+            if (!boxes.length) return null;
+            const left = Math.min(...boxes.map(box => box.x));
+            const top = Math.min(...boxes.map(box => box.y));
+            const right = Math.max(...boxes.map(box => box.x + box.width));
+            const bottom = Math.max(...boxes.map(box => box.y + box.height));
+            return { x: left, y: top, width: right - left, height: bottom - top };
+        }
+
+        async function applySmartFaceFit() {
+            if (!userImage) return;
+            const image = userImage;
+            const request = ++faceFitRequest;
+            const button = $('smartFaceFit');
+            button.disabled = true;
+            setFaceFitMessage('अनुहार खोजिँदैछ...');
+            try {
+                const bounds = faceFitBounds || await detectFacesOnDevice(image);
+                if (request !== faceFitRequest || image !== userImage) return;
+                if (!bounds) {
+                    faceFitMode = false;
+                    setFaceFitMessage(typeof window.FaceDetector !== 'function'
+                        ? 'यो ब्राउजरमा Face Detection उपलब्ध छैन। सामान्य Auto Fit प्रयोग गर्नुहोस्।'
+                        : 'अनुहार भेटिएन। सामान्य Auto Fit प्रयोग गर्नुहोस्।');
+                    return;
+                }
+                faceFitBounds = bounds;
+                faceFitMode = true;
+                positionPhotoAroundFaces(bounds);
+                selectObject('photo');
+                setFaceFitMessage('अनुहारअनुसार फोटो मिलाइयो। आवश्यक परे आफैँ सार्न सक्नुहुन्छ।');
+            } catch (error) {
+                if (request === faceFitRequest) {
+                    faceFitMode = false;
+                    setFaceFitMessage('Face Fit उपलब्ध भएन। सामान्य Auto Fit प्रयोग गर्नुहोस्।');
+                }
+            } finally {
+                if (request === faceFitRequest) button.disabled = false;
+            }
+        }
+
+        $('smartFaceFit').addEventListener('click', applySmartFaceFit);
+
         function resetPhotoAutoFit() {
             if (!userImage) return;
+            faceFitMode = false;
             const region = photoFitRegion || {
                 x: 0, y: 0, width: canvas.width, height: canvas.height
             };
@@ -2293,6 +2397,11 @@
 
             try {
                 userImage = await loadImage(url);
+                faceFitRequest += 1;
+                faceFitBounds = null;
+                faceFitMode = false;
+                $('smartFaceFit').classList.remove('hidden');
+                setFaceFitMessage('');
                 photoX = 0;
                 photoY = 0;
                 photoZoom = 1;
@@ -2311,6 +2420,11 @@
             userImage = null;
             $('photo').value = '';
             $('resetPhotoFit').classList.add('hidden');
+            $('smartFaceFit').classList.add('hidden');
+            faceFitRequest += 1;
+            faceFitBounds = null;
+            faceFitMode = false;
+            setFaceFitMessage('');
 
             setMessage('');
             selectObject(null);
