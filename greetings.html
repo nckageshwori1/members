@@ -14,7 +14,7 @@
 <script>
 'use strict';
 // REQUIRED: Paste the deployed Apps Script Web App /exec URL here. Do not use the editor URL.
-const GREETING_API_URL = 'PASTE_YOUR_GREETING_APPS_SCRIPT_EXEC_URL_HERE';
+const GREETING_API_URL = 'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
 const $=id=>document.getElementById(id), canvas=$('canvas'),ctx=canvas.getContext('2d');
 let stage='festivals',folders=[],templates=[],folder=null,template=null,frame=null,userImage=null,dx=0,dy=0,zoom=1,drag=false,px=0,py=0;
 const configured=()=>/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec/.test(GREETING_API_URL);
