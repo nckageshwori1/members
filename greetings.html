@@ -1,55 +1,925 @@
-<!doctype html>
-<html lang="ne"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>शुभकामना डिजाइन केन्द्र</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#f3f7fc;color:#173653;font-family:"Noto Sans Devanagari","Nirmala UI",Mangal,Arial,sans-serif}button,input{font:inherit}button{cursor:pointer}header{text-align:center;padding:21px 12px;background:white;border-bottom:5px solid #07874d}header h1{margin:0;color:#bc2432;font-size:25px}header p{margin:7px 0;color:#5d7087}.logo{width:62px;height:62px;object-fit:contain;vertical-align:middle}.wrap{max-width:1050px;margin:auto;padding:16px 13px 45px}.top{display:flex;align-items:center;justify-content:space-between;gap:10px}.btn{border:1px solid #d2e0ed;background:white;color:#17446b;border-radius:10px;padding:11px 14px;font-weight:800}.primary{background:#078c4a;color:white;border:0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:15px}.card{background:white;border:1px solid #dbe6f1;border-radius:15px;overflow:hidden;text-align:left;padding:0;box-shadow:0 5px 16px #18365312}.card img{display:block;width:100%;height:200px;object-fit:cover;background:#e7edf4}.card .detail{padding:13px}.card b{font-size:17px;color:#15385c}.card p{font-size:12px;color:#697d91}.emptyCover{height:200px;background:linear-gradient(135deg,#af2634,#f4b54b);display:grid;place-items:center;font-size:65px}.hidden{display:none!important}.note{padding:12px 14px;border:1px solid #e9d7a0;background:#fff9e8;border-radius:11px;margin-top:15px;font-size:13px;line-height:1.7}.editor{display:grid;grid-template-columns:1.15fr .85fr;gap:17px;margin-top:16px}.panel{padding:15px;background:#fff;border:1px solid #dbe6f1;border-radius:15px}.panel h3{margin:0 0 12px}.field{display:grid;gap:5px;margin:12px 0}.field label{font-weight:800}.field input{width:100%;padding:10px;border:1px solid #c8d9e7;border-radius:9px}.canvasBox{background:#edf3f8;padding:9px;border-radius:12px}canvas{display:block;width:100%;max-width:550px;height:auto;margin:auto;touch-action:none;background:#fff;box-shadow:0 3px 10px #0002}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.status{font-size:13px;color:#47627e;line-height:1.7}footer{text-align:center;padding:20px 10px;background:#fff;border-top:1px solid #dbe6f1;font-size:13px;color:#4d6075}footer a{color:#078c4a;font-weight:900;text-decoration:none}@media(max-width:750px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card img,.emptyCover{height:145px}.editor{grid-template-columns:1fr}.card b{font-size:15px}}@media(max-width:420px){.card img,.emptyCover{height:120px}.card .detail{padding:9px}}
-</style></head><body>
-<header><img class="logo" src="logo.png" alt="शुभकामना लोगो" onerror="this.style.display='none'"><h1>🎉 शुभकामना डिजाइन केन्द्र</h1><p>चाडपर्व छान्नुहोस् · आफ्नो फोटो राख्नुहोस् · डिजाइन डाउनलोड गर्नुहोस्</p></header>
-<div class="wrap"><div class="top"><button class="btn" id="back">← मुख्य वेबसाइट</button><strong id="crumb">चाडपर्व छनोट</strong></div>
-<div class="note" id="notice">Google Drive बाट चाडपर्वहरू लोड हुँदैछन्...</div>
-<section id="festivals"><h2>उपलब्ध चाडपर्व</h2><div class="grid" id="festivalGrid"></div></section>
-<section id="templates" class="hidden"><h2 id="festivalHeading"></h2><div class="grid" id="templateGrid"></div></section>
-<section id="edit" class="hidden"><h2 id="editHeading"></h2><div class="editor"><div class="panel"><h3>डिजाइन Preview</h3><div class="canvasBox"><canvas id="canvas" width="1200" height="1200"></canvas></div><p class="status">फोटो Drag गरी सार्नुहोस्, Zoom बाट आकार मिलाउनुहोस्। मोबाइलमा पनि फोटो सार्न सकिन्छ।</p></div><div class="panel"><h3>आफ्नो विवरण</h3><div class="field"><label for="photo">फोटो</label><input id="photo" type="file" accept="image/*"></div><div class="field"><label for="name">नाम</label><input id="name" maxlength="80" placeholder="नाम लेख्नुहोस्"></div><div class="field"><label for="designation">पद / जिम्मेवारी</label><input id="designation" maxlength="100" placeholder="पद लेख्नुहोस्"></div><div class="field"><label for="zoom">फोटो Zoom</label><input id="zoom" type="range" min="0.5" max="3" step="0.02" value="1"></div><div class="actions"><button class="btn" id="remove">फोटो हटाउनुहोस्</button><button class="btn primary" id="download">⬇ PNG डाउनलोड</button></div><p class="status" id="message"></p><p class="status">डाउनलोड गर्दा नाम, पद र डिजाइनको विवरण प्रयोग अभिलेखमा पठाइन्छ। फोटो सर्भरमा पठाइँदैन।</p></div></div></section>
-</div><footer>Designed &amp; Developed by <strong>Nirajan Aryal</strong> (<a href="tel:+9779851113811">9851113811</a>)</footer>
-<script>
-'use strict';
-// REQUIRED: Paste the deployed Apps Script Web App /exec URL here. Do not use the editor URL.
-const GREETING_API_URL = 'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
-const $=id=>document.getElementById(id), canvas=$('canvas'),ctx=canvas.getContext('2d');
-let stage='festivals',folders=[],templates=[],folder=null,template=null,frame=null,userImage=null,dx=0,dy=0,zoom=1,drag=false,px=0,py=0;
-const configured=()=>/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec/.test(GREETING_API_URL);
-function status(s){$('notice').textContent=s;}
-function jsonp(action,params={}){return new Promise((resolve,reject)=>{
- if(!configured()){reject(new Error('Apps Script Web App URL सेट गरिएको छैन।'));return;}
- const cb='greetingCb'+Math.random().toString(36).slice(2),script=document.createElement('script');
- let done=false;const timer=setTimeout(()=>finish(new Error('Server response timeout')),25000);
- function finish(err,data){if(done)return;done=true;clearTimeout(timer);delete window[cb];script.remove();err?reject(err):resolve(data);}
- window[cb]=data=>finish(null,data);script.onerror=()=>finish(new Error('Data request failed'));
- const u=new URL(GREETING_API_URL);u.searchParams.set('greetingApi','1');u.searchParams.set('action',action);u.searchParams.set('callback',cb);
- Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v));script.src=u.toString();document.head.appendChild(script);
- });}
-function go(next){stage=next;['festivals','templates','edit'].forEach(id=>$(id).classList.toggle('hidden',id!==next));$('crumb').textContent=next==='festivals'?'चाडपर्व छनोट':folder?.name||'डिजाइन';$('back').textContent=next==='festivals'?'← मुख्य वेबसाइट':'← पछाडि';window.scrollTo(0,0);}
-$('back').onclick=()=>{if(stage==='edit')go('templates');else if(stage==='templates')go('festivals');else location.href='index.html';};
-function card(title,subtitle,id,cover){const b=document.createElement('button');b.type='button';b.className='card';b.dataset.id=id;
- if(cover){const img=document.createElement('img');img.alt=title;img.loading='lazy';img.src=cover;b.appendChild(img);}else{const c=document.createElement('div');c.className='emptyCover';c.textContent='🎉';b.appendChild(c);}
- const d=document.createElement('div');d.className='detail';const strong=document.createElement('b');strong.textContent=title;const p=document.createElement('p');p.textContent=subtitle;d.append(strong,p);b.appendChild(d);return b;}
-async function imageData(fileId){const r=await jsonp('image',{fileId});if(!r.ok)throw Error(r.error||'Image unavailable');return 'data:'+r.mime+';base64,'+r.data;}
-async function init(){status('Google Drive बाट चाडपर्व लोड हुँदैछन्...');try{const r=await jsonp('folders');if(!r.ok)throw Error(r.error);folders=r.folders||[];const grid=$('festivalGrid');grid.replaceChildren();for(const f of folders){const b=card(f.name,'डिजाइन हेर्नुहोस् →',f.id,null);b.onclick=()=>openFolder(f);grid.appendChild(b);if(f.coverId)imageData(f.coverId).then(src=>{const img=document.createElement('img');img.src=src;img.alt=f.name;b.firstChild.replaceWith(img);}).catch(()=>{});}status(folders.length?folders.length+' चाडपर्व उपलब्ध छन्।':'Drive मा कुनै चाडपर्व Folder भेटिएन।');}catch(err){status('लोड हुन सकेन: '+err.message+' — URL र Apps Script Deployment जाँच्नुहोस्।');}}
-async function openFolder(f){folder=f;status('डिजाइनहरू लोड हुँदैछन्...');$('festivalHeading').textContent=f.name+' — डिजाइन छनोट';go('templates');try{const r=await jsonp('templates',{folderId:f.id});if(!r.ok)throw Error(r.error);templates=r.templates||[];const grid=$('templateGrid');grid.replaceChildren();for(const t of templates){const b=card(t.name,'यो डिजाइन प्रयोग गर्नुहोस् →',t.id,null);b.onclick=()=>openTemplate(t);grid.appendChild(b);imageData(t.id).then(src=>{const img=document.createElement('img');img.src=src;img.alt=t.name;b.firstChild.replaceWith(img);}).catch(()=>{});}status(templates.length?templates.length+' वटा डिजाइन उपलब्ध छन्।':'यो Folder मा Image Template छैन।');}catch(err){status('डिजाइन लोड हुन सकेन: '+err.message);}}
-function loadImg(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Image open failed'));im.src=src;});}
-async function openTemplate(t){template=t;status('Template तयार हुँदैछ...');try{frame=await loadImg(await imageData(t.id));userImage=null;dx=dy=0;zoom=1;$('zoom').value='1';$('photo').value='';$('editHeading').textContent=folder.name+' — '+t.name;draw();go('edit');status('Template तयार भयो।');}catch(err){status('Template खोल्न सकिएन: '+err.message);}}
-function draw(){ctx.clearRect(0,0,1200,1200);ctx.fillStyle='#f1f4f7';ctx.fillRect(0,0,1200,1200);
- if(userImage){const fit=Math.max(1200/userImage.width,1200/userImage.height)*zoom,w=userImage.width*fit,h=userImage.height*fit;ctx.drawImage(userImage,(1200-w)/2+dx,(1200-h)/2+dy,w,h);}
- if(frame)ctx.drawImage(frame,0,0,1200,1200); // Overlay: templates need transparent photo area.
- const name=$('name').value.trim(),post=$('designation').value.trim();if(name||post){ctx.textAlign='center';ctx.shadowColor='#000a';ctx.shadowBlur=7;ctx.fillStyle='#fff';ctx.font='bold 46px "Noto Sans Devanagari","Nirmala UI",sans-serif';if(name)ctx.fillText(name,600,1095,1050);ctx.font='bold 31px "Noto Sans Devanagari","Nirmala UI",sans-serif';if(post)ctx.fillText(post,600,1150,1050);ctx.shadowBlur=0;}}
-$('name').oninput=draw;$('designation').oninput=draw;$('zoom').oninput=()=>{zoom=Number($('zoom').value);draw();};
-$('photo').onchange=e=>{const f=e.target.files[0];if(!f)return;if(!f.type.startsWith('image/')){$('message').textContent='फोटो फाइल छान्नुहोस्।';return;}const url=URL.createObjectURL(f);loadImg(url).then(im=>{userImage=im;dx=dy=0;zoom=1;$('zoom').value=1;draw();$('message').textContent='फोटो राखियो।';}).catch(()=>{$('message').textContent='फोटो खोल्न सकिएन।';}).finally(()=>URL.revokeObjectURL(url));};
-$('remove').onclick=()=>{userImage=null;$('photo').value='';draw();};
-canvas.addEventListener('pointerdown',e=>{if(!userImage)return;drag=true;px=e.clientX;py=e.clientY;canvas.setPointerCapture(e.pointerId);});canvas.addEventListener('pointermove',e=>{if(!drag)return;const r=canvas.getBoundingClientRect();dx+=(e.clientX-px)*1200/r.width;dy+=(e.clientY-py)*1200/r.height;px=e.clientX;py=e.clientY;draw();});canvas.addEventListener('pointerup',()=>drag=false);canvas.addEventListener('pointercancel',()=>drag=false);
-$('download').onclick=()=>{const name=$('name').value.trim(),designation=$('designation').value.trim();if(!userImage||!name||!designation){$('message').textContent='फोटो, नाम र पद अनिवार्य छन्।';return;}if(!frame||!folder||!template)return;draw();canvas.toBlob(blob=>{if(!blob){$('message').textContent='PNG तयार हुन सकेन।';return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Greeting_'+Date.now()+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);
- // Browser no-cors cannot confirm server write; do not claim confirmed Sheet success.
- const form=new URLSearchParams({greetingApi:'1',action:'usage',folderId:folder.id,templateId:template.id,name,designation});
- fetch(GREETING_API_URL,{method:'POST',mode:'no-cors',body:form,keepalive:true}).then(()=>{$('message').textContent='PNG डाउनलोड सुरु भयो। प्रयोग विवरण सर्भरमा पठाइएको छ (Sheet पुष्टि उपलब्ध छैन)।';}).catch(()=>{$('message').textContent='PNG डाउनलोड सुरु भयो, तर प्रयोग विवरण पठाउन सकिएन।';});
- },'image/png');};
-if(!configured())status('Setup आवश्यक: greetings.html मा Apps Script Web App /exec URL राख्नुहोस्।');else init();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="ne">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   शुभकामना डिजाइन केन्द्र
+  </title>
+  <style>
+   
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f7fc;
+            color: #173653;
+            font-family: "Noto Sans Devanagari","Nirmala UI",Mangal,Arial,sans-serif;
+        }
+
+        button,input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        header {
+            text-align: center;
+            padding: 21px 12px;
+            background: white;
+            border-bottom: 5px solid #07874d;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #bc2432;
+            font-size: 25px;
+        }
+
+        header p {
+            margin: 7px 0;
+            color: #5d7087;
+        }
+
+        .logo {
+            width: 62px;
+            height: 62px;
+            object-fit: contain;
+            vertical-align: middle;
+        }
+
+        .wrap {
+            max-width: 1050px;
+            margin: auto;
+            padding: 16px 13px 45px;
+        }
+
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .btn {
+            border: 1px solid #d2e0ed;
+            background: white;
+            color: #17446b;
+            border-radius: 10px;
+            padding: 11px 14px;
+            font-weight: 800;
+        }
+
+        .primary {
+            background: #078c4a;
+            color: white;
+            border: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3,minmax(0,1fr));
+            gap: 14px;
+            margin-top: 15px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #dbe6f1;
+            border-radius: 15px;
+            overflow: hidden;
+            text-align: left;
+            padding: 0;
+            box-shadow: 0 5px 16px #18365312;
+        }
+
+        .card img {
+            display: block;
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background: #e7edf4;
+        }
+
+        .card .detail {
+            padding: 13px;
+        }
+
+        .card b {
+            font-size: 17px;
+            color: #15385c;
+        }
+
+        .card p {
+            font-size: 12px;
+            color: #697d91;
+        }
+
+        .emptyCover {
+            height: 200px;
+            background: linear-gradient(135deg,#af2634,#f4b54b);
+            display: grid;
+            place-items: center;
+            font-size: 65px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .note {
+            padding: 12px 14px;
+            border: 1px solid #e9d7a0;
+            background: #fff9e8;
+            border-radius: 11px;
+            margin-top: 15px;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .editor {
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: 17px;
+            margin-top: 16px;
+        }
+
+        .panel {
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #dbe6f1;
+            border-radius: 15px;
+        }
+
+        .panel h3 {
+            margin: 0 0 12px;
+        }
+
+        .field {
+            display: grid;
+            gap: 5px;
+            margin: 12px 0;
+        }
+
+        .field label {
+            font-weight: 800;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #c8d9e7;
+            border-radius: 9px;
+        }
+
+        .canvasBox {
+            background: #edf3f8;
+            padding: 9px;
+            border-radius: 12px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            max-width: 550px;
+            height: auto;
+            margin: auto;
+            touch-action: none;
+            background: #fff;
+            box-shadow: 0 3px 10px #0002;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 13px;
+        }
+
+        .status {
+            font-size: 13px;
+            color: #47627e;
+            line-height: 1.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 10px;
+            background: #fff;
+            border-top: 1px solid #dbe6f1;
+            font-size: 13px;
+            color: #4d6075;
+        }
+
+        footer a {
+            color: #078c4a;
+            font-weight: 900;
+            text-decoration: none;
+        }
+
+        @media (max-width:750px) {
+            .grid {
+                grid-template-columns: repeat(2,minmax(0,1fr));
+                gap: 9px;
+            }
+            .card img,.emptyCover {
+                height: 145px;
+            }
+            .editor {
+                grid-template-columns: 1fr;
+            }
+            .card b {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width:420px) {
+            .card img,.emptyCover {
+                height: 120px;
+            }
+            .card .detail {
+                padding: 9px;
+            }
+        }
+    
+  </style>
+ </head>
+ <body>
+  <header>
+   <img alt="शुभकामना लोगो" class="logo" onerror="this.style.display='none'" src="logo.png"/>
+   <h1>
+    🎉 शुभकामना डिजाइन केन्द्र
+   </h1>
+   <p>
+    चाडपर्व छान्नुहोस् · आफ्नो फोटो राख्नुहोस् · डिजाइन डाउनलोड गर्नुहोस्
+   </p>
+  </header>
+  <div class="wrap">
+   <div class="top">
+    <button class="btn" id="back">
+     ← मुख्य वेबसाइट
+    </button>
+    <strong id="crumb">
+     चाडपर्व छनोट
+    </strong>
+   </div>
+   <div class="note" id="notice">
+    Google Drive बाट चाडपर्वहरू लोड हुँदैछन्...
+   </div>
+   <section id="festivals">
+    <h2>
+     उपलब्ध चाडपर्व
+    </h2>
+    <div class="grid" id="festivalGrid">
+    </div>
+   </section>
+   <section class="hidden" id="templates">
+    <h2 id="festivalHeading">
+    </h2>
+    <div class="grid" id="templateGrid">
+    </div>
+   </section>
+   <section class="hidden" id="edit">
+    <h2 id="editHeading">
+    </h2>
+    <div class="editor">
+     <div class="panel">
+      <h3>
+       डिजाइन Preview
+      </h3>
+      <div class="canvasBox">
+       <canvas height="1200" id="canvas" width="1200">
+       </canvas>
+      </div>
+      <p class="status">
+       फोटो Drag गरी सार्नुहोस्, Zoom बाट आकार मिलाउनुहोस्। मोबाइलमा पनि फोटो सार्न सकिन्छ।
+      </p>
+     </div>
+     <div class="panel">
+      <h3>
+       आफ्नो विवरण
+      </h3>
+      <div class="field">
+       <label for="photo">
+        फोटो
+       </label>
+       <input accept="image/*" id="photo" type="file"/>
+      </div>
+      <div class="field">
+       <label for="name">
+        नाम
+       </label>
+       <input id="name" maxlength="80" placeholder="नाम लेख्नुहोस्"/>
+      </div>
+      <div class="field">
+       <label for="designation">
+        पद / जिम्मेवारी
+       </label>
+       <input id="designation" maxlength="100" placeholder="पद लेख्नुहोस्"/>
+      </div>
+      <div class="field">
+       <label for="zoom">
+        फोटो Zoom
+       </label>
+       <input id="zoom" max="3" min="0.5" step="0.02" type="range" value="1"/>
+      </div>
+      <div class="actions">
+       <button class="btn" id="remove">
+        फोटो हटाउनुहोस्
+       </button>
+       <button class="btn primary" id="download">
+        ⬇ PNG डाउनलोड
+       </button>
+      </div>
+      <p class="status" id="message">
+      </p>
+      <p class="status">
+       डाउनलोड गर्दा नाम, पद र डिजाइनको विवरण प्रयोग अभिलेखमा पठाइन्छ। फोटो सर्भरमा पठाइँदैन।
+      </p>
+     </div>
+    </div>
+   </section>
+  </div>
+  <footer>
+   Designed & Developed by
+   <strong>
+    Nirajan Aryal
+   </strong>
+   (
+   <a href="tel:+9779851113811">
+    9851113811
+   </a>
+   )
+  </footer>
+  <script>
+   
+        'use strict';
+
+        /* ============================================================
+           CONFIGURATION
+           ============================================================ */
+
+        const GREETING_API_URL =
+            'https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
+
+        const $ = (id) => document.getElementById(id);
+        const canvas = $('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let stage = 'festivals';
+        let folders = [];
+        let templates = [];
+        let folder = null;
+        let template = null;
+        let frame = null;
+        let userImage = null;
+        let dx = 0;
+        let dy = 0;
+        let zoom = 1;
+        let drag = false;
+        let px = 0;
+        let py = 0;
+
+
+        /* ============================================================
+           API CONNECTION
+           ============================================================ */
+
+        function configured() {
+            return /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec/.test(GREETING_API_URL);
+        }
+
+        function status(message) {
+            $('notice').textContent = message;
+        }
+
+        function jsonp(action, params = {}) {
+            return new Promise((resolve, reject) => {
+                if (!configured()) {
+                    reject(new Error('Apps Script Web App URL सेट गरिएको छैन।'));
+                    return;
+                }
+
+                const callback = 'greetingCb' + Math.random().toString(36).slice(2);
+                const script = document.createElement('script');
+
+                let done = false;
+
+                const timer = setTimeout(() => {
+                    finish(new Error('Server response timeout'));
+                }, 25000);
+
+                function finish(error, data) {
+                    if (done) {
+                        return;
+                    }
+
+                    done = true;
+                    clearTimeout(timer);
+                    delete window[callback];
+                    script.remove();
+
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(data);
+                    }
+                }
+
+                window[callback] = (data) => finish(null, data);
+                script.onerror = () => finish(new Error('Data request failed'));
+
+                const url = new URL(GREETING_API_URL);
+                url.searchParams.set('greetingApi', '1');
+                url.searchParams.set('action', action);
+                url.searchParams.set('callback', callback);
+
+                Object.entries(params).forEach(([key, value]) => {
+                    url.searchParams.set(key, value);
+                });
+
+                script.src = url.toString();
+                document.head.appendChild(script);
+            });
+        }
+
+
+        /* ============================================================
+           PAGE NAVIGATION
+           ============================================================ */
+
+        function go(next) {
+            stage = next;
+
+            ['festivals', 'templates', 'edit'].forEach((id) => {
+                $(id).classList.toggle('hidden', id !== next);
+            });
+
+            $('crumb').textContent =
+                next === 'festivals' ? 'चाडपर्व छनोट' : folder?.name || 'डिजाइन';
+
+            $('back').textContent =
+                next === 'festivals' ? '← मुख्य वेबसाइट' : '← पछाडि';
+
+            window.scrollTo(0, 0);
+        }
+
+        $('back').onclick = () => {
+            if (stage === 'edit') {
+                go('templates');
+            } else if (stage === 'templates') {
+                go('festivals');
+            } else {
+                location.href = 'index.html';
+            }
+        };
+
+
+        /* ============================================================
+           FESTIVAL AND TEMPLATE CARDS
+           ============================================================ */
+
+        function card(title, subtitle, id, cover) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'card';
+            button.dataset.id = id;
+
+            if (cover) {
+                const image = document.createElement('img');
+                image.alt = title;
+                image.loading = 'lazy';
+                image.src = cover;
+                button.appendChild(image);
+            } else {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'emptyCover';
+                placeholder.textContent = '🎉';
+                button.appendChild(placeholder);
+            }
+
+            const detail = document.createElement('div');
+            detail.className = 'detail';
+
+            const heading = document.createElement('b');
+            heading.textContent = title;
+
+            const description = document.createElement('p');
+            description.textContent = subtitle;
+
+            detail.append(heading, description);
+            button.appendChild(detail);
+
+            return button;
+        }
+
+        function showPreview(button, fileId, title) {
+            const image = document.createElement('img');
+            image.alt = title;
+            image.loading = 'lazy';
+            image.src =
+                'https://drive.google.com/thumbnail?id=' +
+                encodeURIComponent(fileId) +
+                '&sz=w1200';
+
+            image.onerror = () => {
+                image.onerror = null;
+
+                imageData(fileId)
+                    .then((source) => {
+                        image.src = source;
+                    })
+                    .catch(() => {});
+            };
+
+            button.firstChild.replaceWith(image);
+        }
+
+        async function imageData(fileId) {
+            const result = await jsonp('image', { fileId });
+
+            if (!result.ok) {
+                throw new Error(result.error || 'Image unavailable');
+            }
+
+            return 'data:' + result.mime + ';base64,' + result.data;
+        }
+
+
+        /* ============================================================
+           GOOGLE DRIVE FOLDERS AND TEMPLATES
+           ============================================================ */
+
+        async function init() {
+            status('Google Drive बाट चाडपर्व लोड हुँदैछन्...');
+
+            try {
+                const result = await jsonp('folders');
+
+                if (!result.ok) {
+                    throw new Error(result.error);
+                }
+
+                folders = result.folders || [];
+
+                const grid = $('festivalGrid');
+                grid.replaceChildren();
+
+                for (const item of folders) {
+                    const button = card(
+                        item.name,
+                        'डिजाइन हेर्नुहोस् →',
+                        item.id,
+                        null
+                    );
+
+                    button.onclick = () => openFolder(item);
+                    grid.appendChild(button);
+
+                    if (item.coverId) {
+                        showPreview(button, item.coverId, item.name);
+                    }
+                }
+
+                status(
+                    folders.length
+                        ? folders.length + ' चाडपर्व उपलब्ध छन्।'
+                        : 'Drive मा कुनै चाडपर्व Folder भेटिएन।'
+                );
+            } catch (error) {
+                status(
+                    'लोड हुन सकेन: ' +
+                    error.message +
+                    ' — URL र Apps Script Deployment जाँच्नुहोस्।'
+                );
+            }
+        }
+
+        async function openFolder(selectedFolder) {
+            folder = selectedFolder;
+
+            status('डिजाइनहरू लोड हुँदैछन्...');
+            $('festivalHeading').textContent = selectedFolder.name + ' — डिजाइन छनोट';
+
+            go('templates');
+
+            try {
+                const result = await jsonp('templates', {
+                    folderId: selectedFolder.id
+                });
+
+                if (!result.ok) {
+                    throw new Error(result.error);
+                }
+
+                templates = result.templates || [];
+
+                const grid = $('templateGrid');
+                grid.replaceChildren();
+
+                for (const item of templates) {
+                    const button = card(
+                        item.name,
+                        'यो डिजाइन प्रयोग गर्नुहोस् →',
+                        item.id,
+                        null
+                    );
+
+                    button.onclick = () => openTemplate(item);
+                    grid.appendChild(button);
+                    showPreview(button, item.id, item.name);
+                }
+
+                status(
+                    templates.length
+                        ? templates.length + ' वटा डिजाइन उपलब्ध छन्।'
+                        : 'यो Folder मा Image Template छैन।'
+                );
+            } catch (error) {
+                status('डिजाइन लोड हुन सकेन: ' + error.message);
+            }
+        }
+
+
+        /* ============================================================
+           IMAGE LOADING AND CANVAS EDITOR
+           ============================================================ */
+
+        function loadImg(source) {
+            return new Promise((resolve, reject) => {
+                const image = new Image();
+
+                image.onload = () => resolve(image);
+                image.onerror = () => reject(new Error('Image open failed'));
+                image.src = source;
+            });
+        }
+
+        async function openTemplate(selectedTemplate) {
+            template = selectedTemplate;
+            status('Template तयार हुँदैछ...');
+
+            try {
+                frame = await loadImg(await imageData(selectedTemplate.id));
+
+                canvas.width = frame.naturalWidth;
+                canvas.height = frame.naturalHeight;
+
+                userImage = null;
+                dx = 0;
+                dy = 0;
+                zoom = 1;
+
+                $('zoom').value = '1';
+                $('photo').value = '';
+
+                $('editHeading').textContent =
+                    folder.name + ' — ' + selectedTemplate.name;
+
+                draw();
+                go('edit');
+                status('Template तयार भयो।');
+            } catch (error) {
+                status('Template खोल्न सकिएन: ' + error.message);
+            }
+        }
+
+        function draw() {
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#f1f4f7';
+            ctx.fillRect(0, 0, width, height);
+
+            if (userImage) {
+                const fit = Math.max(
+                    width / userImage.width,
+                    height / userImage.height
+                ) * zoom;
+
+                const imageWidth = userImage.width * fit;
+                const imageHeight = userImage.height * fit;
+
+                ctx.drawImage(
+                    userImage,
+                    (width - imageWidth) / 2 + dx,
+                    (height - imageHeight) / 2 + dy,
+                    imageWidth,
+                    imageHeight
+                );
+            }
+
+            if (frame) {
+                ctx.drawImage(frame, 0, 0, width, height);
+            }
+
+            const name = $('name').value.trim();
+            const designation = $('designation').value.trim();
+
+            if (name || designation) {
+                ctx.textAlign = 'center';
+                ctx.shadowColor = '#000a';
+                ctx.shadowBlur = Math.max(2, width * 0.006);
+                ctx.fillStyle = '#fff';
+
+                ctx.font =
+                    'bold ' +
+                    Math.round(width * 0.038) +
+                    'px "Noto Sans Devanagari","Nirmala UI",sans-serif';
+
+                if (name) {
+                    ctx.fillText(name, width / 2, height * 0.912, width * 0.88);
+                }
+
+                ctx.font =
+                    'bold ' +
+                    Math.round(width * 0.026) +
+                    'px "Noto Sans Devanagari","Nirmala UI",sans-serif';
+
+                if (designation) {
+                    ctx.fillText(
+                        designation,
+                        width / 2,
+                        height * 0.958,
+                        width * 0.88
+                    );
+                }
+
+                ctx.shadowBlur = 0;
+            }
+        }
+
+
+        /* ============================================================
+           PHOTO CONTROLS
+           ============================================================ */
+
+        $('name').oninput = draw;
+        $('designation').oninput = draw;
+
+        $('zoom').oninput = () => {
+            zoom = Number($('zoom').value);
+            draw();
+        };
+
+        $('photo').onchange = (event) => {
+            const file = event.target.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                $('message').textContent = 'फोटो फाइल छान्नुहोस्।';
+                return;
+            }
+
+            const url = URL.createObjectURL(file);
+
+            loadImg(url)
+                .then((image) => {
+                    userImage = image;
+                    dx = 0;
+                    dy = 0;
+                    zoom = 1;
+
+                    $('zoom').value = 1;
+                    draw();
+                    $('message').textContent = 'फोटो राखियो।';
+                })
+                .catch(() => {
+                    $('message').textContent = 'फोटो खोल्न सकिएन।';
+                })
+                .finally(() => {
+                    URL.revokeObjectURL(url);
+                });
+        };
+
+        $('remove').onclick = () => {
+            userImage = null;
+            $('photo').value = '';
+            draw();
+        };
+
+        canvas.addEventListener('pointerdown', (event) => {
+            if (!userImage) {
+                return;
+            }
+
+            drag = true;
+            px = event.clientX;
+            py = event.clientY;
+            canvas.setPointerCapture(event.pointerId);
+        });
+
+        canvas.addEventListener('pointermove', (event) => {
+            if (!drag) {
+                return;
+            }
+
+            const rect = canvas.getBoundingClientRect();
+
+            dx += (event.clientX - px) * canvas.width / rect.width;
+            dy += (event.clientY - py) * canvas.height / rect.height;
+
+            px = event.clientX;
+            py = event.clientY;
+
+            draw();
+        });
+
+        canvas.addEventListener('pointerup', () => {
+            drag = false;
+        });
+
+        canvas.addEventListener('pointercancel', () => {
+            drag = false;
+        });
+
+
+        /* ============================================================
+           PNG DOWNLOAD AND USAGE TRACKING
+           ============================================================ */
+
+        $('download').onclick = () => {
+            const name = $('name').value.trim();
+            const designation = $('designation').value.trim();
+
+            if (!userImage || !name || !designation) {
+                $('message').textContent = 'फोटो, नाम र पद अनिवार्य छन्।';
+                return;
+            }
+
+            if (!frame || !folder || !template) {
+                return;
+            }
+
+            draw();
+
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    $('message').textContent = 'PNG तयार हुन सकेन।';
+                    return;
+                }
+
+                const url = URL.createObjectURL(blob);
+                const anchor = document.createElement('a');
+
+                anchor.href = url;
+                anchor.download = 'Greeting_' + Date.now() + '.png';
+
+                document.body.appendChild(anchor);
+                anchor.click();
+                anchor.remove();
+
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 15000);
+
+                // no-cors ले Google Sheet मा लेखिएको पुष्टि गर्न सक्दैन।
+                const form = new URLSearchParams({
+                    greetingApi: '1',
+                    action: 'usage',
+                    folderId: folder.id,
+                    templateId: template.id,
+                    name,
+                    designation
+                });
+
+                fetch(GREETING_API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: form,
+                    keepalive: true
+                })
+                    .then(() => {
+                        $('message').textContent =
+                            'PNG डाउनलोड सुरु भयो। प्रयोग विवरण सर्भरमा पठाइएको छ ' +
+                            '(Sheet पुष्टि उपलब्ध छैन)।';
+                    })
+                    .catch(() => {
+                        $('message').textContent =
+                            'PNG डाउनलोड सुरु भयो, तर प्रयोग विवरण पठाउन सकिएन।';
+                    });
+            }, 'image/png');
+        };
+
+
+        /* ============================================================
+           APPLICATION STARTUP
+           ============================================================ */
+
+        if (!configured()) {
+            status('Setup आवश्यक: greetings.html मा Apps Script Web App /exec URL राख्नुहोस्।');
+        } else {
+            init();
+        }
+    
+  </script>
+ </body>
+</html>
