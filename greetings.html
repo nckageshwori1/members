@@ -401,45 +401,98 @@
         }
 
 
-        /* Mobile-only precision editing; desktop editor stays unchanged. */
-        .mobile-edit-controls { display: none; }
+        /* Version: Mobile Smart Floating Controls 2026-10-16 */
+        /* ============================================================
+           MOBILE SMART FLOATING CONTROLS
+           Positioned inside the preview, near the selected object.
+           Desktop layout and editing behaviour remain unchanged.
+           ============================================================ */
+        .mobile-edit-controls {
+            display: none;
+        }
+
         @media (pointer: coarse), (max-width: 750px) {
-            #canvas { touch-action: pan-y; cursor: pointer; }
+            #canvas {
+                touch-action: pan-y;
+                cursor: pointer;
+            }
+
             .mobile-edit-controls:not(.hidden) {
+                position: absolute;
+                z-index: 20;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 9px;
-                margin-top: 12px;
-                padding: 12px;
-                border: 1px solid #cbd9e8;
-                border-radius: 12px;
-                background: #fff;
+                gap: 5px;
+                width: 206px;
+                max-width: calc(100% - 12px);
+                padding: 8px;
+                margin: 0;
+                border: 1px solid rgba(115, 149, 178, 0.65);
+                border-radius: 14px;
+                background: rgba(255, 255, 255, 0.96);
+                box-shadow: 0 6px 24px rgba(13, 39, 65, 0.22);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                left: 50%;
+                top: 8px;
+                transform: translateX(-50%);
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
             }
+
             .mobile-edit-controls button {
-                min-width: 47px;
-                min-height: 44px;
+                min-width: 38px;
+                min-height: 36px;
                 border: 1px solid #aac5de;
-                border-radius: 11px;
+                border-radius: 9px;
                 background: #f2f8ff;
                 color: #123b60;
-                font-size: 22px;
+                font-size: 19px;
                 font-weight: 700;
                 touch-action: manipulation;
             }
-            .mobile-edit-controls button:active { background: #d8eafa; }
-            .mobile-control-row { display: flex; align-items: center; justify-content: center; gap: 9px; }
-            .mobile-control-label { font-size: 14px; font-weight: 700; color: #163c61; }
+
+            .mobile-edit-controls button:active {
+                background: #d8eafa;
+            }
+
+            .mobile-control-row {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .mobile-control-label {
+                font-size: 12px;
+                font-weight: 700;
+                color: #163c61;
+                line-height: 1.2;
+            }
+
             .mobile-direction-pad {
                 display: grid;
-                grid-template-columns: repeat(3, 47px);
-                grid-template-rows: repeat(3, 44px);
-                gap: 3px;
+                grid-template-columns: repeat(3, 38px);
+                grid-template-rows: repeat(3, 34px);
+                gap: 2px;
                 align-items: center;
                 justify-items: center;
             }
-            .mobile-direction-pad button { width: 47px; }
-            .mobile-pad-center { font-size: 22px; color: #4381ad; }
+
+            .mobile-direction-pad button {
+                min-width: 34px;
+                min-height: 32px;
+                width: 36px;
+                height: 32px;
+                font-size: 17px;
+            }
+
+            .mobile-pad-center {
+                font-size: 18px;
+                color: #4381ad;
+            }
         }
 
         @media (max-width: 750px) {
@@ -557,14 +610,6 @@
                     <div class="canvas-shell">
                         <div class="canvas-wrap">
                             <canvas id="canvas" width="1200" height="1200" aria-label="सम्पादनयोग्य शुभकामना डिजाइन"></canvas>
-                        </div>
-                    </div>
-
-                    <p class="help-text">
-                        फोटो, नाम वा पदमा छुनुहोस् र सार्नुहोस्।
-                        दुई औँलाले Zoom गर्नुहोस्। कम्प्युटरमा Mouse Wheel पनि प्रयोग गर्न सकिन्छ।
-                    </p>
-
                     <!-- मोबाइलमा मात्र: चयन भएको वस्तुको सूक्ष्म नियन्त्रण -->
                     <div id="mobileEditControls" class="mobile-edit-controls hidden"
                          aria-label="मोबाइल सम्पादन नियन्त्रण">
@@ -590,6 +635,15 @@
                             <span></span>
                         </div>
                     </div>
+
+
+                        </div>
+                    </div>
+
+                    <p class="help-text">
+                        मोबाइलमा फोटो, नाम, पद वा संस्था छानेर नजिकैको नियन्त्रण प्रयोग गर्नुहोस्।
+                        कम्प्युटरमा Mouse Wheel पनि प्रयोग गर्न सकिन्छ।
+                    </p>
 
                     <!-- नाम/पद Select हुँदा मात्र Font Toolbar देखिन्छ। -->
                     <div id="textToolbar" class="floating-toolbar hidden">
@@ -1402,6 +1456,7 @@
 
             if (showSelection && selectedObject) {
                 paintSelection();
+                requestAnimationFrame(positionMobileControls);
             }
         }
 
@@ -1492,6 +1547,85 @@
             drawEditor();
         }
 
+        function positionMobileControls() {
+            const controls = $('mobileEditControls');
+
+            if (!mobileEditor.matches || !selectedObject ||
+                controls.classList.contains('hidden')) {
+                return;
+            }
+
+            const displayWidth = canvas.clientWidth;
+            const displayHeight = canvas.clientHeight;
+
+            if (!displayWidth || !displayHeight) {
+                return;
+            }
+
+            const toolbarWidth = controls.offsetWidth;
+            const toolbarHeight = controls.offsetHeight;
+            const gap = 10;
+            const margin = 6;
+            const scaleX = displayWidth / canvas.width;
+            const scaleY = displayHeight / canvas.height;
+
+            let centerX = displayWidth / 2;
+            let objectTop = displayHeight * 0.24;
+            let objectBottom = displayHeight * 0.42;
+
+            if (selectedObject === 'photo') {
+                // The photo is normally placed near the upper part of the frame.
+                // Use its visible bounds, not the entire page position.
+                if (userImage) {
+                    const rect = photoRect();
+                    centerX = (rect.x + rect.width / 2) * scaleX;
+                    objectTop = Math.max(0, rect.y * scaleY);
+                    objectBottom = Math.min(displayHeight,
+                        (rect.y + rect.height) * scaleY);
+                }
+            } else {
+                const bounds = textBounds(selectedObject);
+
+                if (bounds) {
+                    centerX = bounds.x * scaleX;
+                    objectTop = (bounds.y - bounds.height / 2) * scaleY;
+                    objectBottom = (bounds.y + bounds.height / 2) * scaleY;
+                }
+            }
+
+            const left = Math.max(margin, Math.min(
+                displayWidth - toolbarWidth - margin,
+                centerX - toolbarWidth / 2
+            ));
+
+            // Prefer below a photo and above text, so the edited object remains visible.
+            let top;
+
+            if (selectedObject === 'photo') {
+                top = objectBottom + gap;
+
+                if (top + toolbarHeight > displayHeight - margin) {
+                    top = objectTop - toolbarHeight - gap;
+                }
+            } else {
+                top = objectTop - toolbarHeight - gap;
+
+                if (top < margin) {
+                    top = objectBottom + gap;
+                }
+            }
+
+            // Keep controls within the preview even on very small screens.
+            top = Math.max(margin, Math.min(
+                displayHeight - toolbarHeight - margin,
+                top
+            ));
+
+            controls.style.left = left + 'px';
+            controls.style.top = top + 'px';
+            controls.style.transform = 'none';
+        }
+
         function updateMobileControls() {
             const controls = $('mobileEditControls');
             controls.classList.toggle('hidden', !selectedObject);
@@ -1502,6 +1636,7 @@
                 organization: 'संस्था चयन गरिएको छ'
             };
             $('mobileSelectedLabel').textContent = labels[selectedObject] || '';
+            requestAnimationFrame(positionMobileControls);
         }
 
         function updateToolbar() {
@@ -1752,6 +1887,10 @@
 
             drawEditor();
         }, { passive: false });
+
+        window.addEventListener('resize', () => {
+            requestAnimationFrame(positionMobileControls);
+        }, { passive: true });
 
         // Mobile controls operate only on the selected object.
         // No global zoom, no accidental object switching during scroll.
