@@ -708,6 +708,59 @@
             .details-card #download { display: none; }
         }
 
+
+        /* Template opening dialog: isolated from the existing editor and gallery. */
+        .template-loading-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: rgba(14, 30, 48, 0.48);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+        }
+
+        .template-loading-dialog {
+            width: min(320px, 100%);
+            padding: 27px 22px;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.22);
+            text-align: center;
+        }
+
+        .template-loading-spinner {
+            width: 46px;
+            height: 46px;
+            margin: 0 auto 15px;
+            border: 4px solid #dcece4;
+            border-top-color: var(--brand);
+            border-radius: 50%;
+            animation: greeting-loading-spin 0.85s linear infinite;
+        }
+
+        .template-loading-dialog strong {
+            display: block;
+            font-size: 18px;
+            color: var(--ink);
+        }
+
+        .template-loading-dialog p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        @keyframes greeting-loading-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .template-loading-spinner { animation-duration: 2s; }
+        }
+
     </style>
 </head>
 
@@ -873,6 +926,21 @@
         <strong>Nirajan Aryal</strong>
         (<a href="tel:+9779851113811">9851113811</a>)
     </footer>
+
+
+    <!-- Visible only while the selected template is opening. -->
+    <div id="templateLoadingOverlay"
+         class="template-loading-overlay hidden"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="templateLoadingTitle"
+         aria-describedby="templateLoadingDescription">
+        <div class="template-loading-dialog">
+            <div class="template-loading-spinner" aria-hidden="true"></div>
+            <strong id="templateLoadingTitle">डिजाइन खुल्दैछ...</strong>
+            <p id="templateLoadingDescription">कृपया केही क्षण पर्खनुहोस्।</p>
+        </div>
+    </div>
 
     <script>
         'use strict';
@@ -1486,7 +1554,11 @@
 
             openingTemplate = true;
             selectedTemplate = item;
-            setStatus('डिजाइन खोलिँदैछ...');
+
+            // Keep the gallery in place; show a blocking spinner until ready.
+            setStatus('');
+            $('templateLoadingOverlay').classList.remove('hidden');
+            document.body.setAttribute('aria-busy', 'true');
 
             try {
                 const dataUrl = await getTemplateImageData(item.id);
@@ -1549,6 +1621,8 @@
                 console.warn('Greeting template request failed:', error);
                 showLoadError();
             } finally {
+                $('templateLoadingOverlay').classList.add('hidden');
+                document.body.removeAttribute('aria-busy');
                 openingTemplate = false;
             }
         }
