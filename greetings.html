@@ -418,14 +418,14 @@
             }
 
             .mobile-edit-controls:not(.hidden) {
-                position: absolute;
-                z-index: 20;
+                position: fixed;
+                z-index: 1000;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 5px;
-                width: 206px;
-                max-width: calc(100% - 12px);
+                gap: 4px;
+                width: min(330px, calc(100vw - 20px));
+                max-width: calc(100vw - 20px);
                 padding: 8px;
                 margin: 0;
                 border: 1px solid rgba(115, 149, 178, 0.65);
@@ -435,7 +435,8 @@
                 backdrop-filter: blur(8px);
                 -webkit-backdrop-filter: blur(8px);
                 left: 50%;
-                top: 8px;
+                top: auto;
+                bottom: max(12px, env(safe-area-inset-bottom));
                 transform: translateX(-50%);
                 user-select: none;
                 -webkit-user-select: none;
@@ -474,12 +475,22 @@
 
             .mobile-direction-pad {
                 display: grid;
-                grid-template-columns: repeat(3, 38px);
-                grid-template-rows: repeat(3, 34px);
+                grid-template-columns: repeat(5, 38px);
+                grid-template-rows: 34px;
                 gap: 2px;
                 align-items: center;
                 justify-items: center;
             }
+
+            .mobile-direction-pad > span:empty {
+                display: none;
+            }
+
+            .mobile-direction-pad button[data-mobile-move="left"] { grid-column: 1; grid-row: 1; }
+            .mobile-direction-pad button[data-mobile-move="up"] { grid-column: 2; grid-row: 1; }
+            .mobile-direction-pad button[data-mobile-move="down"] { grid-column: 3; grid-row: 1; }
+            .mobile-direction-pad button[data-mobile-move="right"] { grid-column: 4; grid-row: 1; }
+            .mobile-pad-center { grid-column: 5; grid-row: 1; }
 
             .mobile-direction-pad button {
                 min-width: 34px;
@@ -1548,82 +1559,12 @@
         }
 
         function positionMobileControls() {
+            // Mobile toolbar stays at the viewport bottom, outside the photo area.
+            // Never reposition it over the selected photo or text.
             const controls = $('mobileEditControls');
-
-            if (!mobileEditor.matches || !selectedObject ||
-                controls.classList.contains('hidden')) {
-                return;
-            }
-
-            const displayWidth = canvas.clientWidth;
-            const displayHeight = canvas.clientHeight;
-
-            if (!displayWidth || !displayHeight) {
-                return;
-            }
-
-            const toolbarWidth = controls.offsetWidth;
-            const toolbarHeight = controls.offsetHeight;
-            const gap = 10;
-            const margin = 6;
-            const scaleX = displayWidth / canvas.width;
-            const scaleY = displayHeight / canvas.height;
-
-            let centerX = displayWidth / 2;
-            let objectTop = displayHeight * 0.24;
-            let objectBottom = displayHeight * 0.42;
-
-            if (selectedObject === 'photo') {
-                // The photo is normally placed near the upper part of the frame.
-                // Use its visible bounds, not the entire page position.
-                if (userImage) {
-                    const rect = photoRect();
-                    centerX = (rect.x + rect.width / 2) * scaleX;
-                    objectTop = Math.max(0, rect.y * scaleY);
-                    objectBottom = Math.min(displayHeight,
-                        (rect.y + rect.height) * scaleY);
-                }
-            } else {
-                const bounds = textBounds(selectedObject);
-
-                if (bounds) {
-                    centerX = bounds.x * scaleX;
-                    objectTop = (bounds.y - bounds.height / 2) * scaleY;
-                    objectBottom = (bounds.y + bounds.height / 2) * scaleY;
-                }
-            }
-
-            const left = Math.max(margin, Math.min(
-                displayWidth - toolbarWidth - margin,
-                centerX - toolbarWidth / 2
-            ));
-
-            // Prefer below a photo and above text, so the edited object remains visible.
-            let top;
-
-            if (selectedObject === 'photo') {
-                top = objectBottom + gap;
-
-                if (top + toolbarHeight > displayHeight - margin) {
-                    top = objectTop - toolbarHeight - gap;
-                }
-            } else {
-                top = objectTop - toolbarHeight - gap;
-
-                if (top < margin) {
-                    top = objectBottom + gap;
-                }
-            }
-
-            // Keep controls within the preview even on very small screens.
-            top = Math.max(margin, Math.min(
-                displayHeight - toolbarHeight - margin,
-                top
-            ));
-
-            controls.style.left = left + 'px';
-            controls.style.top = top + 'px';
-            controls.style.transform = 'none';
+            controls.style.removeProperty('left');
+            controls.style.removeProperty('top');
+            controls.style.removeProperty('transform');
         }
 
         function updateMobileControls() {
