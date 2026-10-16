@@ -19,7 +19,7 @@
             font-family: "Noto Sans Devanagari","Nirmala UI",Mangal,Arial,sans-serif;
         }
 
-        button,input {
+        button,input,select {
             font: inherit;
         }
 
@@ -246,6 +246,36 @@
             }
         }
     
+
+        .stepper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stepper input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            accent-color: #078c4a;
+        }
+
+        .zoom-step,
+        .text-step {
+            min-width: 44px;
+            min-height: 44px;
+            padding: 6px;
+            font-size: 24px;
+        }
+
+        .field select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #c8d9e7;
+            border-radius: 9px;
+            background: white;
+            color: #173653;
+        }
+
   </style>
  </head>
  <body>
@@ -268,7 +298,7 @@
     </strong>
    </div>
    <div class="note" id="notice">
-    Google Drive बाट चाडपर्वहरू लोड हुँदैछन्...
+    डिजाइन लोड हुँदैछन्...
    </div>
    <section id="festivals">
     <h2>
@@ -325,7 +355,56 @@
        <label for="zoom">
         फोटो Zoom
        </label>
-       <input id="zoom" max="3" min="0.5" step="0.02" type="range" value="1"/>
+       <div class="stepper">
+        <button aria-label="फोटो सानो बनाउनुहोस्" class="btn zoom-step" id="zoomMinus" type="button">−</button>
+        <input aria-label="फोटोको आकार" id="zoom" max="5" min="0.1" step="0.02" type="range" value="1"/>
+        <button aria-label="फोटो ठूलो बनाउनुहोस्" class="btn zoom-step" id="zoomPlus" type="button">+</button>
+       </div>
+      </div>
+      <div class="field">
+       <label for="textTarget">सार्ने अक्षर छान्नुहोस्</label>
+       <select id="textTarget">
+        <option value="name">नाम</option>
+        <option value="designation">पद / जिम्मेवारी</option>
+        <option value="photo">फोटो</option>
+       </select>
+       <p class="status">Preview मा नाम वा पदलाई छोएर/क्लिक गरेर पनि सार्न सकिन्छ।</p>
+      </div>
+      <div class="field">
+       <label for="nameSize">नामको अक्षर आकार</label>
+       <div class="stepper">
+        <button class="btn text-step" data-field="name" data-step="-2" type="button">−</button>
+        <input id="nameSize" min="12" max="160" step="1" type="range" value="46"/>
+        <button class="btn text-step" data-field="name" data-step="2" type="button">+</button>
+       </div>
+      </div>
+      <div class="field">
+       <label for="designationSize">पदको अक्षर आकार</label>
+       <div class="stepper">
+        <button class="btn text-step" data-field="designation" data-step="-2" type="button">−</button>
+        <input id="designationSize" min="10" max="130" step="1" type="range" value="31"/>
+        <button class="btn text-step" data-field="designation" data-step="2" type="button">+</button>
+       </div>
+      </div>
+      <div class="field">
+       <label for="nameFont">नामको नेपाली फन्ट</label>
+       <select id="nameFont">
+        <option value="Noto Sans Devanagari">Noto Sans Devanagari</option>
+        <option value="Nirmala UI">Nirmala UI</option>
+        <option value="Mangal">Mangal</option>
+        <option value="Kokila">Kokila</option>
+        <option value="serif">देवनागरी Serif (उपलब्ध फन्ट)</option>
+       </select>
+      </div>
+      <div class="field">
+       <label for="designationFont">पदको नेपाली फन्ट</label>
+       <select id="designationFont">
+        <option value="Noto Sans Devanagari">Noto Sans Devanagari</option>
+        <option value="Nirmala UI">Nirmala UI</option>
+        <option value="Mangal">Mangal</option>
+        <option value="Kokila">Kokila</option>
+        <option value="serif">देवनागरी Serif (उपलब्ध फन्ट)</option>
+       </select>
       </div>
       <div class="actions">
        <button class="btn" id="remove">
@@ -336,9 +415,6 @@
        </button>
       </div>
       <p class="status" id="message">
-      </p>
-      <p class="status">
-       डाउनलोड गर्दा नाम, पद र डिजाइनको विवरण प्रयोग अभिलेखमा पठाइन्छ। फोटो सर्भरमा पठाइँदैन।
       </p>
      </div>
     </div>
@@ -383,6 +459,11 @@
         let drag = false;
         let px = 0;
         let py = 0;
+        let dragTarget = null;
+        let namePosition = { x: 0.5, y: 0.912 };
+        let designationPosition = { x: 0.5, y: 0.958 };
+
+        const TEXT_FONT_FALLBACK = '"Noto Sans Devanagari", "Nirmala UI", Mangal, sans-serif';
 
 
         /* ============================================================
@@ -394,7 +475,9 @@
         }
 
         function status(message) {
-            $('notice').textContent = message;
+            const notice = $('notice');
+            notice.textContent = message;
+            notice.classList.toggle('hidden', !message);
         }
 
         function jsonp(action, params = {}) {
@@ -555,7 +638,7 @@
            ============================================================ */
 
         async function init() {
-            status('Google Drive बाट चाडपर्व लोड हुँदैछन्...');
+            status('डिजाइन लोड हुँदैछन्...');
 
             try {
                 const result = await jsonp('folders');
@@ -587,7 +670,7 @@
 
                 status(
                     folders.length
-                        ? folders.length + ' चाडपर्व उपलब्ध छन्।'
+                        ? ''
                         : 'Drive मा कुनै चाडपर्व Folder भेटिएन।'
                 );
             } catch (error) {
@@ -676,6 +759,12 @@
 
                 $('zoom').value = '1';
                 $('photo').value = '';
+                $('message').textContent = '';
+                namePosition = { x: 0.5, y: 0.912 };
+                designationPosition = { x: 0.5, y: 0.958 };
+                $('nameSize').value = '46';
+                $('designationSize').value = '31';
+                $('textTarget').value = 'name';
 
                 $('editHeading').textContent =
                     folder.name + ' — ' + selectedTemplate.name;
@@ -686,6 +775,41 @@
             } catch (error) {
                 status('Template खोल्न सकिएन: ' + error.message);
             }
+        }
+
+        function getTextStyle(target) {
+            const width = canvas.width;
+            const sizePercent = Number($(target + 'Size').value) / 1200;
+            const fontName = $(target + 'Font').value;
+            const fontFamily = fontName === 'serif'
+                ? 'serif'
+                : '"' + fontName.replace(/"/g, '') + '", ' + TEXT_FONT_FALLBACK;
+
+            return {
+                font: 'bold ' + Math.max(8, Math.round(width * sizePercent)) + 'px ' + fontFamily,
+                position: target === 'name' ? namePosition : designationPosition
+            };
+        }
+
+        function paintText(target, text) {
+            if (!text) {
+                return;
+            }
+
+            const style = getTextStyle(target);
+            ctx.font = style.font;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = '#000a';
+            ctx.shadowBlur = Math.max(2, canvas.width * 0.006);
+            ctx.fillStyle = '#fff';
+            ctx.fillText(
+                text,
+                style.position.x * canvas.width,
+                style.position.y * canvas.height,
+                canvas.width * 0.95
+            );
+            ctx.shadowBlur = 0;
         }
 
         function draw() {
@@ -718,40 +842,37 @@
                 ctx.drawImage(frame, 0, 0, width, height);
             }
 
-            const name = $('name').value.trim();
-            const designation = $('designation').value.trim();
+            paintText('name', $('name').value.trim());
+            paintText('designation', $('designation').value.trim());
+        }
 
-            if (name || designation) {
-                ctx.textAlign = 'center';
-                ctx.shadowColor = '#000a';
-                ctx.shadowBlur = Math.max(2, width * 0.006);
-                ctx.fillStyle = '#fff';
+        function textAt(x, y) {
+            const candidates = ['designation', 'name'];
 
-                ctx.font =
-                    'bold ' +
-                    Math.round(width * 0.038) +
-                    'px "Noto Sans Devanagari","Nirmala UI",sans-serif';
+            for (const target of candidates) {
+                const text = $(target).value.trim();
 
-                if (name) {
-                    ctx.fillText(name, width / 2, height * 0.912, width * 0.88);
+                if (!text) {
+                    continue;
                 }
 
-                ctx.font =
-                    'bold ' +
-                    Math.round(width * 0.026) +
-                    'px "Noto Sans Devanagari","Nirmala UI",sans-serif';
+                const style = getTextStyle(target);
+                ctx.font = style.font;
+                const metrics = ctx.measureText(text);
+                const textWidth = Math.min(metrics.width, canvas.width * 0.95);
+                const textHeight = Math.max(24, parseFloat(style.font.match(/(\d+)px/)[1]));
+                const centerX = style.position.x * canvas.width;
+                const centerY = style.position.y * canvas.height;
 
-                if (designation) {
-                    ctx.fillText(
-                        designation,
-                        width / 2,
-                        height * 0.958,
-                        width * 0.88
-                    );
+                if (
+                    Math.abs(x - centerX) <= textWidth / 2 + 20 &&
+                    Math.abs(y - centerY) <= textHeight / 2 + 20
+                ) {
+                    return target;
                 }
-
-                ctx.shadowBlur = 0;
             }
+
+            return null;
         }
 
 
@@ -766,6 +887,30 @@
             zoom = Number($('zoom').value);
             draw();
         };
+
+        function adjustZoom(delta) {
+            const slider = $('zoom');
+            zoom = Math.max(Number(slider.min), Math.min(Number(slider.max), zoom + delta));
+            slider.value = String(zoom);
+            draw();
+        }
+
+        $('zoomMinus').onclick = () => adjustZoom(-0.1);
+        $('zoomPlus').onclick = () => adjustZoom(0.1);
+
+        ['name', 'designation'].forEach((target) => {
+            $(target + 'Size').oninput = draw;
+            $(target + 'Font').onchange = draw;
+        });
+
+        document.querySelectorAll('.text-step').forEach((button) => {
+            button.onclick = () => {
+                const slider = $(button.dataset.field + 'Size');
+                const next = Number(slider.value) + Number(button.dataset.step);
+                slider.value = String(Math.max(Number(slider.min), Math.min(Number(slider.max), next)));
+                draw();
+            };
+        });
 
         $('photo').onchange = (event) => {
             const file = event.target.files[0];
@@ -790,7 +935,7 @@
 
                     $('zoom').value = 1;
                     draw();
-                    $('message').textContent = 'फोटो राखियो।';
+                    $('message').textContent = '';
                 })
                 .catch(() => {
                     $('message').textContent = 'फोटो खोल्न सकिएन।';
@@ -806,40 +951,72 @@
             draw();
         };
 
+        function canvasPoint(event) {
+            const rect = canvas.getBoundingClientRect();
+
+            return {
+                x: (event.clientX - rect.left) * canvas.width / rect.width,
+                y: (event.clientY - rect.top) * canvas.height / rect.height
+            };
+        }
+
         canvas.addEventListener('pointerdown', (event) => {
-            if (!userImage) {
+            const point = canvasPoint(event);
+            dragTarget = textAt(point.x, point.y) || $('textTarget').value;
+
+            if (dragTarget === 'photo' && !userImage) {
+                dragTarget = null;
+                return;
+            }
+
+            if (dragTarget !== 'photo' && !$(dragTarget).value.trim()) {
+                dragTarget = userImage ? 'photo' : null;
+            }
+
+            if (!dragTarget) {
                 return;
             }
 
             drag = true;
-            px = event.clientX;
-            py = event.clientY;
+            px = point.x;
+            py = point.y;
+            $('textTarget').value = dragTarget;
             canvas.setPointerCapture(event.pointerId);
         });
 
         canvas.addEventListener('pointermove', (event) => {
-            if (!drag) {
+            if (!drag || !dragTarget) {
                 return;
             }
 
-            const rect = canvas.getBoundingClientRect();
+            const point = canvasPoint(event);
+            const changeX = point.x - px;
+            const changeY = point.y - py;
 
-            dx += (event.clientX - px) * canvas.width / rect.width;
-            dy += (event.clientY - py) * canvas.height / rect.height;
+            if (dragTarget === 'photo') {
+                dx += changeX;
+                dy += changeY;
+            } else {
+                const position = dragTarget === 'name'
+                    ? namePosition
+                    : designationPosition;
 
-            px = event.clientX;
-            py = event.clientY;
+                position.x = Math.max(0, Math.min(1, position.x + changeX / canvas.width));
+                position.y = Math.max(0, Math.min(1, position.y + changeY / canvas.height));
+            }
 
+            px = point.x;
+            py = point.y;
             draw();
         });
 
-        canvas.addEventListener('pointerup', () => {
+        function stopDragging() {
             drag = false;
-        });
+            dragTarget = null;
+        }
 
-        canvas.addEventListener('pointercancel', () => {
-            drag = false;
-        });
+        canvas.addEventListener('pointerup', stopDragging);
+        canvas.addEventListener('pointercancel', stopDragging);
 
 
         /* ============================================================
