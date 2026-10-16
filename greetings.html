@@ -209,6 +209,13 @@
             box-shadow: var(--shadow);
         }
 
+        .gallery-preview-loading {
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            padding: 12px;
+        }
+
         .gallery-cover {
             display: block;
             width: 100%;
@@ -667,8 +674,8 @@
            MOBILE RECOVERY: ONLY GREETING PAGE STATE, NEVER BROWSER DATA
            ============================================================ */
 
-        const GREETING_BUILD_VERSION = '20261016-mobile-stable-3';
-        const RECOVERY_SESSION_KEY = 'greeting_page_recovery_v3';
+        const GREETING_BUILD_VERSION = '20261016-preview-safe-mobile-4';
+        const RECOVERY_SESSION_KEY = 'greeting_page_recovery_v4';
         let lastAutoRetryAt = 0;
         let loadingFestivals = false;
         let latestLoadFailure = null;
@@ -701,6 +708,7 @@
         function clearFailedGreetingRequests() {
             folderTemplateCache.clear();
             imageCache.clear();
+            previewCache.clear();
             latestLoadFailure = null;
         }
 
@@ -729,8 +737,8 @@
                 // Never prevent the gallery from working due to storage access.
             }
 
-            reloadOnlyThisPageFresh();
-            return true;
+            // Never force a reload loop on mobile; retry the request in-place.
+            return false;
         }
 
         function retryFailedView() {
@@ -760,7 +768,7 @@
 
         async function requestWithRetry(action, params = {}) {
             // अस्थायी नेटवर्क वा मोबाइल ब्राउजरको त्रुटिमा सीमित Retry।
-            const attempts = action === 'image' ? 2 : 3;
+            const attempts = action === 'image' ? 2 : 2;
             let lastError;
 
             for (let attempt = 0; attempt < attempts; attempt += 1) {
@@ -793,7 +801,7 @@
                     'greetingCb' + Math.random().toString(36).slice(2);
 
                 const script = document.createElement('script');
-                const timeoutMs = action === 'image' ? 90000 : 30000;
+                const timeoutMs = action === 'image' ? 90000 : 45000;
 
                 let completed = false;
 
@@ -924,51 +932,113 @@
             return folderTemplateCache.get(folderId);
         }
 
+        /* ============================================================
+           GALLERY PREVIEW: WATERMARK BAKED INTO DISPLAYED PIXELS
+
+           Never place the original Drive URL in an <img> element.
+           Only the watermarked canvas-derived image is attached to
+           the gallery. This discourages ordinary Save Image actions.
+           The browser still receives image data for the editor;
+           absolute protection requires server-side final rendering.
+           ============================================================ */
+
+        const previewCache = new Map();
+        const previewQueue = [];
+        let activePreviewJobs = 0;
+        const MAX_PREVIEW_JOBS = 2;
+
+        function queuePreviewJob(job) {
+            return new Promise((resolve, reject) => {
+                previewQueue.push({ job, resolve, reject });
+                runPreviewQueue();
+            });
+        }
+
+        function runPreviewQueue() {
+            while (activePreviewJobs < MAX_PREVIEW_JOBS && previewQueue.length) {
+                const entry = previewQueue.shift();
+                activePreviewJobs += 1;
+
+                Promise.resolve()
+                    .then(entry.job)
+                    .then(entry.resolve, entry.reject)
+                    .finally(() => {
+                        activePreviewJobs -= 1;
+                        runPreviewQueue();
+                    });
+            }
+        }
+
+        async function getWatermarkedPreview(fileId) {
+            if (!previewCache.has(fileId)) {
+                const pending = queuePreviewJob(async () => {
+                    const source = await getTemplateImageData(fileId);
+                    const original = await loadImage(source);
+                    const maxEdge = 760;
+                    const scale = Math.min(1, maxEdge / Math.max(
+                        original.naturalWidth,
+                        original.naturalHeight
+                    ));
+
+                    const preview = document.createElement('canvas');
+                    preview.width = Math.max(1, Math.round(original.naturalWidth * scale));
+                    preview.height = Math.max(1, Math.round(original.naturalHeight * scale));
+
+                    const painter = preview.getContext('2d');
+                    painter.drawImage(original, 0, 0, preview.width, preview.height);
+                    painter.save();
+                    painter.translate(preview.width / 2, preview.height / 2);
+                    painter.rotate(-Math.PI / 5);
+                    painter.textAlign = 'center';
+                    painter.textBaseline = 'middle';
+                    painter.font = '800 ' + Math.max(25, preview.width * 0.12) + 'px Arial, sans-serif';
+                    painter.lineWidth = Math.max(2, preview.width * 0.006);
+                    painter.strokeStyle = 'rgba(25, 25, 25, 0.48)';
+                    painter.fillStyle = 'rgba(255, 255, 255, 0.68)';
+
+                    for (let y = -preview.height; y <= preview.height; y += preview.height * 0.34) {
+                        painter.strokeText('PREVIEW', 0, y);
+                        painter.fillText('PREVIEW', 0, y);
+                    }
+
+                    painter.restore();
+                    return preview.toDataURL('image/jpeg', 0.84);
+                });
+
+                previewCache.set(fileId, pending);
+                pending.catch(() => previewCache.delete(fileId));
+            }
+
+            return previewCache.get(fileId);
+        }
+
         function loadCover(card, placeholder, imageId, title) {
             if (!imageId) {
                 return;
             }
 
-            // IMPORTANT: A detached image with loading="lazy" may never
-            // start downloading. Use eager loading for the card cover.
-            const image = document.createElement('img');
-            image.className = 'gallery-cover';
-            image.alt = title;
-            image.loading = 'eager';
-            image.decoding = 'async';
+            placeholder.textContent = 'डिजाइन तयार हुँदैछ...';
+            placeholder.classList.add('gallery-preview-loading');
 
-            const encodedId = encodeURIComponent(imageId);
-            const sources = [
-                'https://drive.google.com/thumbnail?id=' + encodedId + '&sz=w1000',
-                'https://lh3.googleusercontent.com/d/' + encodedId + '=w1000'
-            ];
-
-            let sourceIndex = 0;
-            let fallbackUsed = false;
-
-            image.onload = () => {
-                if (card.isConnected && placeholder.isConnected) {
-                    placeholder.replaceWith(image);
-                }
-            };
-
-            image.onerror = async () => {
-                if (!card.isConnected) {
+            getWatermarkedPreview(imageId).then((safeImage) => {
+                if (!card.isConnected || !placeholder.isConnected) {
                     return;
                 }
 
-                if (sourceIndex < sources.length - 1) {
-                    sourceIndex += 1;
-                    image.src = sources[sourceIndex];
-                    return;
+                const image = document.createElement('img');
+                image.className = 'gallery-cover';
+                image.alt = title + ' — PREVIEW';
+                image.draggable = false;
+                image.addEventListener('dragstart', (event) => event.preventDefault());
+                image.addEventListener('contextmenu', (event) => event.preventDefault());
+                image.src = safeImage;
+                placeholder.replaceWith(image);
+            }).catch((error) => {
+                console.warn('Watermarked preview unavailable:', title, error);
+                if (placeholder.isConnected) {
+                    placeholder.textContent = 'डिजाइन हेर्नुहोस् →';
                 }
-
-                // Cover thumbnail could not load; retain the placeholder.
-                // Do not fetch multi-megabyte originals for gallery cards.
-                console.warn('Greeting cover thumbnail unavailable:', title);
-            };
-
-            image.src = sources[0];
+            });
         }
 
         function makeGalleryCard(title, subtitle, imageId, onClick, options = {}) {
@@ -1851,10 +1921,15 @@
         });
 
         window.addEventListener('pageshow', (event) => {
-            if (event.persisted && stage === 'festivals') {
+            if (stage === 'festivals' && (event.persisted || folders.length === 0)) {
                 clearFailedGreetingRequests();
                 loadFestivals();
             }
+        });
+
+        document.querySelectorAll('#festivalGrid, #templateGrid, #canvas').forEach((area) => {
+            area.addEventListener('contextmenu', (event) => event.preventDefault());
+            area.addEventListener('dragstart', (event) => event.preventDefault());
         });
 
         if (apiConfigured()) {
