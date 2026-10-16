@@ -570,6 +570,110 @@
                 font-size: 13px;
             }
         }
+
+        /* ============================================================
+           MOBILE PRECISION TOOLBAR — DRAG, DISMISS, REMOTE D-PAD
+           Desktop styles are intentionally untouched.
+           ============================================================ */
+        .mobile-preview-download { display: none; }
+
+        @media (pointer: coarse), (max-width: 750px) {
+            .mobile-edit-controls:not(.hidden) {
+                width: 218px;
+                max-width: calc(100vw - 16px);
+                left: 50%;
+                bottom: max(14px, env(safe-area-inset-bottom));
+                top: auto;
+                transform: translateX(-50%);
+                padding: 8px 10px 10px;
+                gap: 6px;
+            }
+
+            .mobile-toolbar-header {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .mobile-toolbar-handle {
+                flex: 1;
+                min-height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                cursor: grab;
+                touch-action: none;
+                color: #345f84;
+                font-size: 20px;
+                border-radius: 8px;
+                background: #edf5fc;
+                user-select: none;
+            }
+
+            .mobile-toolbar-handle:active { cursor: grabbing; }
+
+            .mobile-edit-controls .mobile-toolbar-close {
+                width: 36px;
+                min-width: 36px;
+                height: 35px;
+                font-size: 24px;
+                line-height: 1;
+                background: #fff1f1;
+                color: #a12a38;
+            }
+
+            .mobile-direction-pad {
+                display: grid;
+                grid-template-columns: repeat(3, 40px);
+                grid-template-rows: repeat(3, 36px);
+                gap: 3px;
+                justify-content: center;
+                align-items: center;
+                justify-items: center;
+                border-radius: 50%;
+                padding: 4px;
+                background: #eaf2fb;
+            }
+
+            .mobile-direction-pad button[data-mobile-move="up"] { grid-column: 2; grid-row: 1; }
+            .mobile-direction-pad button[data-mobile-move="left"] { grid-column: 1; grid-row: 2; }
+            .mobile-direction-pad button[data-mobile-move="right"] { grid-column: 3; grid-row: 2; }
+            .mobile-direction-pad button[data-mobile-move="down"] { grid-column: 2; grid-row: 3; }
+            .mobile-direction-pad .mobile-pad-center {
+                grid-column: 2;
+                grid-row: 2;
+                display: grid;
+                place-items: center;
+                width: 36px;
+                height: 34px;
+                background: white;
+                border-radius: 50%;
+            }
+            .mobile-direction-pad button {
+                min-width: 38px;
+                min-height: 34px;
+                width: 38px;
+                height: 34px;
+            }
+            .mobile-preview-download {
+                display: block;
+                padding: 12px 0 2px;
+                text-align: center;
+            }
+            .mobile-preview-download .button {
+                width: 100%;
+                min-height: 48px;
+            }
+            .mobile-download-hint {
+                color: #64748b;
+                font-size: 12px;
+                margin: 8px 0 0;
+            }
+            .details-card #download { display: none; }
+        }
+
     </style>
 </head>
 
@@ -624,7 +728,10 @@
                     <!-- मोबाइलमा मात्र: चयन भएको वस्तुको सूक्ष्म नियन्त्रण -->
                     <div id="mobileEditControls" class="mobile-edit-controls hidden"
                          aria-label="मोबाइल सम्पादन नियन्त्रण">
-                        <div id="mobileSelectedLabel" class="mobile-control-label" aria-live="polite"></div>
+                        <div class="mobile-toolbar-header">
+                            <span id="mobileToolbarHandle" class="mobile-toolbar-handle" aria-label="टुलबक्स सार्नुहोस्">⠿ <span id="mobileSelectedLabel" class="mobile-control-label" aria-live="polite"></span></span>
+                            <button type="button" id="mobileToolbarClose" class="mobile-toolbar-close" aria-label="टुलबक्स बन्द गर्नुहोस्">×</button>
+                        </div>
                         <div class="mobile-control-row">
                             <button type="button" id="mobileSelectPhoto" style="font-size:13px;width:auto;padding:0 12px;">फोटो छान्नुहोस्</button>
                         </div>
@@ -634,16 +741,12 @@
                             <button type="button" data-mobile-scale="up" aria-label="आकार बढाउनुहोस्">+</button>
                         </div>
                         <div class="mobile-control-label">स्थान सार्नुहोस्</div>
-                        <div class="mobile-direction-pad">
-                            <span></span>
+                        <div class="mobile-direction-pad" aria-label="चार दिशामा सार्ने रिमोट">
                             <button type="button" data-mobile-move="up" aria-label="माथि सार्नुहोस्">↑</button>
-                            <span></span>
                             <button type="button" data-mobile-move="left" aria-label="बायाँ सार्नुहोस्">←</button>
                             <span class="mobile-pad-center" aria-hidden="true">✥</span>
                             <button type="button" data-mobile-move="right" aria-label="दायाँ सार्नुहोस्">→</button>
-                            <span></span>
                             <button type="button" data-mobile-move="down" aria-label="तल सार्नुहोस्">↓</button>
-                            <span></span>
                         </div>
                     </div>
 
@@ -655,6 +758,11 @@
                         मोबाइलमा फोटो, नाम, पद वा संस्था छानेर नजिकैको नियन्त्रण प्रयोग गर्नुहोस्।
                         कम्प्युटरमा Mouse Wheel पनि प्रयोग गर्न सकिन्छ।
                     </p>
+
+                    <div class="mobile-preview-download">
+                        <button type="button" id="mobileDownload" class="button button-primary">⬇ PNG डाउनलोड गर्नुहोस्</button>
+                        <p class="mobile-download-hint">फोटो र नाम राखेर डिजाइन मिलाउनुहोस्, त्यसपछि डाउनलोड गर्नुहोस्।</p>
+                    </div>
 
                     <!-- नाम/पद Select हुँदा मात्र Font Toolbar देखिन्छ। -->
                     <div id="textToolbar" class="floating-toolbar hidden">
@@ -1553,23 +1661,36 @@
 
         function selectObject(key) {
             selectedObject = key;
+            mobileToolbarDismissed = false;
             updateToolbar();
             updateMobileControls();
             drawEditor();
         }
 
+        let mobileToolbarPosition = null;
+        let mobileToolbarDismissed = false;
+
         function positionMobileControls() {
-            // Mobile toolbar stays at the viewport bottom, outside the photo area.
-            // Never reposition it over the selected photo or text.
             const controls = $('mobileEditControls');
-            controls.style.removeProperty('left');
-            controls.style.removeProperty('top');
-            controls.style.removeProperty('transform');
+            if (!mobileToolbarPosition || controls.classList.contains('hidden')) {
+                return;
+            }
+
+            const rect = controls.getBoundingClientRect();
+            const maxX = Math.max(8, window.innerWidth - rect.width - 8);
+            const maxY = Math.max(8, window.innerHeight - rect.height - 8);
+            mobileToolbarPosition.x = Math.max(8, Math.min(maxX, mobileToolbarPosition.x));
+            mobileToolbarPosition.y = Math.max(8, Math.min(maxY, mobileToolbarPosition.y));
+
+            controls.style.left = mobileToolbarPosition.x + 'px';
+            controls.style.top = mobileToolbarPosition.y + 'px';
+            controls.style.bottom = 'auto';
+            controls.style.transform = 'none';
         }
 
         function updateMobileControls() {
             const controls = $('mobileEditControls');
-            controls.classList.toggle('hidden', !selectedObject);
+            controls.classList.toggle('hidden', !selectedObject || mobileToolbarDismissed);
             const labels = {
                 photo: 'फोटो चयन गरिएको छ',
                 name: 'नाम चयन गरिएको छ',
@@ -1579,6 +1700,63 @@
             $('mobileSelectedLabel').textContent = labels[selectedObject] || '';
             requestAnimationFrame(positionMobileControls);
         }
+
+        function reopenMobileControls() {
+            mobileToolbarDismissed = false;
+            updateMobileControls();
+        }
+
+        // Only the dedicated handle moves the toolbar. Buttons never drag it.
+        (function enableMobileToolbarDrag() {
+            const handle = $('mobileToolbarHandle');
+            const controls = $('mobileEditControls');
+            let drag = null;
+
+            handle.addEventListener('pointerdown', (event) => {
+                if (event.button !== 0 && event.pointerType === 'mouse') return;
+                const rect = controls.getBoundingClientRect();
+                mobileToolbarPosition = { x: rect.left, y: rect.top };
+                drag = {
+                    pointerId: event.pointerId,
+                    startX: event.clientX,
+                    startY: event.clientY,
+                    x: rect.left,
+                    y: rect.top
+                };
+                handle.setPointerCapture(event.pointerId);
+                event.preventDefault();
+            });
+
+            handle.addEventListener('pointermove', (event) => {
+                if (!drag || drag.pointerId !== event.pointerId) return;
+                mobileToolbarPosition = {
+                    x: drag.x + event.clientX - drag.startX,
+                    y: drag.y + event.clientY - drag.startY
+                };
+                positionMobileControls();
+            });
+
+            const stopDrag = (event) => {
+                if (drag && drag.pointerId === event.pointerId) drag = null;
+            };
+            handle.addEventListener('pointerup', stopDrag);
+            handle.addEventListener('pointercancel', stopDrag);
+
+            $('mobileToolbarClose').addEventListener('click', () => {
+                mobileToolbarDismissed = true;
+                updateMobileControls();
+            });
+
+            // A deliberate tap on the preview or a form field reopens controls.
+            canvas.addEventListener('pointerdown', () => {
+                if (mobileToolbarDismissed) reopenMobileControls();
+            });
+            ['name', 'designation', 'organization', 'photo'].forEach((id) => {
+                $(id).addEventListener('focus', () => {
+                    if (mobileToolbarDismissed && selectedObject) reopenMobileControls();
+                });
+            });
+        })();
 
         function updateToolbar() {
             const isText = selectedObject === 'name' ||
@@ -1995,6 +2173,8 @@
             });
         }
 
+        $('mobileDownload').addEventListener('click', () => $('download').click());
+
         $('download').addEventListener('click', async () => {
             const name = $('name').value.trim();
             const designation = $('designation').value.trim();
@@ -2011,6 +2191,8 @@
 
             const button = $('download');
             button.disabled = true;
+            $('mobileDownload').disabled = true;
+            $('mobileDownload').textContent = 'PNG तयार हुँदैछ...';
             button.textContent = 'PNG तयार हुँदैछ...';
             setMessage('');
 
@@ -2037,6 +2219,8 @@
                 setMessage('डाउनलोड गर्न सकिएन: ' + error.message);
             } finally {
                 button.disabled = false;
+                $('mobileDownload').disabled = false;
+                $('mobileDownload').textContent = '⬇ PNG डाउनलोड गर्नुहोस्';
                 button.textContent = '⬇ PNG डाउनलोड';
             }
         });
