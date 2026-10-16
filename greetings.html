@@ -1582,21 +1582,21 @@
                 gesture = null;
 
                 textObjects.name.x = 0.5;
-                textObjects.name.y = 0.88;
+                textObjects.name.y = 0.80;
                 textObjects.name.size = 0.041;
                 textObjects.name.font = 'Yatra One';
                 textObjects.name.color = '#ffffff';
                 resetTextStyle('name');
 
                 textObjects.designation.x = 0.5;
-                textObjects.designation.y = 0.95;
+                textObjects.designation.y = 0.87;
                 textObjects.designation.size = 0.027;
                 textObjects.designation.font = 'Mukta';
                 textObjects.designation.color = '#ffffff';
                 resetTextStyle('designation');
 
                 textObjects.organization.x = 0.5;
-                textObjects.organization.y = 0.975;
+                textObjects.organization.y = 0.94;
                 textObjects.organization.size = 0.022;
                 textObjects.organization.font = 'Mukta';
                 textObjects.organization.color = '#ffffff';
@@ -1791,6 +1791,17 @@
             const padding = Math.max(10, canvas.width * 0.01);
 
             ctx.save();
+            // Selection backing is visible on white, red and dark templates.
+            // It is preview-only and never appears in the downloaded PNG.
+            const left = bounds.x - bounds.width / 2 - padding;
+            const top = bounds.y - bounds.height / 2 - padding;
+            const boxWidth = bounds.width + 2 * padding;
+            const boxHeight = bounds.height + 2 * padding;
+            ctx.fillStyle = 'rgba(12, 35, 62, 0.22)';
+            ctx.fillRect(left, top, boxWidth, boxHeight);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = Math.max(4, canvas.width * 0.004);
+            ctx.strokeRect(left, top, boxWidth, boxHeight);
             ctx.strokeStyle = '#04bff1';
             ctx.lineWidth = Math.max(2, canvas.width * 0.002);
             ctx.setLineDash([
@@ -1805,11 +1816,24 @@
                 bounds.height + 2 * padding
             );
 
+            // Four visible corners help locate white text on white templates.
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#04bff1';
+            const handleSize = Math.max(5, canvas.width * 0.006);
+            for (const x of [left, left + boxWidth]) {
+                for (const y of [top, top + boxHeight]) {
+                    ctx.fillRect(x - handleSize / 2, y - handleSize / 2,
+                        handleSize, handleSize);
+                }
+            }
             ctx.restore();
         }
 
         function selectObject(key) {
             selectedObject = key;
+            // Mobile: the selected canvas object receives touch gestures.
+            // Without a selection the user can scroll the page normally.
+            canvas.style.touchAction = key ? 'none' : '';
             mobileToolbarDismissed = false;
             updateToolbar();
             updateMobileControls();
@@ -1991,31 +2015,35 @@
         let mobileTapStart = null;
 
         canvas.addEventListener('pointerdown', (event) => {
+            const point = pointerToCanvas(event);
+            const hitText = hitTestText(point);
+
             if (mobileEditor.matches) {
-                // Select on a deliberate tap only. Page scrolling never moves an object.
                 mobileTapStart = {
                     id: event.pointerId,
                     x: event.clientX,
-                    y: event.clientY
+                    y: event.clientY,
+                    hitText
                 };
-                return;
+                // Direct manipulation only for the object already selected.
+                // Tapping a different text first changes selection; it cannot
+                // accidentally move the previous object.
+                if (!selectedObject || (hitText && hitText !== selectedObject)) {
+                    return;
+                }
             }
-            event.preventDefault();
 
-            const point = pointerToCanvas(event);
+            if (!mobileEditor.matches || selectedObject) {
+                event.preventDefault();
+            }
             activePointers.set(event.pointerId, point);
 
             if (activePointers.size === 1) {
-                const hitText = hitTestText(point);
-
-                if (hitText) {
-                    selectObject(hitText);
-                } else if (userImage) {
-                    selectObject('photo');
-                } else {
-                    selectObject(null);
+                if (!mobileEditor.matches) {
+                    if (hitText) selectObject(hitText);
+                    else if (userImage) selectObject('photo');
+                    else selectObject(null);
                 }
-
                 gesture = {
                     kind: 'drag',
                     target: selectedObject,
@@ -2023,7 +2051,6 @@
                 };
             } else if (activePointers.size === 2) {
                 const pair = getGesturePair();
-
                 gesture = {
                     kind: 'pinch',
                     target: selectedObject,
@@ -2032,45 +2059,29 @@
                 };
             }
 
-            canvas.setPointerCapture(event.pointerId);
+            if (activePointers.has(event.pointerId)) {
+                canvas.setPointerCapture(event.pointerId);
+            }
         });
 
         canvas.addEventListener('pointermove', (event) => {
-            if (mobileEditor.matches) {
-                return;
-            }
-            if (!activePointers.has(event.pointerId)) {
-                return;
-            }
+            if (!activePointers.has(event.pointerId)) return;
+            if (mobileEditor.matches && !selectedObject) return;
 
             event.preventDefault();
-
             const point = pointerToCanvas(event);
             activePointers.set(event.pointerId, point);
-
-            if (!gesture || !gesture.target) {
-                return;
-            }
+            if (!gesture || !gesture.target) return;
 
             if (activePointers.size >= 2 && gesture.kind === 'pinch') {
                 const pair = getGesturePair();
-
-                if (!pair) {
-                    return;
-                }
-
+                if (!pair) return;
                 if (gesture.distance > 0) {
-                    applyScale(
-                        gesture.target,
-                        pair.distance / gesture.distance
-                    );
+                    applyScale(gesture.target, pair.distance / gesture.distance);
                 }
-
-                const changeX = pair.center.x - gesture.center.x;
-                const changeY = pair.center.y - gesture.center.y;
-
-                moveObject(gesture.target, changeX, changeY);
-
+                moveObject(gesture.target,
+                    pair.center.x - gesture.center.x,
+                    pair.center.y - gesture.center.y);
                 gesture.distance = pair.distance;
                 gesture.center = pair.center;
                 drawEditor();
@@ -2078,11 +2089,9 @@
             }
 
             if (activePointers.size === 1 && gesture.kind === 'drag') {
-                const changeX = point.x - gesture.previous.x;
-                const changeY = point.y - gesture.previous.y;
-
-                moveObject(gesture.target, changeX, changeY);
-
+                moveObject(gesture.target,
+                    point.x - gesture.previous.x,
+                    point.y - gesture.previous.y);
                 gesture.previous = point;
                 drawEditor();
             }
@@ -2094,43 +2103,27 @@
                 photoY += changeY;
                 return;
             }
-
             if (textObjects[target]) {
                 const item = textObjects[target];
-
-                item.x = Math.max(
-                    0,
-                    Math.min(1, item.x + changeX / canvas.width)
-                );
-
-                item.y = Math.max(
-                    0,
-                    Math.min(1, item.y + changeY / canvas.height)
-                );
+                item.x = Math.max(0, Math.min(1, item.x + changeX / canvas.width));
+                item.y = Math.max(0, Math.min(1, item.y + changeY / canvas.height));
             }
         }
 
         function releasePointer(event) {
-            if (mobileEditor.matches) {
-                if (mobileTapStart && mobileTapStart.id === event.pointerId &&
-                    event.type === 'pointerup' &&
-                    Math.hypot(event.clientX - mobileTapStart.x,
-                               event.clientY - mobileTapStart.y) < 12) {
-                    const point = pointerToCanvas(event);
-                    const hitText = hitTestText(point);
-                    // An existing selection stays locked during blank-area taps.
-                    // Tap a text object to change selection; photo can be selected
-                    // by tapping outside text only when no text is selected.
-                    if (hitText) {
-                        selectObject(hitText);
-                    } else if (!selectedObject && userImage) {
-                        selectObject('photo');
-                    }
-                }
-                mobileTapStart = null;
-                return;
-            }
+            const wasTap = mobileEditor.matches && mobileTapStart &&
+                mobileTapStart.id === event.pointerId &&
+                event.type === 'pointerup' &&
+                Math.hypot(event.clientX - mobileTapStart.x,
+                    event.clientY - mobileTapStart.y) < 12;
+
             activePointers.delete(event.pointerId);
+            if (wasTap) {
+                const hitText = hitTestText(pointerToCanvas(event));
+                if (hitText) selectObject(hitText);
+                else if (!selectedObject && userImage) selectObject('photo');
+            }
+            if (mobileEditor.matches) mobileTapStart = null;
 
             if (activePointers.size === 1) {
                 gesture = {
