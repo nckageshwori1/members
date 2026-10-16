@@ -761,6 +761,8 @@
             .template-loading-spinner { animation-duration: 2s; }
         }
 
+        .smart-text-actions { display: flex; flex-wrap: wrap; gap: 7px; margin: 8px 0; }
+        .smart-text-actions .button { flex: 1; min-width: 115px; font-size: 12px; }
         .face-fit-message { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.5; }
     </style>
 </head>
@@ -856,6 +858,10 @@
                     <div id="textToolbar" class="floating-toolbar hidden">
                         <div id="selectionCaption" class="selection-caption"></div>
 
+                        <div class="smart-text-actions">
+                            <button type="button" id="smartTextFit" class="button">↔ Smart Text Fit</button>
+                            <button type="button" id="resetText" class="button">↺ Text Reset</button>
+                        </div>
                         <label for="fontFamily">नेपाली फन्ट</label>
                         <select id="fontFamily">
                             <option value="Mukta">Mukta</option>
@@ -1656,18 +1662,60 @@
             };
         }
 
-        function paintText(key) {
+        /* Smart Text Fit: preserve manual font size as the maximum size.
+           Only shrink when necessary; optional two-line layout for long fields. */
+        function smartTextLayout(key) {
             const value = $(key).value.trim();
-
-            if (!value) {
-                return;
-            }
-
+            if (!value) return null;
             const item = textObjects[key];
+            const maxWidth = canvas.width * 0.88;
             const font = getTextFont(key);
-
+            const fontCss = (size) => (item.bold ? '700 ' : '400 ') +
+                size + 'px "' + item.font + '", ' + FONT_FALLBACK;
+            const measure = (line, size) => {
+                ctx.font = fontCss(size);
+                return ctx.measureText(line).width;
+            };
             ctx.save();
-            ctx.font = font.css;
+            let lines = [value];
+            let size = font.size;
+            if (measure(value, size) > maxWidth && key !== 'name') {
+                const words = value.split(/\s+/);
+                if (words.length > 1) {
+                    let best = null;
+                    for (let i = 1; i < words.length; i++) {
+                        const candidate = [words.slice(0, i).join(' '), words.slice(i).join(' ')];
+                        const widest = Math.max(...candidate.map(line => measure(line, size)));
+                        if (!best || widest < best.width) best = { lines: candidate, width: widest };
+                    }
+                    if (best) lines = best.lines;
+                }
+            }
+            const widest = Math.max(...lines.map(line => measure(line, size)));
+            if (widest > maxWidth) size = Math.max(8, size * maxWidth / widest);
+            const width = Math.max(...lines.map(line => measure(line, size)));
+            ctx.restore();
+            return { lines, size, width, lineHeight: size * 1.22, css: fontCss(size) };
+        }
+
+        function resetSelectedText() {
+            if (!textObjects[selectedObject]) return;
+            const defaults = {
+                name: { x: 0.5, y: 0.80, size: 0.041 },
+                designation: { x: 0.5, y: 0.87, size: 0.027 },
+                organization: { x: 0.5, y: 0.94, size: 0.022 }
+            };
+            Object.assign(textObjects[selectedObject], defaults[selectedObject]);
+            drawEditor();
+            updateToolbar();
+        }
+
+        function paintText(key) {
+            const layout = smartTextLayout(key);
+            if (!layout) return;
+            const item = textObjects[key];
+            ctx.save();
+            ctx.font = layout.css;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = item.color;
@@ -1675,14 +1723,17 @@
             ctx.shadowBlur = 0;
             const x = item.x * canvas.width;
             const y = item.y * canvas.height;
-            if (item.strokeEnabled && item.strokeWidth > 0) {
-                ctx.strokeStyle = item.strokeColor;
-                ctx.lineWidth = canvas.width * item.strokeWidth / 1200;
-                ctx.lineJoin = 'round';
-                ctx.strokeText(value, x, y);
-            }
-            ctx.fillText(value, x, y);
-
+            const firstY = y - (layout.lines.length - 1) * layout.lineHeight / 2;
+            layout.lines.forEach((line, index) => {
+                const lineY = firstY + index * layout.lineHeight;
+                if (item.strokeEnabled && item.strokeWidth > 0) {
+                    ctx.strokeStyle = item.strokeColor;
+                    ctx.lineWidth = canvas.width * item.strokeWidth / 1200;
+                    ctx.lineJoin = 'round';
+                    ctx.strokeText(line, x, lineY);
+                }
+                ctx.fillText(line, x, lineY);
+            });
             ctx.restore();
         }
 
@@ -1929,26 +1980,14 @@
            ============================================================ */
 
         function textBounds(key) {
-            const value = $(key).value.trim();
-
-            if (!value) {
-                return null;
-            }
-
+            const layout = smartTextLayout(key);
+            if (!layout) return null;
             const item = textObjects[key];
-            const font = getTextFont(key);
-
-            ctx.save();
-            ctx.font = font.css;
-
-            const measuredWidth = ctx.measureText(value).width;
-            ctx.restore();
-
             return {
                 x: item.x * canvas.width,
                 y: item.y * canvas.height,
-                width: measuredWidth,
-                height: font.size * 1.25
+                width: layout.width,
+                height: layout.lineHeight * layout.lines.length
             };
         }
 
@@ -2116,6 +2155,13 @@
                 });
             });
         })();
+
+        $('smartTextFit').addEventListener('click', () => {
+            if (!textObjects[selectedObject]) return;
+            // Smart layout is calculated live on every render.
+            drawEditor();
+        });
+        $('resetText').addEventListener('click', resetSelectedText);
 
         function updateToolbar() {
             const isText = selectedObject === 'name' ||
