@@ -891,6 +891,7 @@
                     <div class="form-field">
                         <label for="photo">फोटो</label>
                         <input id="photo" type="file" accept="image/*">
+                        <button id="resetPhotoFit" class="button hidden" type="button" style="margin-top:6px;">↺ फोटो Auto Fit / Reset</button>
                     </div>
 
                     <div class="form-field">
@@ -1013,6 +1014,7 @@
         let photoX = 0;
         let photoY = 0;
         let photoZoom = 1;
+        let photoFitRegion = null;
         let selectedObject = null;
         let gesture = null;
         let openingTemplate = false;
@@ -1578,6 +1580,8 @@
                 photoX = 0;
                 photoY = 0;
                 photoZoom = 1;
+                photoFitRegion = detectPhotoWindow(image);
+                $('resetPhotoFit').classList.add('hidden');
                 selectedObject = null;
                 gesture = null;
 
@@ -1673,6 +1677,94 @@
 
             ctx.restore();
         }
+
+        /* Auto Fit: detect a substantial transparent photo window in the template.
+           Opaque/complex templates retain the existing full-canvas cover logic. */
+        function detectPhotoWindow(image) {
+            const size = 96;
+            const probe = document.createElement('canvas');
+            probe.width = size;
+            probe.height = size;
+            const context = probe.getContext('2d', { willReadFrequently: true });
+            context.drawImage(image, 0, 0, size, size);
+            let pixels;
+            try {
+                pixels = context.getImageData(0, 0, size, size).data;
+            } catch (error) {
+                return null;
+            }
+
+            const seen = new Uint8Array(size * size);
+            let best = null;
+            for (let i = 0; i < seen.length; i += 1) {
+                if (seen[i] || pixels[i * 4 + 3] > 24) continue;
+                const queue = [i];
+                seen[i] = 1;
+                let count = 0;
+                let left = size, top = size, right = 0, bottom = 0;
+                for (let q = 0; q < queue.length; q += 1) {
+                    const at = queue[q];
+                    const x = at % size;
+                    const y = Math.floor(at / size);
+                    count += 1;
+                    left = Math.min(left, x);
+                    right = Math.max(right, x);
+                    top = Math.min(top, y);
+                    bottom = Math.max(bottom, y);
+                    const neighbors = [];
+                    if (x > 0) neighbors.push(at - 1);
+                    if (x < size - 1) neighbors.push(at + 1);
+                    if (y > 0) neighbors.push(at - size);
+                    if (y < size - 1) neighbors.push(at + size);
+                    for (const n of neighbors) {
+                        if (!seen[n] && pixels[n * 4 + 3] <= 24) {
+                            seen[n] = 1;
+                            queue.push(n);
+                        }
+                    }
+                }
+                if (!best || count > best.count) {
+                    best = { count, left, right, top, bottom };
+                }
+            }
+            if (!best || best.count < size * size * 0.025 ||
+                best.count > size * size * 0.75) return null;
+            const region = {
+                x: best.left / size * canvas.width,
+                y: best.top / size * canvas.height,
+                width: (best.right - best.left + 1) / size * canvas.width,
+                height: (best.bottom - best.top + 1) / size * canvas.height
+            };
+            if (region.width < canvas.width * 0.10 ||
+                region.height < canvas.height * 0.10) return null;
+            return region;
+        }
+
+        function resetPhotoAutoFit() {
+            if (!userImage) return;
+            const region = photoFitRegion || {
+                x: 0, y: 0, width: canvas.width, height: canvas.height
+            };
+            const baseScale = Math.max(
+                canvas.width / userImage.naturalWidth,
+                canvas.height / userImage.naturalHeight
+            );
+            const targetScale = Math.max(
+                region.width / userImage.naturalWidth,
+                region.height / userImage.naturalHeight
+            );
+            photoZoom = targetScale / baseScale;
+            photoX = region.x + region.width / 2 - canvas.width / 2;
+            photoY = region.y + region.height / 2 - canvas.height / 2;
+            // The existing photoRect() handles centering and offsets.
+            $('resetPhotoFit').classList.remove('hidden');
+            drawEditor();
+        }
+
+        $('resetPhotoFit').addEventListener('click', () => {
+            resetPhotoAutoFit();
+            selectObject('photo');
+        });
 
         function photoRect() {
             if (!userImage) {
@@ -2204,6 +2296,7 @@
                 photoX = 0;
                 photoY = 0;
                 photoZoom = 1;
+                resetPhotoAutoFit();
 
                 setMessage('');
                 selectObject('photo');
@@ -2217,6 +2310,7 @@
         $('remove').addEventListener('click', () => {
             userImage = null;
             $('photo').value = '';
+            $('resetPhotoFit').classList.add('hidden');
 
             setMessage('');
             selectObject(null);
