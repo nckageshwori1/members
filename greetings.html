@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0b8150">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>शुभकामना डिजाइन केन्द्र</title>
 
     <!-- नेपाली वेब फन्ट: प्रयोगकर्ताको फोनमा इन्स्टल हुनु आवश्यक छैन। -->
@@ -637,6 +638,58 @@
             );
         }
 
+        /* ============================================================
+           MOBILE RECOVERY: ONLY GREETING PAGE STATE, NEVER BROWSER DATA
+           ============================================================ */
+
+        const GREETING_BUILD_VERSION = '20261016-recovery-1';
+        const RECOVERY_SESSION_KEY = 'greeting_page_recovery_v1';
+        let latestLoadFailure = null;
+
+        function newRequestNonce() {
+            // Avoid a repeated timestamp when requests start in one millisecond.
+            const randomPart = Math.random().toString(36).slice(2);
+            return Date.now().toString(36) + '-' + randomPart;
+        }
+
+        function rememberLoadFailure(error, action) {
+            latestLoadFailure = {
+                action,
+                reason: String(error?.message || error),
+                timestamp: new Date().toISOString(),
+                version: GREETING_BUILD_VERSION
+            };
+            console.warn('Greeting loading diagnostic:', latestLoadFailure);
+        }
+
+        function reloadOnlyThisPageFresh() {
+            // Changes only this page URL. Never clears passwords, history,
+            // cookies, bookmarks, or storage of other websites.
+            const next = new URL(window.location.href);
+            next.searchParams.set('greeting_version', GREETING_BUILD_VERSION);
+            next.searchParams.set('fresh', newRequestNonce());
+            window.location.replace(next.toString());
+        }
+
+        function clearFailedGreetingRequests() {
+            folderTemplateCache.clear();
+            imageCache.clear();
+            latestLoadFailure = null;
+        }
+
+        function requestRecovery(action, error) {
+            rememberLoadFailure(error, action);
+            // A single fresh-page recovery is attempted per tab/session.
+            // Further failures remain visible with a manual retry option.
+            const alreadyRecovered = sessionStorage.getItem(RECOVERY_SESSION_KEY);
+            if (!alreadyRecovered) {
+                sessionStorage.setItem(RECOVERY_SESSION_KEY, GREETING_BUILD_VERSION);
+                reloadOnlyThisPageFresh();
+                return true;
+            }
+            return false;
+        }
+
         function waitBeforeRetry(milliseconds) {
             return new Promise((resolve) => setTimeout(resolve, milliseconds));
         }
@@ -708,7 +761,8 @@
                 url.searchParams.set('greetingApi', '1');
                 url.searchParams.set('action', action);
                 url.searchParams.set('callback', callbackName);
-                url.searchParams.set('_request', Date.now().toString());
+                url.searchParams.set('_request', newRequestNonce());
+                url.searchParams.set('_version', GREETING_BUILD_VERSION);
 
                 Object.entries(params).forEach(([key, value]) => {
                     url.searchParams.set(key, value);
@@ -811,13 +865,22 @@
                 return;
             }
 
+            // IMPORTANT: A detached image with loading="lazy" may never
+            // start downloading. Use eager loading for the card cover.
             const image = document.createElement('img');
             image.className = 'gallery-cover';
             image.alt = title;
-            image.loading = 'lazy';
+            image.loading = 'eager';
             image.decoding = 'async';
 
-            let fallbackStarted = false;
+            const encodedId = encodeURIComponent(imageId);
+            const sources = [
+                'https://drive.google.com/thumbnail?id=' + encodedId + '&sz=w1000',
+                'https://lh3.googleusercontent.com/d/' + encodedId + '=w1000'
+            ];
+
+            let sourceIndex = 0;
+            let fallbackUsed = false;
 
             image.onload = () => {
                 if (card.isConnected && placeholder.isConnected) {
@@ -826,30 +889,33 @@
             };
 
             image.onerror = async () => {
-                if (fallbackStarted || !card.isConnected) {
+                if (!card.isConnected) {
                     return;
                 }
 
-                fallbackStarted = true;
+                if (sourceIndex < sources.length - 1) {
+                    sourceIndex += 1;
+                    image.src = sources[sourceIndex];
+                    return;
+                }
+
+                if (fallbackUsed) {
+                    return;
+                }
+
+                fallbackUsed = true;
 
                 try {
-                    // Drive Thumbnail रोकिएमा पहिलेकै Greeting API प्रयोग गर्ने।
-                    // नयाँ Backend Function वा Deployment आवश्यक छैन।
-                    const source = await getTemplateImageData(imageId);
-
-                    if (card.isConnected) {
-                        image.src = source;
-                    }
+                    const dataUrl = await getTemplateImageData(imageId);
+                    image.src = dataUrl;
                 } catch (error) {
-                    // Preview नआए पनि डिजाइन छनोटको Function सुरक्षित रहन्छ।
-                    console.warn('Greeting cover unavailable:', title);
+                    // Cover may be unavailable without public image access;
+                    // keep the gallery functional and log technical details only.
+                    console.warn('Greeting cover unavailable:', title, error);
                 }
             };
 
-            image.src =
-                'https://drive.google.com/thumbnail?id=' +
-                encodeURIComponent(imageId) +
-                '&sz=w1200';
+            image.src = sources[0];
         }
 
         function makeGalleryCard(title, subtitle, imageId, onClick, options = {}) {
@@ -972,7 +1038,9 @@
                 setStatus(folders.length ? '' : 'कुनै चाडपर्व Folder भेटिएन।');
             } catch (error) {
                 console.warn('Greeting gallery request failed:', error);
-                showLoadError();
+                if (!requestRecovery('folders', error)) {
+                    showLoadError();
+                }
             }
         }
 
@@ -1660,9 +1728,12 @@
            ============================================================ */
 
         $('retryLoad').addEventListener('click', () => {
+            clearFailedGreetingRequests();
+
             if (stage === 'templates' && selectedFolder) {
                 openFestival(selectedFolder);
             } else if (stage === 'edit' && selectedTemplate) {
+                openingTemplate = false;
                 openTemplate(selectedTemplate);
             } else {
                 loadFestivals();
@@ -1672,6 +1743,13 @@
         window.addEventListener('online', () => {
             if (!$('retryLoad').classList.contains('hidden')) {
                 $('retryLoad').click();
+            }
+        });
+
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted && stage === 'festivals') {
+                clearFailedGreetingRequests();
+                loadFestivals();
             }
         });
 
