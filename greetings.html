@@ -400,6 +400,48 @@
             font-weight: 700;
         }
 
+
+        /* Mobile-only precision editing; desktop editor stays unchanged. */
+        .mobile-edit-controls { display: none; }
+        @media (pointer: coarse), (max-width: 750px) {
+            #canvas { touch-action: pan-y; cursor: pointer; }
+            .mobile-edit-controls:not(.hidden) {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 9px;
+                margin-top: 12px;
+                padding: 12px;
+                border: 1px solid #cbd9e8;
+                border-radius: 12px;
+                background: #fff;
+            }
+            .mobile-edit-controls button {
+                min-width: 47px;
+                min-height: 44px;
+                border: 1px solid #aac5de;
+                border-radius: 11px;
+                background: #f2f8ff;
+                color: #123b60;
+                font-size: 22px;
+                font-weight: 700;
+                touch-action: manipulation;
+            }
+            .mobile-edit-controls button:active { background: #d8eafa; }
+            .mobile-control-row { display: flex; align-items: center; justify-content: center; gap: 9px; }
+            .mobile-control-label { font-size: 14px; font-weight: 700; color: #163c61; }
+            .mobile-direction-pad {
+                display: grid;
+                grid-template-columns: repeat(3, 47px);
+                grid-template-rows: repeat(3, 44px);
+                gap: 3px;
+                align-items: center;
+                justify-items: center;
+            }
+            .mobile-direction-pad button { width: 47px; }
+            .mobile-pad-center { font-size: 22px; color: #4381ad; }
+        }
+
         @media (max-width: 750px) {
             .gallery {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -522,6 +564,32 @@
                         फोटो, नाम वा पदमा छुनुहोस् र सार्नुहोस्।
                         दुई औँलाले Zoom गर्नुहोस्। कम्प्युटरमा Mouse Wheel पनि प्रयोग गर्न सकिन्छ।
                     </p>
+
+                    <!-- मोबाइलमा मात्र: चयन भएको वस्तुको सूक्ष्म नियन्त्रण -->
+                    <div id="mobileEditControls" class="mobile-edit-controls hidden"
+                         aria-label="मोबाइल सम्पादन नियन्त्रण">
+                        <div id="mobileSelectedLabel" class="mobile-control-label" aria-live="polite"></div>
+                        <div class="mobile-control-row">
+                            <button type="button" id="mobileSelectPhoto" style="font-size:13px;width:auto;padding:0 12px;">फोटो छान्नुहोस्</button>
+                        </div>
+                        <div class="mobile-control-row">
+                            <span class="mobile-control-label">आकार</span>
+                            <button type="button" data-mobile-scale="down" aria-label="आकार घटाउनुहोस्">−</button>
+                            <button type="button" data-mobile-scale="up" aria-label="आकार बढाउनुहोस्">+</button>
+                        </div>
+                        <div class="mobile-control-label">स्थान सार्नुहोस्</div>
+                        <div class="mobile-direction-pad">
+                            <span></span>
+                            <button type="button" data-mobile-move="up" aria-label="माथि सार्नुहोस्">↑</button>
+                            <span></span>
+                            <button type="button" data-mobile-move="left" aria-label="बायाँ सार्नुहोस्">←</button>
+                            <span class="mobile-pad-center" aria-hidden="true">✥</span>
+                            <button type="button" data-mobile-move="right" aria-label="दायाँ सार्नुहोस्">→</button>
+                            <span></span>
+                            <button type="button" data-mobile-move="down" aria-label="तल सार्नुहोस्">↓</button>
+                            <span></span>
+                        </div>
+                    </div>
 
                     <!-- नाम/पद Select हुँदा मात्र Font Toolbar देखिन्छ। -->
                     <div id="textToolbar" class="floating-toolbar hidden">
@@ -1420,7 +1488,20 @@
         function selectObject(key) {
             selectedObject = key;
             updateToolbar();
+            updateMobileControls();
             drawEditor();
+        }
+
+        function updateMobileControls() {
+            const controls = $('mobileEditControls');
+            controls.classList.toggle('hidden', !selectedObject);
+            const labels = {
+                photo: 'फोटो चयन गरिएको छ',
+                name: 'नाम चयन गरिएको छ',
+                designation: 'पद चयन गरिएको छ',
+                organization: 'संस्था चयन गरिएको छ'
+            };
+            $('mobileSelectedLabel').textContent = labels[selectedObject] || '';
         }
 
         function updateToolbar() {
@@ -1498,7 +1579,19 @@
             }
         }
 
+        const mobileEditor = window.matchMedia('(pointer: coarse), (max-width: 750px)');
+        let mobileTapStart = null;
+
         canvas.addEventListener('pointerdown', (event) => {
+            if (mobileEditor.matches) {
+                // Select on a deliberate tap only. Page scrolling never moves an object.
+                mobileTapStart = {
+                    id: event.pointerId,
+                    x: event.clientX,
+                    y: event.clientY
+                };
+                return;
+            }
             event.preventDefault();
 
             const point = pointerToCanvas(event);
@@ -1535,6 +1628,9 @@
         });
 
         canvas.addEventListener('pointermove', (event) => {
+            if (mobileEditor.matches) {
+                return;
+            }
             if (!activePointers.has(event.pointerId)) {
                 return;
             }
@@ -1607,6 +1703,25 @@
         }
 
         function releasePointer(event) {
+            if (mobileEditor.matches) {
+                if (mobileTapStart && mobileTapStart.id === event.pointerId &&
+                    event.type === 'pointerup' &&
+                    Math.hypot(event.clientX - mobileTapStart.x,
+                               event.clientY - mobileTapStart.y) < 12) {
+                    const point = pointerToCanvas(event);
+                    const hitText = hitTestText(point);
+                    // An existing selection stays locked during blank-area taps.
+                    // Tap a text object to change selection; photo can be selected
+                    // by tapping outside text only when no text is selected.
+                    if (hitText) {
+                        selectObject(hitText);
+                    } else if (!selectedObject && userImage) {
+                        selectObject('photo');
+                    }
+                }
+                mobileTapStart = null;
+                return;
+            }
             activePointers.delete(event.pointerId);
 
             if (activePointers.size === 1) {
@@ -1637,6 +1752,39 @@
 
             drawEditor();
         }, { passive: false });
+
+        // Mobile controls operate only on the selected object.
+        // No global zoom, no accidental object switching during scroll.
+        $('mobileSelectPhoto').addEventListener('click', () => {
+            if (userImage) {
+                selectObject('photo');
+            }
+        });
+
+        document.querySelectorAll('[data-mobile-scale]').forEach((button) => {
+            button.addEventListener('click', () => {
+                if (!selectedObject) return;
+                applyScale(selectedObject,
+                    button.dataset.mobileScale === 'up' ? 1.08 : 1 / 1.08);
+                drawEditor();
+            });
+        });
+
+        document.querySelectorAll('[data-mobile-move]').forEach((button) => {
+            button.addEventListener('click', () => {
+                if (!selectedObject) return;
+                const step = Math.max(2, canvas.width * 0.007);
+                const movement = {
+                    up: [0, -step],
+                    down: [0, step],
+                    left: [-step, 0],
+                    right: [step, 0]
+                }[button.dataset.mobileMove];
+                if (!movement) return;
+                moveObject(selectedObject, movement[0], movement[1]);
+                drawEditor();
+            });
+        });
 
         /* ============================================================
            17. PHOTO INPUT AND CONTEXTUAL TEXT SETTINGS
