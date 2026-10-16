@@ -3268,6 +3268,10 @@ let ncCentralRequest = null;
 let ncCentralAutoTimer = null;
 let ncCentralRefreshTimer = null;
 let ncCentralFeedTimeout = null;
+let ncCentralRetryTimer = null;
+let ncCentralAttempts = 0;
+let ncCentralRequestSerial = 0;
+const NC_CENTRAL_MAX_RETRIES = 3;
 let ncCentralHover = false;
 let ncCentralPageVisible = !document.hidden;
 const NC_CENTRAL_SLIDE_MS = 5000;
@@ -3318,12 +3322,30 @@ function ncCentralStartAuto(){
     }
   },NC_CENTRAL_SLIDE_MS);
 }
-function ncCentralFeedCallback(data){
+function ncCentralClearRequest(){
   if(ncCentralFeedTimeout){clearTimeout(ncCentralFeedTimeout);ncCentralFeedTimeout=null;}
-  if(ncCentralRequest){ncCentralRequest.remove();ncCentralRequest=null;}
+  if(ncCentralRequest){
+    ncCentralRequest.onerror=null;
+    ncCentralRequest.onload=null;
+    if(ncCentralRequest.parentNode)ncCentralRequest.parentNode.removeChild(ncCentralRequest);
+    ncCentralRequest=null;
+  }
+}
+function ncCentralScheduleRetry(){
+  if(ncCentralRetryTimer||ncCentralAttempts>=NC_CENTRAL_MAX_RETRIES||document.hidden)return;
+  const delay=ncCentralAttempts===1?2000:5000;
+  ncCentralRetryTimer=setTimeout(function(){
+    ncCentralRetryTimer=null;
+    if(!ncCentralPeople.length&&!document.hidden)ncCentralLoad();
+  },delay);
+}
+function ncCentralFeedCallback(data){
+  ncCentralClearRequest();
   if(data&&data.ok&&Array.isArray(data.members)&&data.members.length){
     const incoming=data.members.filter(function(p){return p&&p.name&&p.role;});
     if(incoming.length){
+      if(ncCentralRetryTimer){clearTimeout(ncCentralRetryTimer);ncCentralRetryTimer=null;}
+      ncCentralAttempts=0;
       const current=ncCentralPeople[ncCentralIndex];
       ncCentralPeople=incoming;
       const previousIndex=current?incoming.findIndex(function(p){return p.name===current.name;}):-1;
@@ -3331,16 +3353,31 @@ function ncCentralFeedCallback(data){
       ncCentralRender();ncCentralStartAuto();return;
     }
   }
-  /* On temporary feed failure, preserve the last successfully loaded members. */
-  if(!ncCentralPeople.length)ncCentralRender();
+  if(!ncCentralPeople.length){
+    ncCentralRender();
+    ncCentralScheduleRetry();
+  }
 }
 function ncCentralLoad(){
   if(ncCentralRequest)return;
+  if(ncCentralRetryTimer){clearTimeout(ncCentralRetryTimer);ncCentralRetryTimer=null;}
+  ncCentralAttempts++;
+  const serial=++ncCentralRequestSerial;
   const script=document.createElement('script');
   ncCentralRequest=script;
-  script.src=NC_CENTRAL_FEED_URL+(NC_CENTRAL_FEED_URL.includes('?')?'&':'?')+'callback=ncCentralFeedCallback&t='+Date.now();
-  script.onerror=function(){ncCentralFeedCallback({ok:false});};
-  ncCentralFeedTimeout=setTimeout(function(){ncCentralFeedCallback({ok:false});},18000);
+  /* A distinct callback prevents late responses from older attempts corrupting state. */
+  const callbackName='ncCentralFeedCallback';
+  script.async=true;
+  script.src=NC_CENTRAL_FEED_URL+(NC_CENTRAL_FEED_URL.indexOf('?')>=0?'&':'?')+
+    'callback='+encodeURIComponent(callbackName)+'&t='+Date.now();
+  script.onerror=function(){
+    if(serial!==ncCentralRequestSerial)return;
+    ncCentralFeedCallback({ok:false});
+  };
+  ncCentralFeedTimeout=setTimeout(function(){
+    if(serial!==ncCentralRequestSerial)return;
+    ncCentralFeedCallback({ok:false});
+  },18000);
   document.head.appendChild(script);
 }
 function ncCentralVisibility(){
@@ -3374,11 +3411,11 @@ function ncCentralVisibility(){
   document.addEventListener('visibilitychange',function(){
     ncCentralPageVisible=!document.hidden;
     ncCentralStartAuto();
-    if(ncCentralPageVisible&&ncCentralPeople.length===0)ncCentralLoad();
+    if(ncCentralPageVisible&&ncCentralPeople.length===0){ncCentralAttempts=0;ncCentralLoad();}
   });
   ncCentralVisibility();
   ncCentralLoad();
-  ncCentralRefreshTimer=setInterval(ncCentralLoad,NC_CENTRAL_REFRESH_MS);
+  ncCentralRefreshTimer=setInterval(function(){ncCentralAttempts=0;ncCentralLoad();},NC_CENTRAL_REFRESH_MS);
 })();
 </script>
 </body>
