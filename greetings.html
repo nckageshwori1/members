@@ -1778,54 +1778,44 @@
         }
 
         function paintSelection() {
-            if (selectedObject === 'photo') {
-                return;
-            }
+            if (selectedObject === 'photo') return;
 
             const bounds = textBounds(selectedObject);
+            if (!bounds) return;
 
-            if (!bounds) {
-                return;
-            }
-
-            const padding = Math.max(10, canvas.width * 0.01);
+            // Corner-only guides: never cover the real text, color or stroke.
+            // These guides are excluded from the exported PNG by drawEditor(false).
+            const padding = Math.max(15, canvas.width * 0.014);
+            const left = bounds.x - bounds.width / 2 - padding;
+            const right = bounds.x + bounds.width / 2 + padding;
+            const top = bounds.y - bounds.height / 2 - padding;
+            const bottom = bounds.y + bounds.height / 2 + padding;
+            const arm = Math.max(11, Math.min(24, canvas.width * 0.018));
 
             ctx.save();
-            // Selection backing is visible on white, red and dark templates.
-            // It is preview-only and never appears in the downloaded PNG.
-            const left = bounds.x - bounds.width / 2 - padding;
-            const top = bounds.y - bounds.height / 2 - padding;
-            const boxWidth = bounds.width + 2 * padding;
-            const boxHeight = bounds.height + 2 * padding;
-            ctx.fillStyle = 'rgba(12, 35, 62, 0.22)';
-            ctx.fillRect(left, top, boxWidth, boxHeight);
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = Math.max(4, canvas.width * 0.004);
-            ctx.strokeRect(left, top, boxWidth, boxHeight);
-            ctx.strokeStyle = '#04bff1';
-            ctx.lineWidth = Math.max(2, canvas.width * 0.002);
-            ctx.setLineDash([
-                Math.max(5, canvas.width * 0.008),
-                Math.max(3, canvas.width * 0.005)
-            ]);
+            ctx.lineWidth = Math.max(2, canvas.width * 0.0025);
+            ctx.strokeStyle = '#00b9e8';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+            ctx.shadowBlur = Math.max(2, canvas.width * 0.003);
+            ctx.beginPath();
 
-            ctx.strokeRect(
-                bounds.x - bounds.width / 2 - padding,
-                bounds.y - bounds.height / 2 - padding,
-                bounds.width + 2 * padding,
-                bounds.height + 2 * padding
-            );
+            // L-shaped corner marks outside the text area.
+            ctx.moveTo(left, top + arm);
+            ctx.lineTo(left, top);
+            ctx.lineTo(left + arm, top);
 
-            // Four visible corners help locate white text on white templates.
-            ctx.setLineDash([]);
-            ctx.fillStyle = '#04bff1';
-            const handleSize = Math.max(5, canvas.width * 0.006);
-            for (const x of [left, left + boxWidth]) {
-                for (const y of [top, top + boxHeight]) {
-                    ctx.fillRect(x - handleSize / 2, y - handleSize / 2,
-                        handleSize, handleSize);
-                }
-            }
+            ctx.moveTo(right - arm, top);
+            ctx.lineTo(right, top);
+            ctx.lineTo(right, top + arm);
+
+            ctx.moveTo(left, bottom - arm);
+            ctx.lineTo(left, bottom);
+            ctx.lineTo(left + arm, bottom);
+
+            ctx.moveTo(right - arm, bottom);
+            ctx.lineTo(right, bottom);
+            ctx.lineTo(right, bottom - arm);
+            ctx.stroke();
             ctx.restore();
         }
 
