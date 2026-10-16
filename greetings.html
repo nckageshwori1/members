@@ -168,17 +168,29 @@
         }
 
         .gallery-count {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1;
-            padding: 5px 10px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #173650;
-            font-size: 13px;
+            display: inline-flex;
+            flex: 0 0 auto;
+            align-items: center;
+            padding: 4px 9px;
+            border: 1px solid #b9e7d0;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #e5f8ee, #c9efd9);
+            color: #087047;
+            font-size: 12px;
             font-weight: 800;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            white-space: nowrap;
+            box-shadow: 0 2px 7px rgba(8, 112, 71, 0.09);
+        }
+
+        .gallery-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 7px;
+        }
+
+        .gallery-title-row strong {
+            min-width: 0;
         }
 
         .gallery-card-empty {
@@ -642,8 +654,10 @@
            MOBILE RECOVERY: ONLY GREETING PAGE STATE, NEVER BROWSER DATA
            ============================================================ */
 
-        const GREETING_BUILD_VERSION = '20261016-recovery-1';
-        const RECOVERY_SESSION_KEY = 'greeting_page_recovery_v1';
+        const GREETING_BUILD_VERSION = '20261016-mobile-recovery-2';
+        const RECOVERY_SESSION_KEY = 'greeting_page_recovery_v2';
+        let lastAutoRetryAt = 0;
+        let loadingFestivals = false;
         let latestLoadFailure = null;
 
         function newRequestNonce() {
@@ -679,15 +693,52 @@
 
         function requestRecovery(action, error) {
             rememberLoadFailure(error, action);
-            // A single fresh-page recovery is attempted per tab/session.
-            // Further failures remain visible with a manual retry option.
-            const alreadyRecovered = sessionStorage.getItem(RECOVERY_SESSION_KEY);
-            if (!alreadyRecovered) {
-                sessionStorage.setItem(RECOVERY_SESSION_KEY, GREETING_BUILD_VERSION);
-                reloadOnlyThisPageFresh();
-                return true;
+
+            // Recover once per build within a short window, not forever.
+            // Session storage may be blocked by browser privacy settings.
+            let previous = 0;
+
+            try {
+                previous = Number(sessionStorage.getItem(RECOVERY_SESSION_KEY) || 0);
+            } catch (storageError) {
+                console.warn('Session storage unavailable:', storageError);
             }
-            return false;
+
+            const now = Date.now();
+
+            if (now - previous < 120000) {
+                return false;
+            }
+
+            try {
+                sessionStorage.setItem(RECOVERY_SESSION_KEY, String(now));
+            } catch (storageError) {
+                // Never prevent the gallery from working due to storage access.
+            }
+
+            reloadOnlyThisPageFresh();
+            return true;
+        }
+
+        function retryFailedView() {
+            if (document.visibilityState === 'hidden') {
+                return;
+            }
+
+            const now = Date.now();
+
+            if (now - lastAutoRetryAt < 15000) {
+                return;
+            }
+
+            lastAutoRetryAt = now;
+            clearFailedGreetingRequests();
+
+            if (stage === 'templates' && selectedFolder) {
+                openFestival(selectedFolder);
+            } else if (stage === 'festivals') {
+                loadFestivals();
+            }
         }
 
         function waitBeforeRetry(milliseconds) {
@@ -936,14 +987,18 @@
             const description = document.createElement('small');
             description.textContent = subtitle;
 
-            detail.append(heading, description);
+            const titleRow = document.createElement('div');
+            titleRow.className = 'gallery-title-row';
+            titleRow.appendChild(heading);
+
+            detail.append(titleRow, description);
             card.append(placeholder, detail);
 
             if (options.badge) {
                 const badge = document.createElement('span');
                 badge.className = 'gallery-count';
                 badge.textContent = options.badge;
-                card.appendChild(badge);
+                titleRow.appendChild(badge);
             }
 
             if (options.empty) {
@@ -999,7 +1054,7 @@
                 const badge = document.createElement('span');
                 badge.className = 'gallery-count';
                 badge.textContent = entries.length + ' डिजाइन';
-                card.appendChild(badge);
+                card.querySelector('.gallery-title-row').appendChild(badge);
 
                 // Folder को coverId नभए पहिलो Template नै Cover बनाउने।
                 if (!item.coverId) {
@@ -1019,6 +1074,11 @@
         }
 
         async function loadFestivals() {
+            if (loadingFestivals) {
+                return;
+            }
+
+            loadingFestivals = true;
             setStatus('डिजाइन लोड हुँदैछन्...');
 
             try {
@@ -1041,6 +1101,8 @@
                 if (!requestRecovery('folders', error)) {
                     showLoadError();
                 }
+            } finally {
+                loadingFestivals = false;
             }
         }
 
@@ -1742,7 +1804,16 @@
 
         window.addEventListener('online', () => {
             if (!$('retryLoad').classList.contains('hidden')) {
-                $('retryLoad').click();
+                retryFailedView();
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (
+                document.visibilityState === 'visible' &&
+                !$('retryLoad').classList.contains('hidden')
+            ) {
+                retryFailedView();
             }
         });
 
