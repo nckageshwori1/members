@@ -161,6 +161,30 @@
             gap: 15px;
         }
 
+        /* चाडपर्व Card को माथिल्लो कुनामा डिजाइन संख्या। */
+        .gallery-card {
+            position: relative;
+        }
+
+        .gallery-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #173650;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .gallery-card-empty {
+            cursor: default;
+            opacity: 0.8;
+        }
+
         .gallery-card {
             min-width: 0;
             overflow: hidden;
@@ -757,7 +781,78 @@
             }
         });
 
-        function makeGalleryCard(title, subtitle, imageId, onClick) {
+        /* ============================================================
+           13A. IMAGE COVER WITH DRIVE AND API FALLBACK
+           ============================================================ */
+
+        const folderTemplateCache = new Map();
+
+        async function getFolderTemplates(folderId) {
+            if (!folderTemplateCache.has(folderId)) {
+                const pending = requestWithRetry('templates', {
+                    folderId
+                }).then((response) => {
+                    if (!response.ok) {
+                        throw new Error(response.error || 'Templates unavailable');
+                    }
+
+                    return response.templates || [];
+                });
+
+                folderTemplateCache.set(folderId, pending);
+                pending.catch(() => folderTemplateCache.delete(folderId));
+            }
+
+            return folderTemplateCache.get(folderId);
+        }
+
+        function loadCover(card, placeholder, imageId, title) {
+            if (!imageId) {
+                return;
+            }
+
+            const image = document.createElement('img');
+            image.className = 'gallery-cover';
+            image.alt = title;
+            image.loading = 'lazy';
+            image.decoding = 'async';
+
+            let fallbackStarted = false;
+
+            image.onload = () => {
+                if (card.isConnected && placeholder.isConnected) {
+                    placeholder.replaceWith(image);
+                }
+            };
+
+            image.onerror = async () => {
+                if (fallbackStarted || !card.isConnected) {
+                    return;
+                }
+
+                fallbackStarted = true;
+
+                try {
+                    // Drive Thumbnail रोकिएमा पहिलेकै Greeting API प्रयोग गर्ने।
+                    // नयाँ Backend Function वा Deployment आवश्यक छैन।
+                    const source = await getTemplateImageData(imageId);
+
+                    if (card.isConnected) {
+                        image.src = source;
+                    }
+                } catch (error) {
+                    // Preview नआए पनि डिजाइन छनोटको Function सुरक्षित रहन्छ।
+                    console.warn('Greeting cover unavailable:', title);
+                }
+            };
+
+            image.src =
+                'https://drive.google.com/thumbnail?id=' +
+                encodeURIComponent(imageId) +
+                '&sz=w1200';
+        }
+
+        function makeGalleryCard(title, subtitle, imageId, onClick, options = {}) {
             const card = document.createElement('button');
             card.className = 'gallery-card';
             card.type = 'button';
@@ -777,27 +872,84 @@
 
             detail.append(heading, description);
             card.append(placeholder, detail);
-            card.addEventListener('click', onClick);
 
-            if (imageId) {
-                const image = document.createElement('img');
-                image.className = 'gallery-cover';
-                image.alt = title;
-                image.loading = 'lazy';
+            if (options.badge) {
+                const badge = document.createElement('span');
+                badge.className = 'gallery-count';
+                badge.textContent = options.badge;
+                card.appendChild(badge);
+            }
 
-                image.onload = () => placeholder.replaceWith(image);
-                image.onerror = () => {
-                    // Preview असफल भए पनि कार्ड क्लिक गरेर Template खोल्न मिल्छ।
-                    image.onerror = null;
-                };
-
-                image.src =
-                    'https://drive.google.com/thumbnail?id=' +
-                    encodeURIComponent(imageId) +
-                    '&sz=w1200';
+            if (options.empty) {
+                card.disabled = true;
+                card.classList.add('gallery-card-empty');
+                placeholder.textContent = '🗓️';
+            } else {
+                card.addEventListener('click', onClick);
+                loadCover(card, placeholder, imageId, title);
             }
 
             return card;
+        }
+
+        function createFolderCard(item, gallery) {
+            // Count थाहा नभएसम्म पनि Folder तुरुन्त देखिन्छ।
+            const card = makeGalleryCard(
+                item.name,
+                'डिजाइन जाँच हुँदैछ...',
+                item.coverId,
+                () => openFestival(item)
+            );
+
+            gallery.appendChild(card);
+
+            getFolderTemplates(item.id).then((entries) => {
+                if (!card.isConnected) {
+                    return;
+                }
+
+                const description = card.querySelector('.gallery-detail small');
+                const oldBadge = card.querySelector('.gallery-count');
+
+                if (oldBadge) {
+                    oldBadge.remove();
+                }
+
+                if (entries.length === 0) {
+                    description.textContent = 'डिजाइन चाँडै उपलब्ध हुनेछ';
+                    card.disabled = true;
+                    card.classList.add('gallery-card-empty');
+                    const placeholder = card.querySelector('.gallery-placeholder');
+
+                    if (placeholder) {
+                        placeholder.textContent = '🗓️';
+                    }
+
+                    return;
+                }
+
+                description.textContent = 'डिजाइन हेर्नुहोस् →';
+
+                const badge = document.createElement('span');
+                badge.className = 'gallery-count';
+                badge.textContent = entries.length + ' डिजाइन';
+                card.appendChild(badge);
+
+                // Folder को coverId नभए पहिलो Template नै Cover बनाउने।
+                if (!item.coverId) {
+                    const placeholder = card.querySelector('.gallery-placeholder');
+
+                    if (placeholder) {
+                        loadCover(card, placeholder, entries[0].id, item.name);
+                    }
+                }
+            }).catch(() => {
+                const description = card.querySelector('.gallery-detail small');
+
+                if (description) {
+                    description.textContent = 'डिजाइन हेर्नुहोस् →';
+                }
+            });
         }
 
         async function loadFestivals() {
@@ -815,16 +967,7 @@
                 const gallery = $('festivalGrid');
                 gallery.replaceChildren();
 
-                folders.forEach((item) => {
-                    gallery.appendChild(
-                        makeGalleryCard(
-                            item.name,
-                            'डिजाइन हेर्नुहोस् →',
-                            item.coverId,
-                            () => openFestival(item)
-                        )
-                    );
-                });
+                folders.forEach((item) => createFolderCard(item, gallery));
 
                 setStatus(folders.length ? '' : 'कुनै चाडपर्व Folder भेटिएन।');
             } catch (error) {
@@ -841,15 +984,7 @@
             setStatus('डिजाइन लोड हुँदैछन्...');
 
             try {
-                const response = await requestWithRetry('templates', {
-                    folderId: item.id
-                });
-
-                if (!response.ok) {
-                    throw new Error(response.error || 'Templates unavailable');
-                }
-
-                templates = response.templates || [];
+                templates = await getFolderTemplates(item.id);
 
                 const gallery = $('templateGrid');
                 gallery.replaceChildren();
@@ -865,7 +1000,7 @@
                     );
                 });
 
-                setStatus(templates.length ? '' : 'यस Folder मा Template छैन।');
+                setStatus(templates.length ? '' : 'डिजाइन चाँडै उपलब्ध हुनेछ।');
             } catch (error) {
                 console.warn('Greeting gallery request failed:', error);
                 showLoadError();
