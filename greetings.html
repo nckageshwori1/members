@@ -764,6 +764,15 @@
         .smart-text-actions { display: flex; flex-wrap: wrap; gap: 7px; margin: 8px 0; }
         .smart-text-actions .button { flex: 1; min-width: 115px; font-size: 12px; }
         .face-fit-message { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+        /* Targeted update: unobtrusive operation feedback */
+        #greetingActionToast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:99999; background:#12365b; color:#fff; padding:10px 17px; border-radius:11px; box-shadow:0 5px 22px #0003; font-size:14px; max-width:90vw; text-align:center; pointer-events:none; opacity:0; transition:opacity .18s; }
+        #greetingActionToast.visible { opacity:1; }
+        .greeting-action-working { opacity:.72; cursor:progress !important; }
+        .greeting-action-flash { animation:greetingActionFlash .3s ease-out; }
+        @keyframes greetingActionFlash { 50% { filter:brightness(.87); } }
+        #greetingHistoryActions { display:flex; gap:8px; margin:8px 0; }
+        #greetingHistoryActions button { flex:1; }
+        #greetingHistoryActions button:disabled { opacity:.45; cursor:not-allowed; }
     </style>
 </head>
 
@@ -898,6 +907,10 @@
                     <div class="form-field">
                         <label for="photo">फोटो</label>
                         <input id="photo" type="file" accept="image/*">
+                        <div id="greetingHistoryActions">
+                            <button type="button" id="greetingUndo" class="button" disabled>↶ Undo</button>
+                            <button type="button" id="greetingRedo" class="button" disabled>↷ Redo</button>
+                        </div>
                         <button id="resetPhotoFit" class="button hidden" type="button" style="margin-top:6px;">↺ फोटो Auto Fit / Reset</button>
                         <button id="smartFaceFit" class="button hidden" type="button" style="margin-top:6px;">☺ Smart Face Fit</button>
                         <small id="faceFitMessage" class="face-fit-message" role="status" aria-live="polite"></small>
@@ -952,6 +965,7 @@
         </div>
     </div>
 
+    <div id="greetingActionToast" role="status" aria-live="polite"></div>
     <script>
         'use strict';
 
@@ -2648,6 +2662,154 @@
                 $('mobileDownload').disabled = false;
                 $('mobileDownload').textContent = '⬇ PNG डाउनलोड गर्नुहोस्';
                 button.textContent = '⬇ PNG डाउनलोड';
+            }
+        });
+
+        /* ============================================================
+           18A. UNDO / REDO AND BUTTON RESPONSE (additive update)
+           ============================================================ */
+        const greetingUndoStack = [];
+        const greetingRedoStack = [];
+        let greetingHistoryTimer = null;
+        let greetingToastTimer = null;
+        let greetingRestoring = false;
+
+        function greetingSnapshot() {
+            return JSON.stringify({
+                photoX, photoY, photoZoom,
+                texts: Object.fromEntries(Object.entries(textObjects).map(([key, value]) => [key, { ...value }])),
+                values: {
+                    name: $('name').value,
+                    designation: $('designation').value,
+                    organization: $('organization').value
+                }
+            });
+        }
+
+        let greetingLastSnapshot = greetingSnapshot();
+
+        function greetingUpdateHistoryButtons() {
+            $('greetingUndo').disabled = greetingUndoStack.length === 0;
+            $('greetingRedo').disabled = greetingRedoStack.length === 0;
+        }
+
+        function greetingCommitHistory() {
+            if (greetingRestoring) return;
+            const current = greetingSnapshot();
+            if (current === greetingLastSnapshot) return;
+            greetingUndoStack.push(greetingLastSnapshot);
+            if (greetingUndoStack.length > 60) greetingUndoStack.shift();
+            greetingRedoStack.length = 0;
+            greetingLastSnapshot = current;
+            greetingUpdateHistoryButtons();
+        }
+
+        function greetingScheduleHistory(delay = 0) {
+            if (greetingRestoring) return;
+            clearTimeout(greetingHistoryTimer);
+            greetingHistoryTimer = setTimeout(greetingCommitHistory, delay);
+        }
+
+        function greetingRestore(snapshot) {
+            const state = JSON.parse(snapshot);
+            greetingRestoring = true;
+            photoX = state.photoX;
+            photoY = state.photoY;
+            photoZoom = state.photoZoom;
+            for (const [key, value] of Object.entries(state.texts)) {
+                if (textObjects[key]) Object.assign(textObjects[key], value);
+            }
+            for (const [key, value] of Object.entries(state.values)) {
+                if ($(key)) $(key).value = value;
+            }
+            greetingLastSnapshot = snapshot;
+            greetingRestoring = false;
+            updateToolbar();
+            drawEditor();
+            greetingUpdateHistoryButtons();
+        }
+
+        function greetingUndo() {
+            clearTimeout(greetingHistoryTimer);
+            greetingCommitHistory();
+            if (!greetingUndoStack.length) return;
+            greetingRedoStack.push(greetingLastSnapshot);
+            greetingRestore(greetingUndoStack.pop());
+            greetingToast('अघिल्लो परिवर्तन फर्काइयो।');
+        }
+
+        function greetingRedo() {
+            clearTimeout(greetingHistoryTimer);
+            if (!greetingRedoStack.length) return;
+            greetingUndoStack.push(greetingLastSnapshot);
+            greetingRestore(greetingRedoStack.pop());
+            greetingToast('परिवर्तन फेरि लागू गरियो।');
+        }
+
+        function greetingToast(message, duration = 2200) {
+            const toast = $('greetingActionToast');
+            if (!toast) return;
+            clearTimeout(greetingToastTimer);
+            toast.textContent = message;
+            toast.classList.add('visible');
+            greetingToastTimer = setTimeout(() => toast.classList.remove('visible'), duration);
+        }
+
+        $('greetingUndo').addEventListener('click', greetingUndo);
+        $('greetingRedo').addEventListener('click', greetingRedo);
+
+        // Record only completed interactions, not every pointer movement.
+        canvas.addEventListener('pointerup', () => greetingScheduleHistory(30));
+        canvas.addEventListener('pointercancel', () => greetingScheduleHistory(30));
+        canvas.addEventListener('wheel', () => greetingScheduleHistory(300), { passive: true });
+        ['name', 'designation', 'organization'].forEach(id => {
+            $(id).addEventListener('input', () => greetingScheduleHistory(550));
+        });
+        ['fontFamily', 'fontColor', 'fontBold', 'strokeEnabled', 'strokeWidth', 'strokeColor'].forEach(id => {
+            $(id).addEventListener('change', () => greetingScheduleHistory(30));
+        });
+
+        // Capture-phase listener adds feedback without changing existing handlers.
+        document.addEventListener('click', event => {
+            const button = event.target.closest('button');
+            if (!button || button.disabled) return;
+            button.classList.remove('greeting-action-flash');
+            void button.offsetWidth;
+            button.classList.add('greeting-action-flash');
+            setTimeout(() => button.classList.remove('greeting-action-flash'), 350);
+            const id = button.id;
+            const messages = {
+                resetPhotoFit: 'फोटो Auto Fit लागू हुँदैछ...',
+                smartFaceFit: 'अनुहार पहिचान गर्ने प्रयास हुँदैछ...',
+                smartTextFit: 'अक्षर डिजाइनमा मिलाइँदैछ...',
+                resetText: 'अक्षरको स्थान र आकार Reset हुँदैछ...',
+                download: 'PNG तयार हुँदैछ...',
+                mobileDownload: 'PNG तयार हुँदैछ...',
+                remove: 'फोटो हटाइँदैछ...'
+            };
+            if (messages[id]) greetingToast(messages[id]);
+            if (id !== 'greetingUndo' && id !== 'greetingRedo' &&
+                (['resetPhotoFit','smartFaceFit','smartTextFit','resetText','remove'].includes(id) ||
+                button.hasAttribute('data-mobile-move') || button.hasAttribute('data-mobile-scale') ||
+                id === 'strokeMinus' || id === 'strokePlus')) {
+                greetingScheduleHistory(id === 'smartFaceFit' ? 1800 : 80);
+            }
+        }, true);
+
+        $('photo').addEventListener('change', event => {
+            if (event.target.files && event.target.files.length) greetingToast('फोटो लोड हुँदैछ...');
+        }, true);
+
+        // Keyboard shortcuts while not typing into a form field.
+        document.addEventListener('keydown', event => {
+            if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+            const tag = document.activeElement?.tagName;
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag) || document.activeElement?.isContentEditable) return;
+            const key = event.key.toLowerCase();
+            if (key === 'z' && !event.shiftKey) {
+                event.preventDefault(); greetingUndo();
+            } else if (key === 'y' || (key === 'z' && event.shiftKey)) {
+                event.preventDefault(); greetingRedo();
             }
         });
 
