@@ -401,7 +401,41 @@
         }
 
 
-        /* Version: Mobile Smart Floating Controls 2026-10-16 */
+                 /* Text styling controls: independent per selected text object. */
+         .floating-toolbar .style-toggle {
+             display: inline-flex;
+             align-items: center;
+             gap: 6px;
+             padding: 6px 9px;
+             border: 1px solid #d7e6e0;
+             border-radius: 8px;
+             background: #fff;
+         }
+         .floating-toolbar .style-toggle input {
+             accent-color: var(--brand);
+             width: 17px;
+             height: 17px;
+         }
+         .stroke-size-control {
+             display: flex;
+             align-items: center;
+             gap: 6px;
+         }
+         .stroke-size-control button {
+             width: 34px;
+             height: 34px;
+             border: 1px solid #bcd4cb;
+             border-radius: 8px;
+             background: #fff;
+             font-weight: 800;
+         }
+         .stroke-size-control input { width: 95px; accent-color: var(--brand); }
+         .stroke-size-control output { min-width: 24px; text-align: right; font-size: 13px; }
+         @media (max-width: 750px) {
+             .floating-toolbar { justify-content: flex-start; }
+         }
+
+/* Version: Mobile Smart Floating Controls 2026-10-16 */
         /* ============================================================
            MOBILE SMART FLOATING CONTROLS
            Positioned inside the preview, near the selected object.
@@ -778,6 +812,23 @@
 
                         <label for="fontColor">रङ</label>
                         <input id="fontColor" type="color" value="#ffffff" aria-label="अक्षरको रङ">
+
+                        <!-- Selected text only: optional professional styling -->
+                        <label class="style-toggle" for="fontBold">
+                            <input id="fontBold" type="checkbox" checked> <strong>B</strong> बोल्ड
+                        </label>
+                        <label class="style-toggle" for="strokeEnabled">
+                            <input id="strokeEnabled" type="checkbox"> अक्षरको बाहिरी रेखा
+                        </label>
+                        <label for="strokeWidth">रेखा मोटाइ</label>
+                        <div class="stroke-size-control">
+                            <button id="strokeMinus" type="button" aria-label="रेखा घटाउनुहोस्">−</button>
+                            <input id="strokeWidth" type="range" min="0" max="12" step="0.5" value="0">
+                            <button id="strokePlus" type="button" aria-label="रेखा बढाउनुहोस्">+</button>
+                            <output id="strokeWidthValue">0</output>
+                        </div>
+                        <label for="strokeColor">रेखाको रङ</label>
+                        <input id="strokeColor" type="color" value="#000000" aria-label="बाहिरी रेखाको रङ">
                     </div>
                 </div>
 
@@ -854,21 +905,33 @@
                 y: 0.88,
                 size: 0.041,
                 font: 'Yatra One',
-                color: '#ffffff'
+                color: '#ffffff',
+                bold: true,
+                strokeEnabled: false,
+                strokeWidth: 0,
+                strokeColor: '#000000'
             },
             designation: {
                 x: 0.5,
                 y: 0.93,
                 size: 0.027,
                 font: 'Mukta',
-                color: '#ffffff'
+                color: '#ffffff',
+                bold: true,
+                strokeEnabled: false,
+                strokeWidth: 0,
+                strokeColor: '#000000'
             },
             organization: {
                 x: 0.5,
                 y: 0.975,
                 size: 0.022,
                 font: 'Mukta',
-                color: '#ffffff'
+                color: '#ffffff',
+                bold: true,
+                strokeEnabled: false,
+                strokeWidth: 0,
+                strokeColor: '#000000'
             }
         };
 
@@ -1451,18 +1514,21 @@
                 textObjects.name.size = 0.041;
                 textObjects.name.font = 'Yatra One';
                 textObjects.name.color = '#ffffff';
+                resetTextStyle('name');
 
                 textObjects.designation.x = 0.5;
                 textObjects.designation.y = 0.95;
                 textObjects.designation.size = 0.027;
                 textObjects.designation.font = 'Mukta';
                 textObjects.designation.color = '#ffffff';
+                resetTextStyle('designation');
 
                 textObjects.organization.x = 0.5;
                 textObjects.organization.y = 0.975;
                 textObjects.organization.size = 0.022;
                 textObjects.organization.font = 'Mukta';
                 textObjects.organization.color = '#ffffff';
+                resetTextStyle('organization');
 
                 $('photo').value = '';
                 $('name').value = '';
@@ -1487,13 +1553,20 @@
             }
         }
 
+        function resetTextStyle(key) {
+            Object.assign(textObjects[key], {
+                bold: true, strokeEnabled: false,
+                strokeWidth: 0, strokeColor: '#000000'
+            });
+        }
+
         function getTextFont(key) {
             const item = textObjects[key];
             const fontSize = Math.max(8, canvas.width * item.size);
 
             return {
                 size: fontSize,
-                css: '700 ' + fontSize + 'px "' + item.font + '", ' + FONT_FALLBACK
+                css: (item.bold ? '700 ' : '400 ') + fontSize + 'px "' + item.font + '", ' + FONT_FALLBACK
             };
         }
 
@@ -1512,15 +1585,17 @@
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = item.color;
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
-            ctx.shadowBlur = Math.max(2, canvas.width * 0.004);
-
-            // Canvas ले अक्षरलाई तेर्सो खुम्च्याउने maxWidth प्रयोग गरिएको छैन।
-            ctx.fillText(
-                value,
-                item.x * canvas.width,
-                item.y * canvas.height
-            );
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            const x = item.x * canvas.width;
+            const y = item.y * canvas.height;
+            if (item.strokeEnabled && item.strokeWidth > 0) {
+                ctx.strokeStyle = item.strokeColor;
+                ctx.lineWidth = canvas.width * item.strokeWidth / 1200;
+                ctx.lineJoin = 'round';
+                ctx.strokeText(value, x, y);
+            }
+            ctx.fillText(value, x, y);
 
             ctx.restore();
         }
@@ -1779,6 +1854,11 @@
 
             $('fontFamily').value = item.font;
             $('fontColor').value = item.color;
+            $('fontBold').checked = item.bold;
+            $('strokeEnabled').checked = item.strokeEnabled;
+            $('strokeWidth').value = item.strokeWidth;
+            $('strokeWidthValue').textContent = String(item.strokeWidth);
+            $('strokeColor').value = item.strokeColor;
         }
 
         /* ============================================================
@@ -2126,6 +2206,41 @@
             textObjects[selectedObject].color = event.target.value;
             drawEditor();
         });
+
+        // Text-only styling, with separate values for name, designation and organization.
+        function styleSelected(change) {
+            const item = textObjects[selectedObject];
+            if (!item) return;
+            change(item);
+            drawEditor();
+        }
+        $('fontBold').addEventListener('change', e =>
+            styleSelected(item => { item.bold = e.target.checked; }));
+        $('strokeEnabled').addEventListener('change', e =>
+            styleSelected(item => {
+                item.strokeEnabled = e.target.checked;
+                if (item.strokeEnabled && !item.strokeWidth) item.strokeWidth = 2;
+                $('strokeWidth').value = item.strokeWidth;
+                $('strokeWidthValue').textContent = String(item.strokeWidth);
+            }));
+        function setStrokeWidth(value) {
+            styleSelected(item => {
+                item.strokeWidth = Math.max(0, Math.min(12, value));
+                item.strokeEnabled = item.strokeWidth > 0;
+                $('strokeEnabled').checked = item.strokeEnabled;
+                $('strokeWidth').value = item.strokeWidth;
+                $('strokeWidthValue').textContent = String(item.strokeWidth);
+            });
+        }
+        $('strokeWidth').addEventListener('input', e => setStrokeWidth(Number(e.target.value)));
+        $('strokeMinus').addEventListener('click', () => {
+            if (textObjects[selectedObject]) setStrokeWidth(textObjects[selectedObject].strokeWidth - 0.5);
+        });
+        $('strokePlus').addEventListener('click', () => {
+            if (textObjects[selectedObject]) setStrokeWidth(textObjects[selectedObject].strokeWidth + 0.5);
+        });
+        $('strokeColor').addEventListener('input', e =>
+            styleSelected(item => { item.strokeColor = e.target.value; }));
 
         /* ============================================================
            18. LOSSLESS PNG EXPORT AND SHEET USAGE REQUEST
