@@ -1367,6 +1367,29 @@ main {
   }
 }
 </style>
+<style id="ncCentralPopupStyle">
+/* Targeted full committee popup; independent from the existing member system. */
+.ncCentralOpenList{border:0;background:transparent;cursor:pointer;font:inherit;font-weight:800}
+.ncCentralPopup{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(7,26,48,.72)}
+.ncCentralPopup.on{display:flex}
+.ncCentralPopupPanel{width:min(1050px,100%);max-height:92dvh;display:flex;flex-direction:column;overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 25px 75px #0005}
+.ncCentralPopupHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid #dce7f2}
+.ncCentralPopupHeader h3{margin:0;color:#0d315d;font-size:20px}
+.ncCentralPopupClose{border:0;border-radius:50%;background:#eaf0f7;width:38px;height:38px;font-size:24px;flex:none}
+.ncCentralPopupTools{padding:12px 18px;border-bottom:1px solid #e5edf5;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ncCentralPopupSearch{flex:1;min-width:180px;padding:11px 13px;border:1px solid #cbd8e6;border-radius:10px}
+.ncCentralPopupStatus{font-size:13px;color:#5b7087;font-weight:700}
+.ncCentralPopupBody{overflow:auto;padding:16px 18px;overscroll-behavior:contain}
+.ncCentralGroup{margin-bottom:20px}
+.ncCentralGroup h4{margin:0 0 10px;color:#0d315d;border-bottom:2px solid #e3edf6;padding-bottom:8px}
+.ncCentralMemberGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ncCentralMember{display:flex;align-items:center;gap:11px;min-width:0;padding:12px;border:1px solid #dce7f2;border-radius:12px;background:#fbfdff}
+.ncCentralMember img,.ncCentralNoPhoto{width:64px;height:64px;flex:none;border-radius:50%;object-fit:cover;background:#eaf1f7;display:grid;place-items:center;color:#7791a8}
+.ncCentralMember strong{display:block;color:#153b63;overflow-wrap:anywhere}
+.ncCentralMember small{display:block;color:#bf2536;margin-top:3px;overflow-wrap:anywhere}
+@media(max-width:750px){.ncCentralMemberGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.ncCentralPopup{padding:0;align-items:flex-end}.ncCentralPopupPanel{max-height:96dvh;border-radius:18px 18px 0 0}.ncCentralMemberGrid{grid-template-columns:1fr}.ncCentralPopupHeader h3{font-size:17px}}
+</style>
 
 <style id="wardMenuOnlyStyles">
 /* Mobile-only drawer. No existing styles or functions are modified. */
@@ -1590,14 +1613,14 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
           <!-- Trial-only central committee carousel. Member search markup is untouched. -->
           <section id="ncCentralCommitteeTrial" class="ncCentral" aria-label="केन्द्रीय कार्यसमिति">
             <h4>🏛️ केन्द्रीय कार्यसमिति</h4>
-            <p class="ncCentralNote">नेपाली कांग्रेसका सभापति, पदाधिकारी र केन्द्रीय सदस्यहरू</p>
+            <p class="ncCentralNote">नेपाली कांग्रेसका सभापतिदेखि सहमहामन्त्रीसम्मका पदाधिकारीहरू</p>
             <div class="ncCentralSlide">
               <button class="ncCentralArrow" type="button" onclick="ncCentralMove(-1)" aria-label="अघिल्लो सदस्य">‹‹</button>
               <div id="ncCentralPerson" class="ncCentralPerson" aria-live="polite"><span>आधिकारिक विवरण लोड हुँदैछ...</span></div>
               <button class="ncCentralArrow" type="button" onclick="ncCentralMove(1)" aria-label="अर्को सदस्य">››</button>
             </div>
             <p id="ncCentralCount" class="ncCentralCount"></p>
-            <a class="ncCentralSource" href="https://nepalicongress.org/central-committee/" target="_blank" rel="noopener noreferrer">आधिकारिक केन्द्रीय कार्यसमिति ↗</a>
+            <button class="ncCentralSource ncCentralOpenList" type="button" onclick="ncCentralOpenPopup()">सम्पूर्ण केन्द्रीय कार्यसमिति हेर्नुहोस् ↗</button>
           </section>
 
         </div>
@@ -3259,10 +3282,27 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
 })();
 </script>
 
+
+<div id="ncCentralPopup" class="ncCentralPopup" role="dialog" aria-modal="true" aria-labelledby="ncCentralPopupTitle" aria-hidden="true" onclick="if(event.target===this)ncCentralClosePopup()">
+  <div class="ncCentralPopupPanel">
+    <div class="ncCentralPopupHeader">
+      <h3 id="ncCentralPopupTitle">🏛️ सम्पूर्ण केन्द्रीय कार्यसमिति</h3>
+      <button type="button" class="ncCentralPopupClose" onclick="ncCentralClosePopup()" aria-label="बन्द गर्नुहोस्">×</button>
+    </div>
+    <div class="ncCentralPopupTools">
+      <input id="ncCentralPopupSearch" class="ncCentralPopupSearch" type="search" placeholder="सदस्यको नाम, पद वा समूह खोज्नुहोस्" oninput="ncCentralRenderPopup()">
+      <span id="ncCentralPopupStatus" class="ncCentralPopupStatus"></span>
+    </div>
+    <div id="ncCentralPopupBody" class="ncCentralPopupBody"></div>
+  </div>
+</div>
+
 <script id="ncCentralCommitteeTrialScript">
 /* Isolated Central Committee slider. No original app functions are overridden. */
 const NC_CENTRAL_FEED_URL = 'https://script.google.com/macros/s/AKfycby3HFgNAnKFwdyUK5vS0ZtXfk9ZKjm7HJ_jq-Ru6MsW3lhGF852fOVI0KxHWgHwlkcUhg/exec';
 let ncCentralPeople = [];
+let ncCentralAllPeople = [];
+let ncCentralPopupPreviousFocus = null;
 let ncCentralIndex = 0;
 let ncCentralRequest = null;
 let ncCentralAutoTimer = null;
@@ -3287,12 +3327,83 @@ function ncCentralPhotoUrl(url){
   const separator = String(url).includes('?') ? '&' : '?';
   return String(url) + separator + 'nc_photo_refresh=' + Math.floor(Date.now()/NC_CENTRAL_REFRESH_MS);
 }
+function ncCentralRoleText(person){
+  return String(person.role || person.position || '').trim();
+}
+function ncCentralGroupText(person){
+  return String(person.group || person.category || person.section || '').trim();
+}
+function ncCentralRoleRank(person){
+  const text=(ncCentralRoleText(person)+' '+ncCentralGroupText(person)).replace(/\s+/g,'');
+  if(/सहमहामन्त्री|सह[-–]?महामन्त्री/.test(text))return 5;
+  if(/महामन्त्री/.test(text))return 4;
+  if(/कोषाध्यक्ष/.test(text))return 3;
+  if(/वरिष्ठउपसभापति|बरिष्ठउपसभापति/.test(text))return 1;
+  if(/उपसभापति/.test(text))return 2;
+  if(/सभापति/.test(text))return 0;
+  return 99;
+}
+function ncCentralIsOfficer(person){
+  const text=(ncCentralRoleText(person)+' '+ncCentralGroupText(person)).replace(/\s+/g,'');
+  if(/केन्द्रीयसदस्य|केन्द्रियसदस्य/.test(text))return false;
+  return ncCentralRoleRank(person)<99;
+}
+function ncCentralOpenPopup(){
+  const popup=document.getElementById('ncCentralPopup');
+  if(!popup)return;
+  ncCentralPopupPreviousFocus=document.activeElement;
+  popup.classList.add('on');
+  popup.setAttribute('aria-hidden','false');
+  ncCentralRenderPopup();
+  document.getElementById('ncCentralPopupSearch').focus();
+}
+function ncCentralClosePopup(){
+  const popup=document.getElementById('ncCentralPopup');
+  if(!popup)return;
+  popup.classList.remove('on');
+  popup.setAttribute('aria-hidden','true');
+  if(ncCentralPopupPreviousFocus&&ncCentralPopupPreviousFocus.focus)ncCentralPopupPreviousFocus.focus();
+}
+function ncCentralRenderPopup(){
+  const body=document.getElementById('ncCentralPopupBody');
+  const status=document.getElementById('ncCentralPopupStatus');
+  const input=document.getElementById('ncCentralPopupSearch');
+  if(!body||!status)return;
+  const query=String(input&&input.value||'').trim().toLocaleLowerCase();
+  const list=ncCentralAllPeople.filter(function(person){
+    return !query || [person.name,ncCentralRoleText(person),ncCentralGroupText(person)].join(' ').toLocaleLowerCase().includes(query);
+  });
+  status.textContent=list.length+' / '+ncCentralAllPeople.length+' जना';
+  if(!ncCentralAllPeople.length){body.innerHTML='<p class="ncCentralError">पूर्ण कार्यसमितिको विवरण अहिले लोड भएको छैन। केही बेरपछि पुनः प्रयास गर्नुहोस्।</p>';return;}
+  if(!list.length){body.innerHTML='<p>खोजीअनुसार कुनै सदस्य भेटिएन।</p>';return;}
+  const groups=new Map();
+  list.forEach(function(person){
+    const role=ncCentralRoleText(person);
+    const group=ncCentralGroupText(person) || (/केन्द्रीय सदस्य/.test(role)?role:'पदाधिकारी');
+    if(!groups.has(group))groups.set(group,[]);
+    groups.get(group).push(person);
+  });
+  let html='';
+  groups.forEach(function(people,group){
+    html+='<section class="ncCentralGroup"><h4>'+ncCentralEscape(group)+' ('+people.length+')</h4><div class="ncCentralMemberGrid">';
+    people.forEach(function(person){
+      const photo=ncCentralPhotoUrl(person.photo);
+      const img=photo?'<img src="'+ncCentralEscape(photo)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="ncCentralNoPhoto">👤</span>';
+      html+='<article class="ncCentralMember">'+img+'<div><strong>'+ncCentralEscape(person.name)+'</strong><small>'+ncCentralEscape(ncCentralRoleText(person))+'</small></div></article>';
+    });
+    html+='</div></section>';
+  });
+  body.innerHTML=html;
+}
+document.addEventListener('keydown',function(event){
+  if(event.key==='Escape'&&document.getElementById('ncCentralPopup')?.classList.contains('on'))ncCentralClosePopup();
+});
 function ncCentralRender(){
   const card=document.getElementById('ncCentralPerson');
   const counter=document.getElementById('ncCentralCount');
   if(!card||!counter)return;
   if(!ncCentralPeople.length){
-    card.innerHTML='<div class="ncCentralError">आधिकारिक सूची अहिले लोड हुन सकेन । तलको आधिकारिक लिंकबाट हेर्न सक्नुहुन्छ ।</div>';
+    card.innerHTML='<div class="ncCentralError">पदाधिकारीको विवरण अहिले लोड हुन सकेन।</div>';
     counter.textContent='';return;
   }
   const p=ncCentralPeople[ncCentralIndex];
@@ -3347,9 +3458,11 @@ function ncCentralFeedCallback(data){
       if(ncCentralRetryTimer){clearTimeout(ncCentralRetryTimer);ncCentralRetryTimer=null;}
       ncCentralAttempts=0;
       const current=ncCentralPeople[ncCentralIndex];
-      ncCentralPeople=incoming;
-      const previousIndex=current?incoming.findIndex(function(p){return p.name===current.name;}):-1;
-      ncCentralIndex=previousIndex>=0?previousIndex:Math.min(ncCentralIndex,incoming.length-1);
+      ncCentralAllPeople=incoming;
+      ncCentralPeople=incoming.filter(ncCentralIsOfficer).sort(function(a,b){return ncCentralRoleRank(a)-ncCentralRoleRank(b);});
+      ncCentralRenderPopup();
+      const previousIndex=current?ncCentralPeople.findIndex(function(p){return p.name===current.name;}):-1;
+      ncCentralIndex=previousIndex>=0?previousIndex:Math.max(0,Math.min(ncCentralIndex,ncCentralPeople.length-1));
       ncCentralRender();ncCentralStartAuto();return;
     }
   }
