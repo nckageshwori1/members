@@ -1527,16 +1527,29 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
 #ncAreaOverlay .ncAreaClose,
 .ncSafePopupClose {
   width:auto; height:auto; min-height:38px; flex:none;
-  border:0; border-radius:9px; padding:8px 12px;
-  background:#e8eef5; color:#153b63;
-  font:inherit; font-size:14px; font-weight:700;
-  white-space:nowrap; cursor:pointer;
+  border:2px solid #b91c1c; border-radius:10px; padding:8px 14px;
+  background:#dc2626; color:#ffffff;
+  font:inherit; font-size:14px; font-weight:800;
+  line-height:1.35; white-space:nowrap; cursor:pointer;
+  box-shadow:0 2px 7px rgba(153,27,27,.22);
+  transition:background-color .15s ease, box-shadow .15s ease;
 }
+#statListModal .listClose:hover,
+#ncCentralPopup .ncCentralPopupClose:hover,
+#ncAreaOverlay .ncAreaClose:hover,
+.ncSafePopupClose:hover {
+  background:#991b1b; color:#ffffff;
+  box-shadow:0 3px 10px rgba(153,27,27,.3);
+}
+#statListModal .listClose:active,
+#ncCentralPopup .ncCentralPopupClose:active,
+#ncAreaOverlay .ncAreaClose:active,
+.ncSafePopupClose:active { background:#7f1d1d; }
 .ncSafeAdminHead { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
 .ncSafeAdminHead h3 { margin:0; }
 .ncSafePopupClose:focus-visible, #statListModal .listClose:focus-visible,
 #ncCentralPopup .ncCentralPopupClose:focus-visible, #ncAreaOverlay .ncAreaClose:focus-visible {
-  outline:3px solid #16815a; outline-offset:2px;
+  outline:3px solid #f59e0b; outline-offset:3px;
 }
 </style>
 </head>
