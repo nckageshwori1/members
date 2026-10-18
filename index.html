@@ -1519,6 +1519,26 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
 @media(prefers-reduced-motion:reduce){.ncAreaSpinner{animation:none;border-top-color:#078c48}}
 @media(max-width:760px){.ncAreaCards{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.ncAreaOverlay{padding:0;align-items:flex-end}.ncAreaPanel{width:100%;max-height:97dvh;border-radius:18px 18px 0 0}.ncAreaTools{grid-template-columns:1fr;padding:10px}.ncAreaContent{padding:10px}.ncAreaCards{grid-template-columns:1fr}.ncAreaHead h3{font-size:17px}.ncAreaCard img,.ncAreaAvatar{width:55px;height:55px}}
 </style>
+
+<style id="ncSafePopupCloseStyle">
+/* Targeted close controls; no changes to data, layout logic, or API integration. */
+#statListModal .listClose,
+#ncCentralPopup .ncCentralPopupClose,
+#ncAreaOverlay .ncAreaClose,
+.ncSafePopupClose {
+  width:auto; height:auto; min-height:38px; flex:none;
+  border:0; border-radius:9px; padding:8px 12px;
+  background:#e8eef5; color:#153b63;
+  font:inherit; font-size:14px; font-weight:700;
+  white-space:nowrap; cursor:pointer;
+}
+.ncSafeAdminHead { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+.ncSafeAdminHead h3 { margin:0; }
+.ncSafePopupClose:focus-visible, #statListModal .listClose:focus-visible,
+#ncCentralPopup .ncCentralPopupClose:focus-visible, #ncAreaOverlay .ncAreaClose:focus-visible {
+  outline:3px solid #16815a; outline-offset:2px;
+}
+</style>
 </head>
   <body>
 
@@ -1726,7 +1746,7 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
     <div class="modal" id="adminModal">
       <div class="dialog">
         <div id="loginView">
-          <h3>प्रशासन Login</h3>
+          <div class="ncSafeAdminHead"><h3>प्रशासन Login</h3><button type="button" class="ncSafePopupClose" onclick="closeAdmin()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button></div>
           <div class="login">
             <input id="adminUser" placeholder="Username">
             <input id="adminPass" type="password" placeholder="Password">
@@ -1737,7 +1757,7 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
           </div>
         </div>
         <div id="adminView" class="adminBox">
-          <h3>सदस्य व्यवस्थापन</h3>
+          <div class="ncSafeAdminHead"><h3>सदस्य व्यवस्थापन</h3><button type="button" class="ncSafePopupClose" onclick="closeAdmin()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button></div>
           <p id="adminWelcome">
           </p>
           <div class="search">
@@ -1754,11 +1774,11 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
       </div>
     </div>
 
-<div id="statListModal" class="listModal" onclick="closeStatList(event)">
+<div id="statListModal" class="listModal">
   <div class="listModalBox" role="dialog" aria-modal="true" aria-labelledby="statListTitle">
     <div class="listModalHead">
       <h3 id="statListTitle">विवरण</h3>
-      <button class="listClose" type="button" onclick="closeStatList()" aria-label="बन्द गर्नुहोस्">×</button>
+      <button class="listClose" type="button" onclick="closeStatList()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button>
     </div>
     <div id="statListBody" class="listModalBody">लोड हुँदैछ...</div>
   </div>
@@ -1873,14 +1893,12 @@ function renderStatRows(rows, category) {
 }
 
 function closeStatList(event) {
-  if (event && event.target !== document.getElementById('statListModal')) return;
+  if (event) return; // Popup closes only through its explicit close button.
   document.getElementById('statListModal').classList.remove('on');
   document.body.style.overflow = '';
 }
 
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'Escape') closeStatList();
-});
+
 
 function nepaliNum(v) {
   return String(v).replace(/[0-9]/g,d=>'०१२३४५६७८९'[d]);
@@ -3311,11 +3329,11 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
 </script>
 
 
-<div id="ncCentralPopup" class="ncCentralPopup" role="dialog" aria-modal="true" aria-labelledby="ncCentralPopupTitle" aria-hidden="true" onclick="if(event.target===this)ncCentralClosePopup()">
+<div id="ncCentralPopup" class="ncCentralPopup" role="dialog" aria-modal="true" aria-labelledby="ncCentralPopupTitle" aria-hidden="true" >
   <div class="ncCentralPopupPanel">
     <div class="ncCentralPopupHeader">
       <h3 id="ncCentralPopupTitle">🏛️ सम्पूर्ण केन्द्रीय कार्यसमिति</h3>
-      <button type="button" class="ncCentralPopupClose" onclick="ncCentralClosePopup()" aria-label="बन्द गर्नुहोस्">×</button>
+      <button type="button" class="ncCentralPopupClose" onclick="ncCentralClosePopup()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button>
     </div>
     <div class="ncCentralPopupTools">
       <input id="ncCentralPopupSearch" class="ncCentralPopupSearch" type="search" placeholder="सदस्यको नाम, पद वा समूह खोज्नुहोस्" oninput="ncCentralRenderPopup()">
@@ -3461,9 +3479,7 @@ function ncCentralRenderPopup(){
   });
   body.innerHTML=html;
 }
-document.addEventListener('keydown',function(event){
-  if(event.key==='Escape'&&document.getElementById('ncCentralPopup')?.classList.contains('on'))ncCentralClosePopup();
-});
+
 function ncCentralRender(){
   const card=document.getElementById('ncCentralPerson');
   const counter=document.getElementById('ncCentralCount');
@@ -3599,9 +3615,9 @@ function ncCentralVisibility(){
 })();
 </script>
 
-<div id="ncAreaOverlay" class="ncAreaOverlay" role="dialog" aria-modal="true" aria-labelledby="ncAreaTitle" aria-hidden="true" onclick="if(event.target===this)ncAreaClose()">
+<div id="ncAreaOverlay" class="ncAreaOverlay" role="dialog" aria-modal="true" aria-labelledby="ncAreaTitle" aria-hidden="true" >
  <div class="ncAreaPanel">
-  <div class="ncAreaHead"><div><h3 id="ncAreaTitle">🏛️ हाम्रो क्षेत्र नं. ३</h3><small>नेपाली कांग्रेस · काठमाडौं</small></div><button type="button" class="ncAreaClose" onclick="ncAreaClose()" aria-label="बन्द गर्नुहोस्">×</button></div>
+  <div class="ncAreaHead"><div><h3 id="ncAreaTitle">🏛️ हाम्रो क्षेत्र नं. ३</h3><small>नेपाली कांग्रेस · काठमाडौं</small></div><button type="button" class="ncAreaClose" onclick="ncAreaClose()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button></div>
   <div class="ncAreaTools"><input id="ncAreaSearch" type="search" placeholder="नाम, पद वा समूह खोज्नुहोस्" oninput="ncAreaRender();ncAreaScrollTop()" aria-label="सदस्य खोज्नुहोस्"><select id="ncAreaSelect" onchange="ncAreaRender();ncAreaScrollTop()" aria-label="क्षेत्र वा समूह छान्नुहोस्"><option value="">सबै क्षेत्र र समूह</option></select></div>
   <div class="ncAreaContent" id="ncAreaContent"><div id="ncAreaLoading" class="ncAreaLoading" role="status" aria-live="polite"><span class="ncAreaSpinner" aria-hidden="true"></span><div class="ncAreaLoadingMessage">नेपाली कांग्रेसको आधिकारिक विवरण लोड हुँदैछ...</div><div class="ncAreaLoadingSub">कृपया केही क्षण प्रतीक्षा गर्नुहोस्।</div></div><p id="ncAreaStatus" class="ncAreaStatus"></p><div id="ncAreaResults"></div></div>
  </div>
@@ -3620,7 +3636,7 @@ function ncAreaScrollTop(){const box=document.getElementById('ncAreaContent');if
 function ncAreaShowLoading(show){const loading=document.getElementById('ncAreaLoading');if(loading)loading.classList.toggle('on',!!show);const results=document.getElementById('ncAreaResults');if(results)results.style.display=show?'none':'';}
 function ncAreaOpen(){const p=document.getElementById('ncAreaOverlay');ncAreaPreviousFocus=document.activeElement;p.classList.add('on');p.setAttribute('aria-hidden','false');ncAreaScrollTop();ncAreaRender();document.getElementById('ncAreaSearch').focus();if(!ncAreaData.length||Date.now()-ncAreaLastLoaded>600000)ncAreaLoad();}
 function ncAreaClose(){const p=document.getElementById('ncAreaOverlay');p.classList.remove('on');p.setAttribute('aria-hidden','true');if(ncAreaPreviousFocus?.focus)ncAreaPreviousFocus.focus();}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('ncAreaOverlay')?.classList.contains('on'))ncAreaClose();});
+
 function ncAreaLoad(){
  if(ncAreaLoading)return;
  const status=document.getElementById('ncAreaStatus');
