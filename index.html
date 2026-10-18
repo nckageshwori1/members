@@ -1552,6 +1552,20 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
   outline:3px solid #f59e0b; outline-offset:3px;
 }
 </style>
+
+<style id="ncExpandablePopupStyle">
+/* Optional fullscreen only for the Central Committee and Area 3 popups. */
+.ncExpandActions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex:none}
+.ncExpandToggle{border:1px solid #b7cbe0;background:#edf5ff;color:#133d66;border-radius:10px;padding:9px 13px;min-height:38px;font:inherit;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap}
+.ncExpandToggle:hover{background:#dcecff}
+.ncExpandToggle:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+#ncCentralPopup.ncExpandedPopup,#ncAreaOverlay.ncExpandedPopup{padding:0;align-items:stretch;justify-content:stretch}
+#ncCentralPopup.ncExpandedPopup .ncCentralPopupPanel,#ncAreaOverlay.ncExpandedPopup .ncAreaPanel{width:100%;max-width:none;height:100dvh;max-height:100dvh;border-radius:0;box-shadow:none}
+#ncCentralPopup.ncExpandedPopup .ncCentralMemberGrid,#ncAreaOverlay.ncExpandedPopup .ncAreaCards{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:900px){#ncCentralPopup.ncExpandedPopup .ncCentralMemberGrid,#ncAreaOverlay.ncExpandedPopup .ncAreaCards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){#ncCentralPopup.ncExpandedPopup .ncCentralMemberGrid,#ncAreaOverlay.ncExpandedPopup .ncAreaCards{grid-template-columns:repeat(2,minmax(0,1fr))}.ncExpandToggle{font-size:12px;padding:8px 9px}.ncExpandActions{gap:6px}}
+@media(max-width:480px){#ncCentralPopup.ncExpandedPopup .ncCentralMemberGrid,#ncAreaOverlay.ncExpandedPopup .ncAreaCards{grid-template-columns:1fr}.ncExpandToggle{font-size:12px}}
+</style>
 </head>
   <body>
 
@@ -3346,7 +3360,7 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   <div class="ncCentralPopupPanel">
     <div class="ncCentralPopupHeader">
       <h3 id="ncCentralPopupTitle">🏛️ सम्पूर्ण केन्द्रीय कार्यसमिति</h3>
-      <button type="button" class="ncCentralPopupClose" onclick="ncCentralClosePopup()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button>
+      <div class="ncExpandActions"><button type="button" class="ncExpandToggle" onclick="ncToggleExpandedPopup('ncCentralPopup',this)" aria-pressed="false" aria-label="फुल स्क्रिनमा हेर्नुहोस्">⛶ फुल स्क्रिन</button><button type="button" class="ncCentralPopupClose" onclick="ncCentralClosePopup()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button></div>
     </div>
     <div class="ncCentralPopupTools">
       <input id="ncCentralPopupSearch" class="ncCentralPopupSearch" type="search" placeholder="सदस्यको नाम, पद वा समूह खोज्नुहोस्" oninput="ncCentralRenderPopup()">
@@ -3630,7 +3644,7 @@ function ncCentralVisibility(){
 
 <div id="ncAreaOverlay" class="ncAreaOverlay" role="dialog" aria-modal="true" aria-labelledby="ncAreaTitle" aria-hidden="true" >
  <div class="ncAreaPanel">
-  <div class="ncAreaHead"><div><h3 id="ncAreaTitle">🏛️ हाम्रो क्षेत्र नं. ३</h3><small>नेपाली कांग्रेस · काठमाडौं</small></div><button type="button" class="ncAreaClose" onclick="ncAreaClose()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button></div>
+  <div class="ncAreaHead"><div><h3 id="ncAreaTitle">🏛️ हाम्रो क्षेत्र नं. ३</h3><small>नेपाली कांग्रेस · काठमाडौं</small></div><div class="ncExpandActions"><button type="button" class="ncExpandToggle" onclick="ncToggleExpandedPopup('ncAreaOverlay',this)" aria-pressed="false" aria-label="फुल स्क्रिनमा हेर्नुहोस्">⛶ फुल स्क्रिन</button><button type="button" class="ncAreaClose" onclick="ncAreaClose()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button></div></div>
   <div class="ncAreaTools"><input id="ncAreaSearch" type="search" placeholder="नाम, पद वा समूह खोज्नुहोस्" oninput="ncAreaRender();ncAreaScrollTop()" aria-label="सदस्य खोज्नुहोस्"><select id="ncAreaSelect" onchange="ncAreaRender();ncAreaScrollTop()" aria-label="क्षेत्र वा समूह छान्नुहोस्"><option value="">सबै क्षेत्र र समूह</option></select></div>
   <div class="ncAreaContent" id="ncAreaContent"><div id="ncAreaLoading" class="ncAreaLoading" role="status" aria-live="polite"><span class="ncAreaSpinner" aria-hidden="true"></span><div class="ncAreaLoadingMessage">नेपाली कांग्रेसको आधिकारिक विवरण लोड हुँदैछ...</div><div class="ncAreaLoadingSub">कृपया केही क्षण प्रतीक्षा गर्नुहोस्।</div></div><p id="ncAreaStatus" class="ncAreaStatus"></p><div id="ncAreaResults"></div></div>
  </div>
@@ -3676,6 +3690,18 @@ function ncAreaRender(){const target=document.getElementById('ncAreaResults'),st
   filtered.forEach(m=>{const photo=/^https:\/\/nepalicongress\.org\//.test(m.photo||'')?m.photo:'';inner+='<article class="ncAreaCard">'+(photo?'<img loading="lazy" referrerpolicy="no-referrer" src="'+ncAreaEscape(photo)+'" alt="">':'<span class="ncAreaAvatar">👤</span>')+'<div><strong>'+ncAreaEscape(m.name)+'</strong><small>'+ncAreaEscape(m.role)+'</small></div></article>';});inner+='</div></section>';});
  if(inner)html+='<section class="ncAreaRegion"><h4>'+ncAreaEscape(r.title)+'</h4>'+inner+'</section>';
  });status.textContent='देखिएका '+shown+' / '+total+' सदस्य';target.innerHTML=html||'<p>खोजीअनुसार कुनै सदस्य भेटिएन।</p>';
+}
+</script>
+
+<script id="ncExpandablePopupScript">
+/* Only a presentation toggle. No data, filters, API calls or existing close logic changed. */
+function ncToggleExpandedPopup(popupId, button){
+  const popup=document.getElementById(popupId);
+  if(!popup || !button || !['ncCentralPopup','ncAreaOverlay'].includes(popupId)) return;
+  const expanded=popup.classList.toggle('ncExpandedPopup');
+  button.textContent=expanded?'▣ सानो बनाउनुहोस्':'⛶ फुल स्क्रिन';
+  button.setAttribute('aria-pressed',String(expanded));
+  button.setAttribute('aria-label',expanded?'सामान्य आकारमा फर्काउनुहोस्':'फुल स्क्रिनमा हेर्नुहोस्');
 }
 </script>
 </body>
