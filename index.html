@@ -3613,7 +3613,7 @@ function ncAreaLoad(){
  if(ncAreaLoading)return;
  const status=document.getElementById('ncAreaStatus');
  if(!/^https:\/\/script\.google\.com\/macros\/s\//.test(NC_AREA_FEED_URL)){status.textContent='स्रोत फिडको Web App URL सेट गर्न बाँकी छ। NC_Area_Source_Feed.gs Deploy गरी URL राख्नुहोस्।';return;}
- ncAreaLoading=true;status.textContent='नेपाली कांग्रेसको आधिकारिक वेबसाइटबाट विवरण लोड हुँदैछ...';
+ ncAreaLoading=true;status.textContent='नेपाली कांग्रेसको आधिकारिक विवरण लोड हुँदैछ...';
  const callback='ncAreaCallback_'+Date.now();const tag=document.createElement('script');let done=false;
  const timer=setTimeout(()=>finish(null,'समयभित्र स्रोतबाट प्रतिक्रिया आएन। फेरि प्रयास गर्नुहोस्।'),25000);
  function finish(data,error){if(done)return;done=true;clearTimeout(timer);delete window[callback];tag.remove();ncAreaLoading=false;
@@ -3633,7 +3633,7 @@ function ncAreaRender(){const target=document.getElementById('ncAreaResults'),st
   const filtered=members.filter(m=>!q||[m.name,m.role,g.title,r.title].join(' ').toLocaleLowerCase().includes(q));if(!filtered.length)return;shown+=filtered.length;
   inner+='<section class="ncAreaGroup"><h5>'+ncAreaEscape(g.title)+' ('+filtered.length+')</h5><div class="ncAreaCards">';
   filtered.forEach(m=>{const photo=/^https:\/\/nepalicongress\.org\//.test(m.photo||'')?m.photo:'';inner+='<article class="ncAreaCard">'+(photo?'<img loading="lazy" referrerpolicy="no-referrer" src="'+ncAreaEscape(photo)+'" alt="">':'<span class="ncAreaAvatar">👤</span>')+'<div><strong>'+ncAreaEscape(m.name)+'</strong><small>'+ncAreaEscape(m.role)+'</small></div></article>';});inner+='</div></section>';});
- if(inner)html+='<section class="ncAreaRegion"><h4>'+ncAreaEscape(r.title)+'</h4>'+inner+'<p class="ncAreaSource">स्रोत: <a href="'+r.url+'" target="_blank" rel="noopener noreferrer">नेपाली कांग्रेस आधिकारिक वेबसाइट ↗</a></p></section>';
+ if(inner)html+='<section class="ncAreaRegion"><h4>'+ncAreaEscape(r.title)+'</h4>'+inner+'</section>';
  });status.textContent='देखिएका '+shown+' / '+total+' सदस्य';target.innerHTML=html||'<p>खोजीअनुसार कुनै सदस्य भेटिएन।</p>';
 }
 </script>
