@@ -1507,6 +1507,16 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
 .ncAreaCards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.ncAreaCard{display:flex;align-items:center;gap:10px;border:1px solid #dce7f2;background:#fbfdff;border-radius:12px;padding:10px;min-width:0}
 .ncAreaCard img,.ncAreaAvatar{width:62px;height:62px;border-radius:50%;object-fit:cover;flex:none;background:#e7eff6;display:grid;place-items:center}.ncAreaCard strong{display:block;color:#133c65;overflow-wrap:anywhere}.ncAreaCard small{display:block;color:#b91c1c;margin-top:3px;overflow-wrap:anywhere}
 .ncAreaSource{font-size:12px;margin:6px 13px 12px}.ncAreaSource a{color:#075bb3}
+/* Area 3 popup: centered, accessible loading state (targeted update). */
+.ncAreaContent{position:relative;min-height:220px}
+.ncAreaLoading{display:none;min-height:270px;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;padding:35px 12px}
+.ncAreaLoading.on{display:flex}
+.ncAreaSpinner{width:58px;height:58px;border:5px solid #e2edf5;border-top-color:#078c48;border-right-color:#078c48;border-radius:50%;animation:ncAreaSpin .85s linear infinite}
+@keyframes ncAreaSpin{to{transform:rotate(360deg)}}
+.ncAreaLoadingMessage{color:#123b61;font-size:16px;font-weight:900;line-height:1.6}
+.ncAreaLoadingSub{color:#657b90;font-size:12px}
+.ncAreaStatus:empty{display:none}
+@media(prefers-reduced-motion:reduce){.ncAreaSpinner{animation:none;border-top-color:#078c48}}
 @media(max-width:760px){.ncAreaCards{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.ncAreaOverlay{padding:0;align-items:flex-end}.ncAreaPanel{width:100%;max-height:97dvh;border-radius:18px 18px 0 0}.ncAreaTools{grid-template-columns:1fr;padding:10px}.ncAreaContent{padding:10px}.ncAreaCards{grid-template-columns:1fr}.ncAreaHead h3{font-size:17px}.ncAreaCard img,.ncAreaAvatar{width:55px;height:55px}}
 </style>
 </head>
@@ -3592,8 +3602,8 @@ function ncCentralVisibility(){
 <div id="ncAreaOverlay" class="ncAreaOverlay" role="dialog" aria-modal="true" aria-labelledby="ncAreaTitle" aria-hidden="true" onclick="if(event.target===this)ncAreaClose()">
  <div class="ncAreaPanel">
   <div class="ncAreaHead"><div><h3 id="ncAreaTitle">🏛️ हाम्रो क्षेत्र नं. ३</h3><small>नेपाली कांग्रेस · काठमाडौं</small></div><button type="button" class="ncAreaClose" onclick="ncAreaClose()" aria-label="बन्द गर्नुहोस्">×</button></div>
-  <div class="ncAreaTools"><input id="ncAreaSearch" type="search" placeholder="नाम, पद वा समूह खोज्नुहोस्" oninput="ncAreaRender()" aria-label="सदस्य खोज्नुहोस्"><select id="ncAreaSelect" onchange="ncAreaRender()" aria-label="क्षेत्र वा समूह छान्नुहोस्"><option value="">सबै क्षेत्र र समूह</option></select></div>
-  <div class="ncAreaContent"><p id="ncAreaStatus" class="ncAreaStatus">आधिकारिक स्रोतबाट विवरण लोड हुँदैछ...</p><div id="ncAreaResults"></div></div>
+  <div class="ncAreaTools"><input id="ncAreaSearch" type="search" placeholder="नाम, पद वा समूह खोज्नुहोस्" oninput="ncAreaRender();ncAreaScrollTop()" aria-label="सदस्य खोज्नुहोस्"><select id="ncAreaSelect" onchange="ncAreaRender();ncAreaScrollTop()" aria-label="क्षेत्र वा समूह छान्नुहोस्"><option value="">सबै क्षेत्र र समूह</option></select></div>
+  <div class="ncAreaContent" id="ncAreaContent"><div id="ncAreaLoading" class="ncAreaLoading" role="status" aria-live="polite"><span class="ncAreaSpinner" aria-hidden="true"></span><div class="ncAreaLoadingMessage">नेपाली कांग्रेसको आधिकारिक विवरण लोड हुँदैछ...</div><div class="ncAreaLoadingSub">कृपया केही क्षण प्रतीक्षा गर्नुहोस्।</div></div><p id="ncAreaStatus" class="ncAreaStatus"></p><div id="ncAreaResults"></div></div>
  </div>
 </div>
 <script id="ncAreaScript">
@@ -3606,19 +3616,21 @@ const ncAreaRegions=[
 ];
 let ncAreaData=[],ncAreaLastLoaded=0,ncAreaLoading=false,ncAreaPreviousFocus=null;
 function ncAreaEscape(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function ncAreaOpen(){const p=document.getElementById('ncAreaOverlay');ncAreaPreviousFocus=document.activeElement;p.classList.add('on');p.setAttribute('aria-hidden','false');ncAreaRender();document.getElementById('ncAreaSearch').focus();if(!ncAreaData.length||Date.now()-ncAreaLastLoaded>600000)ncAreaLoad();}
+function ncAreaScrollTop(){const box=document.getElementById('ncAreaContent');if(box)box.scrollTop=0;}
+function ncAreaShowLoading(show){const loading=document.getElementById('ncAreaLoading');if(loading)loading.classList.toggle('on',!!show);const results=document.getElementById('ncAreaResults');if(results)results.style.display=show?'none':'';}
+function ncAreaOpen(){const p=document.getElementById('ncAreaOverlay');ncAreaPreviousFocus=document.activeElement;p.classList.add('on');p.setAttribute('aria-hidden','false');ncAreaScrollTop();ncAreaRender();document.getElementById('ncAreaSearch').focus();if(!ncAreaData.length||Date.now()-ncAreaLastLoaded>600000)ncAreaLoad();}
 function ncAreaClose(){const p=document.getElementById('ncAreaOverlay');p.classList.remove('on');p.setAttribute('aria-hidden','true');if(ncAreaPreviousFocus?.focus)ncAreaPreviousFocus.focus();}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('ncAreaOverlay')?.classList.contains('on'))ncAreaClose();});
 function ncAreaLoad(){
  if(ncAreaLoading)return;
  const status=document.getElementById('ncAreaStatus');
  if(!/^https:\/\/script\.google\.com\/macros\/s\//.test(NC_AREA_FEED_URL)){status.textContent='स्रोत फिडको Web App URL सेट गर्न बाँकी छ। NC_Area_Source_Feed.gs Deploy गरी URL राख्नुहोस्।';return;}
- ncAreaLoading=true;status.textContent='नेपाली कांग्रेसको आधिकारिक विवरण लोड हुँदैछ...';
+ ncAreaLoading=true;status.textContent='';ncAreaShowLoading(true);ncAreaScrollTop();
  const callback='ncAreaCallback_'+Date.now();const tag=document.createElement('script');let done=false;
  const timer=setTimeout(()=>finish(null,'समयभित्र स्रोतबाट प्रतिक्रिया आएन। फेरि प्रयास गर्नुहोस्।'),25000);
- function finish(data,error){if(done)return;done=true;clearTimeout(timer);delete window[callback];tag.remove();ncAreaLoading=false;
+ function finish(data,error){if(done)return;done=true;clearTimeout(timer);delete window[callback];tag.remove();ncAreaLoading=false;ncAreaShowLoading(false);
   if(error){status.textContent=error;return;}
-  ncAreaData=Array.isArray(data?.regions)?data.regions:[];ncAreaLastLoaded=Date.now();ncAreaFilters();ncAreaRender();
+  ncAreaData=Array.isArray(data?.regions)?data.regions:[];ncAreaLastLoaded=Date.now();ncAreaFilters();ncAreaRender();ncAreaScrollTop();
  }
  window[callback]=data=>finish(data,data?.error||'');tag.onerror=()=>finish(null,'स्रोत फिडमा पहुँच भएन। Deployment जाँच गर्नुहोस्।');
  tag.src=NC_AREA_FEED_URL+'?callback='+encodeURIComponent(callback)+'&t='+Date.now();document.head.appendChild(tag);
