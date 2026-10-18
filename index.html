@@ -1493,6 +1493,22 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
 @media(max-width:700px){.memberMeetingCards{grid-template-columns:repeat(2,1fr)}}
 @media print{.memberMeetingHistory{break-inside:avoid}.memberMeetingTable{font-size:10px}}
 </style>
+
+<style id="ncAreaStyles">
+.ncAreaOverlay{position:fixed;inset:0;z-index:9800;background:#071c36b8;display:none;align-items:center;justify-content:center;padding:15px}
+.ncAreaOverlay.on{display:flex}.ncAreaPanel{background:white;border-radius:18px;width:min(1100px,100%);max-height:94dvh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 70px #0005}
+.ncAreaHead{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #dce7f2;background:#f4f9ff;gap:12px}
+.ncAreaHead h3{margin:0;color:#0d315d;font-size:20px}.ncAreaHead small{color:#637b91}.ncAreaClose{border:0;background:#e8eef5;border-radius:50%;width:40px;height:40px;font-size:24px;flex:none}
+.ncAreaTools{padding:12px 16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,300px);gap:10px;border-bottom:1px solid #dce7f2}
+.ncAreaTools input,.ncAreaTools select{width:100%;min-width:0;border:1px solid #cad9e8;border-radius:10px;padding:11px 12px;background:#fff;color:#193754}
+.ncAreaContent{overflow:auto;padding:14px 16px;overscroll-behavior:contain}.ncAreaStatus{font-size:13px;color:#61768c;margin:0 0 12px}
+.ncAreaRegion{margin:0 0 22px;border:1px solid #d9e6f1;border-radius:14px;overflow:hidden}.ncAreaRegion>h4{margin:0;background:linear-gradient(100deg,#0b3b71,#0a8e68);color:#fff;padding:13px 15px;font-size:17px}
+.ncAreaGroup{padding:13px}.ncAreaGroup h5{margin:0 0 11px;color:#17436d;border-bottom:1px solid #dce7f2;padding-bottom:8px;font-size:15px}
+.ncAreaCards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.ncAreaCard{display:flex;align-items:center;gap:10px;border:1px solid #dce7f2;background:#fbfdff;border-radius:12px;padding:10px;min-width:0}
+.ncAreaCard img,.ncAreaAvatar{width:62px;height:62px;border-radius:50%;object-fit:cover;flex:none;background:#e7eff6;display:grid;place-items:center}.ncAreaCard strong{display:block;color:#133c65;overflow-wrap:anywhere}.ncAreaCard small{display:block;color:#b91c1c;margin-top:3px;overflow-wrap:anywhere}
+.ncAreaSource{font-size:12px;margin:6px 13px 12px}.ncAreaSource a{color:#075bb3}
+@media(max-width:760px){.ncAreaCards{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.ncAreaOverlay{padding:0;align-items:flex-end}.ncAreaPanel{width:100%;max-height:97dvh;border-radius:18px 18px 0 0}.ncAreaTools{grid-template-columns:1fr;padding:10px}.ncAreaContent{padding:10px}.ncAreaCards{grid-template-columns:1fr}.ncAreaHead h3{font-size:17px}.ncAreaCard img,.ncAreaAvatar{width:55px;height:55px}}
+</style>
 </head>
   <body>
 
@@ -1510,7 +1526,7 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
     <button type="button" onclick="wardMenuRun(function(){scrollToId('protocolSection');})"><span class="wardMenuIcon" style="background:#8c42b4">🏛</span><span>वडा कार्यसमिति</span><span class="wardMenuArrow">›</span></button>
     <button type="button" onclick="wardMenuRun(function(){window.location.href='bidhan.html';})"><span class="wardMenuIcon" style="background:#e08114">📖</span><span>पार्टीको विधान</span><span class="wardMenuArrow">›</span></button>
     <button type="button" onclick="wardMenuRun(function(){scrollToId('noticeSection');})"><span class="wardMenuIcon" style="background:#d82c42">📢</span><span>सूचना</span><span class="wardMenuArrow">›</span></button>
-    <button type="button" onclick="wardMenuRun(function(){loadGallery();})"><span class="wardMenuIcon" style="background:#078e9f">🖼</span><span>फोटो ग्यालरी</span><span class="wardMenuArrow">›</span></button>
+    <button type="button" onclick="wardMenuRun(function(){ncAreaOpen();})"><span class="wardMenuIcon" style="background:#078e9f">🏛</span><span>हाम्रो क्षेत्र नं. ३</span><span class="wardMenuArrow">›</span></button>
     <button type="button" onclick="wardMenuRun(function(){window.location.href='greetings.html';})"><span class="wardMenuIcon" style="background:#b35b1d">🎉</span><span>शुभकामना डिजाइन</span><span class="wardMenuArrow">›</span></button>
     <button type="button" onclick="wardMenuRun(function(){window.location.href='admin.html';})"><span class="wardMenuIcon" style="background:#485c76">⚙</span><span>प्रशासन</span><span class="wardMenuArrow">›</span></button>
   </div>
@@ -1562,7 +1578,7 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
         <button onclick="scrollToId('protocolSection')">🏛️ वडा कार्यसमिति</button>
         <button onclick="window.location.href='bidhan.html'">📖 पार्टीको विधान</button>
         <button onclick="scrollToId('noticeSection')">📢 सूचना</button>
-        <button onclick="loadGallery()">🖼️ फोटो ग्यालरी</button>
+        <button onclick="ncAreaOpen()">🏛️ हाम्रो क्षेत्र नं. ३</button>
         <button type="button" onclick="window.location.href='greetings.html'">🎉 शुभकामना डिजाइन</button>
         <span class="spacer">
         </span>
@@ -3571,6 +3587,55 @@ function ncCentralVisibility(){
   ncCentralLoad();
   ncCentralRefreshTimer=setInterval(function(){ncCentralAttempts=0;ncCentralLoad();},NC_CENTRAL_REFRESH_MS);
 })();
+</script>
+
+<div id="ncAreaOverlay" class="ncAreaOverlay" role="dialog" aria-modal="true" aria-labelledby="ncAreaTitle" aria-hidden="true" onclick="if(event.target===this)ncAreaClose()">
+ <div class="ncAreaPanel">
+  <div class="ncAreaHead"><div><h3 id="ncAreaTitle">🏛️ हाम्रो क्षेत्र नं. ३</h3><small>नेपाली कांग्रेस · काठमाडौं</small></div><button type="button" class="ncAreaClose" onclick="ncAreaClose()" aria-label="बन्द गर्नुहोस्">×</button></div>
+  <div class="ncAreaTools"><input id="ncAreaSearch" type="search" placeholder="नाम, पद वा समूह खोज्नुहोस्" oninput="ncAreaRender()" aria-label="सदस्य खोज्नुहोस्"><select id="ncAreaSelect" onchange="ncAreaRender()" aria-label="क्षेत्र वा समूह छान्नुहोस्"><option value="">सबै क्षेत्र र समूह</option></select></div>
+  <div class="ncAreaContent"><p id="ncAreaStatus" class="ncAreaStatus">आधिकारिक स्रोतबाट विवरण लोड हुँदैछ...</p><div id="ncAreaResults"></div></div>
+ </div>
+</div>
+<script id="ncAreaScript">
+/* Independent official-source popup. Deploy NC_Area_Source_Feed.gs separately. */
+const NC_AREA_FEED_URL = 'PASTE_YOUR_NEW_AREA_FEED_WEB_APP_URL_HERE';
+const ncAreaRegions=[
+ {id:'area',title:'प्रतिनिधिसभा क्षेत्र नं. ३',url:'https://nepalicongress.org/constituency/kathmandu-3/'},
+ {id:'a',title:'प्रदेशसभा क्षेत्र नं. ३ (क)',url:'https://nepalicongress.org/constituency/kathmandu-3a/'},
+ {id:'b',title:'प्रदेशसभा क्षेत्र नं. ३ (ख)',url:'https://nepalicongress.org/constituency/kathmandu-3b/'}
+];
+let ncAreaData=[],ncAreaLastLoaded=0,ncAreaLoading=false,ncAreaPreviousFocus=null;
+function ncAreaEscape(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function ncAreaOpen(){const p=document.getElementById('ncAreaOverlay');ncAreaPreviousFocus=document.activeElement;p.classList.add('on');p.setAttribute('aria-hidden','false');ncAreaRender();document.getElementById('ncAreaSearch').focus();if(!ncAreaData.length||Date.now()-ncAreaLastLoaded>600000)ncAreaLoad();}
+function ncAreaClose(){const p=document.getElementById('ncAreaOverlay');p.classList.remove('on');p.setAttribute('aria-hidden','true');if(ncAreaPreviousFocus?.focus)ncAreaPreviousFocus.focus();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('ncAreaOverlay')?.classList.contains('on'))ncAreaClose();});
+function ncAreaLoad(){
+ if(ncAreaLoading)return;
+ const status=document.getElementById('ncAreaStatus');
+ if(!/^https:\/\/script\.google\.com\/macros\/s\//.test(NC_AREA_FEED_URL)){status.textContent='स्रोत फिडको Web App URL सेट गर्न बाँकी छ। NC_Area_Source_Feed.gs Deploy गरी URL राख्नुहोस्।';return;}
+ ncAreaLoading=true;status.textContent='नेपाली कांग्रेसको आधिकारिक वेबसाइटबाट विवरण लोड हुँदैछ...';
+ const callback='ncAreaCallback_'+Date.now();const tag=document.createElement('script');let done=false;
+ const timer=setTimeout(()=>finish(null,'समयभित्र स्रोतबाट प्रतिक्रिया आएन। फेरि प्रयास गर्नुहोस्।'),25000);
+ function finish(data,error){if(done)return;done=true;clearTimeout(timer);delete window[callback];tag.remove();ncAreaLoading=false;
+  if(error){status.textContent=error;return;}
+  ncAreaData=Array.isArray(data?.regions)?data.regions:[];ncAreaLastLoaded=Date.now();ncAreaFilters();ncAreaRender();
+ }
+ window[callback]=data=>finish(data,data?.error||'');tag.onerror=()=>finish(null,'स्रोत फिडमा पहुँच भएन। Deployment जाँच गर्नुहोस्।');
+ tag.src=NC_AREA_FEED_URL+'?callback='+encodeURIComponent(callback)+'&t='+Date.now();document.head.appendChild(tag);
+}
+function ncAreaFilters(){const sel=document.getElementById('ncAreaSelect');const prior=sel.value;let html='<option value="">सबै क्षेत्र र समूह</option>';
+ ncAreaRegions.forEach(r=>{html+='<option value="region:'+r.id+'">'+ncAreaEscape(r.title)+' (सबै)</option>';const data=ncAreaData.find(x=>x.id===r.id);(data?.groups||[]).forEach(g=>{html+='<option value="group:'+r.id+'|'+ncAreaEscape(g.title)+'">　'+ncAreaEscape(g.title)+'</option>';});});sel.innerHTML=html;sel.value=Array.from(sel.options).some(o=>o.value===prior)?prior:'';}
+function ncAreaRender(){const target=document.getElementById('ncAreaResults'),status=document.getElementById('ncAreaStatus'),q=document.getElementById('ncAreaSearch').value.trim().toLocaleLowerCase(),choice=document.getElementById('ncAreaSelect').value;
+ if(!ncAreaData.length){target.innerHTML='';return;}let total=0,shown=0,html='';
+ ncAreaRegions.forEach(r=>{const region=ncAreaData.find(x=>x.id===r.id);if(!region)return;let inner='';(region.groups||[]).forEach(g=>{const members=Array.isArray(g.members)?g.members:[];total+=members.length;
+  if(choice.startsWith('region:')&&choice.slice(7)!==r.id)return;
+  if(choice.startsWith('group:')&&choice.slice(6)!==r.id+'|'+g.title)return;
+  const filtered=members.filter(m=>!q||[m.name,m.role,g.title,r.title].join(' ').toLocaleLowerCase().includes(q));if(!filtered.length)return;shown+=filtered.length;
+  inner+='<section class="ncAreaGroup"><h5>'+ncAreaEscape(g.title)+' ('+filtered.length+')</h5><div class="ncAreaCards">';
+  filtered.forEach(m=>{const photo=/^https:\/\/nepalicongress\.org\//.test(m.photo||'')?m.photo:'';inner+='<article class="ncAreaCard">'+(photo?'<img loading="lazy" referrerpolicy="no-referrer" src="'+ncAreaEscape(photo)+'" alt="">':'<span class="ncAreaAvatar">👤</span>')+'<div><strong>'+ncAreaEscape(m.name)+'</strong><small>'+ncAreaEscape(m.role)+'</small></div></article>';});inner+='</div></section>';});
+ if(inner)html+='<section class="ncAreaRegion"><h4>'+ncAreaEscape(r.title)+'</h4>'+inner+'<p class="ncAreaSource">स्रोत: <a href="'+r.url+'" target="_blank" rel="noopener noreferrer">नेपाली कांग्रेस आधिकारिक वेबसाइट ↗</a></p></section>';
+ });status.textContent='देखिएका '+shown+' / '+total+' सदस्य';target.innerHTML=html||'<p>खोजीअनुसार कुनै सदस्य भेटिएन।</p>';
+}
 </script>
 </body>
   </html>
