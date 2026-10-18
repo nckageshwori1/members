@@ -1379,6 +1379,8 @@ main {
 .ncCentralPopupTools{padding:12px 18px;border-bottom:1px solid #e5edf5;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .ncCentralPopupSearch{flex:1;min-width:180px;padding:11px 13px;border:1px solid #cbd8e6;border-radius:10px}
 .ncCentralPopupStatus{font-size:13px;color:#5b7087;font-weight:700}
+.ncCentralPopupFilter{min-width:210px;max-width:100%;padding:11px 13px;border:1px solid #cbd8e6;border-radius:10px;background:#fff;color:#16324b;font:inherit}
+@media(max-width:600px){.ncCentralPopupFilter{width:100%;min-width:0}.ncCentralPopupSearch{width:100%}}
 .ncCentralPopupBody{overflow:auto;padding:16px 18px;overscroll-behavior:contain}
 .ncCentralGroup{margin-bottom:20px}
 .ncCentralGroup h4{margin:0 0 10px;color:#0d315d;border-bottom:2px solid #e3edf6;padding-bottom:8px}
@@ -3291,6 +3293,9 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
     </div>
     <div class="ncCentralPopupTools">
       <input id="ncCentralPopupSearch" class="ncCentralPopupSearch" type="search" placeholder="सदस्यको नाम, पद वा समूह खोज्नुहोस्" oninput="ncCentralRenderPopup()">
+      <select id="ncCentralPopupFilter" class="ncCentralPopupFilter" aria-label="पद वा समूह छान्नुहोस्" onchange="ncCentralRenderPopup()">
+        <option value="">सबै पद / समूह</option>
+      </select>
       <span id="ncCentralPopupStatus" class="ncCentralPopupStatus"></span>
     </div>
     <div id="ncCentralPopupBody" class="ncCentralPopupBody"></div>
@@ -3364,14 +3369,49 @@ function ncCentralClosePopup(){
   popup.setAttribute('aria-hidden','true');
   if(ncCentralPopupPreviousFocus&&ncCentralPopupPreviousFocus.focus)ncCentralPopupPreviousFocus.focus();
 }
+/* Filter choices are generated from actual feed data; no member names are hardcoded. */
+function ncCentralFilterKey(person){
+  const group=ncCentralGroupText(person);
+  const role=ncCentralRoleText(person);
+  if(group && group!=='पदाधिकारी'){
+    // Some feed records contain the subgroup (e.g. महिला/खुला) in role.
+    return group + ((role && role!==group && !/^(केन्द्रीय सदस्य|केन्द्रिय सदस्य)$/.test(role)) ? ' — '+role : '');
+  }
+  return role || group || 'अन्य';
+}
+function ncCentralUpdateFilters(){
+  const select=document.getElementById('ncCentralPopupFilter');
+  if(!select)return;
+  const previous=select.value;
+  const groups=new Set();
+  const exact=new Set();
+  ncCentralAllPeople.forEach(function(person){
+    const group=ncCentralGroupText(person);
+    const role=ncCentralRoleText(person);
+    if(group && group!=='पदाधिकारी')groups.add(group);
+    if(group && group!=='पदाधिकारी' && role && role!==group && !/^(केन्द्रीय सदस्य|केन्द्रिय सदस्य)$/.test(role)){
+      exact.add(ncCentralFilterKey(person));
+    }else if(!group || group==='पदाधिकारी'){
+      exact.add(role || 'पदाधिकारी');
+    }
+  });
+  const options=[{value:'',label:'सबै पद / समूह'}];
+  groups.forEach(function(group){options.push({value:'group:'+group,label:group+' (सबै)'});});
+  exact.forEach(function(key){options.push({value:'exact:'+key,label:key});});
+  select.innerHTML=options.map(function(item){return '<option value="'+ncCentralEscape(item.value)+'">'+ncCentralEscape(item.label)+'</option>';}).join('');
+  if(options.some(function(item){return item.value===previous;}))select.value=previous;
+}
 function ncCentralRenderPopup(){
   const body=document.getElementById('ncCentralPopupBody');
   const status=document.getElementById('ncCentralPopupStatus');
   const input=document.getElementById('ncCentralPopupSearch');
+  const selected=document.getElementById('ncCentralPopupFilter')?.value || '';
   if(!body||!status)return;
   const query=String(input&&input.value||'').trim().toLocaleLowerCase();
   const list=ncCentralAllPeople.filter(function(person){
-    return !query || [person.name,ncCentralRoleText(person),ncCentralGroupText(person)].join(' ').toLocaleLowerCase().includes(query);
+    const group=ncCentralGroupText(person);
+    const filterMatch=!selected || (selected.startsWith('group:') ? group===selected.slice(6) : ncCentralFilterKey(person)===selected.slice(6));
+    return filterMatch && (!query || [person.name,ncCentralRoleText(person),group].join(' ').toLocaleLowerCase().includes(query));
   });
   status.textContent=list.length+' / '+ncCentralAllPeople.length+' जना';
   if(!ncCentralAllPeople.length){body.innerHTML='<p class="ncCentralError">पूर्ण कार्यसमितिको विवरण अहिले लोड भएको छैन। केही बेरपछि पुनः प्रयास गर्नुहोस्।</p>';return;}
@@ -3459,6 +3499,7 @@ function ncCentralFeedCallback(data){
       ncCentralAttempts=0;
       const current=ncCentralPeople[ncCentralIndex];
       ncCentralAllPeople=incoming;
+      ncCentralUpdateFilters();
       ncCentralPeople=incoming.filter(ncCentralIsOfficer).sort(function(a,b){return ncCentralRoleRank(a)-ncCentralRoleRank(b);});
       ncCentralRenderPopup();
       const previousIndex=current?ncCentralPeople.findIndex(function(p){return p.name===current.name;}):-1;
