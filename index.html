@@ -3682,8 +3682,13 @@ function ncAreaLoad(){
  tag.src=NC_AREA_FEED_URL+'?callback='+encodeURIComponent(callback)+'&t='+Date.now();document.head.appendChild(tag);
 }
 function ncAreaFilters(){const sel=document.getElementById('ncAreaSelect');const prior=sel.value;let html='<option value="">सबै क्षेत्र र समूह</option>';
- ncAreaRegions.forEach(r=>{html+='<option value="region:'+r.id+'">'+ncAreaEscape(r.title)+' (सबै)</option>';const data=ncAreaData.find(x=>x.id===r.id);(data?.groups||[]).forEach(g=>{html+='<option value="group:'+r.id+'|'+ncAreaEscape(g.title)+'">　'+ncAreaEscape(g.title)+'</option>';});});sel.innerHTML=html;sel.value=Array.from(sel.options).some(o=>o.value===prior)?prior:'';}
+ ncAreaRegions.forEach(r=>{html+='<option value="region:'+r.id+'">'+ncAreaEscape(r.title)+' (सबै)</option>';const data=ncAreaData.find(x=>x.id===r.id);(data?.groups||[]).forEach(g=>{html+='<option value="group:'+r.id+'|'+ncAreaEscape(g.title)+'">　'+ncAreaEscape(g.title)+'</option>';});});html+='<option value="regional-delegates">क्षेत्रीय प्रतिनिधि (सबै)</option>';sel.innerHTML=html;sel.value=Array.from(sel.options).some(o=>o.value===prior)?prior:'';}
 function ncAreaRender(){const target=document.getElementById('ncAreaResults'),status=document.getElementById('ncAreaStatus'),q=document.getElementById('ncAreaSearch').value.trim().toLocaleLowerCase(),choice=document.getElementById('ncAreaSelect').value;
+ if(choice==='regional-delegates'){
+  status.textContent='क्षेत्रीय प्रतिनिधि — वडा अनुसार नामावली';
+  target.innerHTML='<section class="ncAreaRegion"><h4>क्षेत्रीय प्रतिनिधि</h4><div id="regionalPublicBlock" class="regionalPublicBlock"><h5>🏛️ क्षेत्रीय प्रतिनिधि</h5><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="regionalPublicSelect" onchange="regionalPublicDraw()"><option>लोड हुँदैछ...</option></select><input id="regionalPublicSearch" type="search" placeholder="नाम खोज्नुहोस्" oninput="regionalPublicDraw()"></div><div id="regionalPublicList" class="regionalPublicNames">नामावली लोड हुँदैछ...</div></div></section>';
+  regionalPublicPopulate();return;
+ }
  if(!ncAreaData.length){target.innerHTML='';return;}let total=0,shown=0,html='';
  ncAreaRegions.forEach(r=>{const region=ncAreaData.find(x=>x.id===r.id);if(!region)return;let inner='';(region.groups||[]).forEach(g=>{const members=Array.isArray(g.members)?g.members:[];total+=members.length;
   if(choice.startsWith('region:')&&choice.slice(7)!==r.id)return;
@@ -3734,9 +3739,19 @@ function regionalPublicDraw(){
  const names=(sheet?.names||[]).filter(n=>n.toLowerCase().includes(q));
  list.innerHTML=names.length?names.map((n,i)=>'<div>'+(i+1)+'. '+regionalPublicEsc(n)+'</div>').join(''):'<p>नामावली भेटिएन।</p>';
 }
+async function regionalPublicPopulate(){
+ try{
+  const d=await regionalPublicLoad();
+  const sel=document.getElementById('regionalPublicSelect');if(!sel)return;
+  const prior=sel.value;
+  sel.innerHTML=d.sheets.map(s=>'<option value="'+regionalPublicEsc(s.sheet)+'">'+regionalPublicEsc(s.sheet)+'</option>').join('');
+  if(d.sheets.some(s=>s.sheet===prior))sel.value=prior;
+  regionalPublicDraw();
+ }catch(e){const el=document.getElementById('regionalPublicList');if(el)el.textContent='नामावली लोड भएन: '+e.message;}
+}
 async function regionalPublicMount(){
  const root=document.getElementById('ncAreaResults');if(!root||!document.getElementById('ncAreaOverlay')?.classList.contains('on'))return;
- const first=root.querySelector('.ncAreaRegion');if(!first)return;
+ const first=root.querySelector('.ncAreaRegion');if(!first||document.getElementById('ncAreaSelect')?.value==='regional-delegates')return;
  const groups=Array.from(first.querySelectorAll('.ncAreaGroup'));
  const delegate=groups.find(g=>/महाधिवेशन प्रतिनिधि/.test(g.querySelector('h5')?.textContent||''));
  const target=delegate||groups[groups.length-1]||first;
