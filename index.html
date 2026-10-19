@@ -3645,7 +3645,7 @@ function ncCentralVisibility(){
 
 <div id="ncAreaOverlay" class="ncAreaOverlay" role="dialog" aria-modal="true" aria-labelledby="ncAreaTitle" aria-hidden="true" >
  <div class="ncAreaPanel">
-  <div class="ncAreaHead"><div><h3 id="ncAreaTitle">🏛️ हाम्रो क्षेत्र नं. ३</h3><small>नेपाली कांग्रेस · काठमाडौं</small></div><div class="ncExpandActions"><button type="button" class="ncExpandToggle" onclick="ncToggleExpandedPopup('ncAreaOverlay',this)" aria-pressed="false" aria-label="फुल स्क्रिनमा हेर्नुहोस्">⛶ फुल स्क्रिन</button><button type="button" class="ncAreaClose" onclick="ncAreaClose()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button></div></div>
+  <div class="ncAreaHead"><div><h3 id="ncAreaTitle">🏛️ हाम्रो क्षेत्र नं. ३</h3><small>नेपाली कांग्रेस · काठमाडौं</small></div><div class="ncExpandActions"><button type="button" id="ncRegionalQuickLink" class="ncRegionalQuickLink" onclick="ncRegionalShowOnly()">क्षेत्रीय प्रतिनिधिहरूको सूची हेर्न यहाँ क्लिक गर्नुहोस् →</button><button type="button" class="ncExpandToggle" onclick="ncToggleExpandedPopup('ncAreaOverlay',this)" aria-pressed="false" aria-label="फुल स्क्रिनमा हेर्नुहोस्">⛶ फुल स्क्रिन</button><button type="button" class="ncAreaClose" onclick="ncAreaClose()" aria-label="बन्द गर्नुहोस्">बन्द (✕)</button></div></div>
   <div class="ncAreaTools"><input id="ncAreaSearch" type="search" placeholder="नाम, पद वा समूह खोज्नुहोस्" oninput="ncAreaRender();ncAreaScrollTop()" aria-label="सदस्य खोज्नुहोस्"><select id="ncAreaSelect" onchange="ncAreaRender();ncAreaScrollTop()" aria-label="क्षेत्र वा समूह छान्नुहोस्"><option value="">सबै क्षेत्र र समूह</option></select></div>
   <div class="ncAreaContent" id="ncAreaContent"><div id="ncAreaLoading" class="ncAreaLoading" role="status" aria-live="polite"><span class="ncAreaSpinner" aria-hidden="true"></span><div class="ncAreaLoadingMessage">नेपाली कांग्रेसको आधिकारिक विवरण लोड हुँदैछ...</div><div class="ncAreaLoadingSub">कृपया केही क्षण प्रतीक्षा गर्नुहोस्।</div></div><p id="ncAreaStatus" class="ncAreaStatus"></p><div id="ncAreaResults"></div></div>
  </div>
@@ -3663,6 +3663,8 @@ const ncAreaRegions=[
 let ncAreaData=[],ncAreaLastLoaded=0,ncAreaLoading=false,ncAreaPreviousFocus=null;
 function ncAreaEscape(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function ncAreaScrollTop(){const box=document.getElementById('ncAreaContent');if(box)box.scrollTop=0;}
+function ncRegionalShowOnly(){const sel=document.getElementById('ncAreaSelect');if(!sel)return;sel.value='regional-delegates';ncAreaRender();ncAreaScrollTop();}
+function ncRegionalBack(){const sel=document.getElementById('ncAreaSelect');if(!sel)return;sel.value='';document.getElementById('ncAreaSearch').value='';ncAreaRender();ncAreaScrollTop();}
 function ncAreaShowLoading(show){const loading=document.getElementById('ncAreaLoading');if(loading)loading.classList.toggle('on',!!show);const results=document.getElementById('ncAreaResults');if(results)results.style.display=show?'none':'';}
 function ncAreaOpen(){const p=document.getElementById('ncAreaOverlay');ncAreaPreviousFocus=document.activeElement;p.classList.add('on');p.setAttribute('aria-hidden','false');ncAreaScrollTop();ncAreaRender();document.getElementById('ncAreaSearch').focus();if(!ncAreaData.length||Date.now()-ncAreaLastLoaded>600000)ncAreaLoad();}
 function ncAreaClose(){const p=document.getElementById('ncAreaOverlay');p.classList.remove('on');p.setAttribute('aria-hidden','true');if(ncAreaPreviousFocus?.focus)ncAreaPreviousFocus.focus();}
@@ -3686,7 +3688,7 @@ function ncAreaFilters(){const sel=document.getElementById('ncAreaSelect');const
 function ncAreaRender(){const target=document.getElementById('ncAreaResults'),status=document.getElementById('ncAreaStatus'),q=document.getElementById('ncAreaSearch').value.trim().toLocaleLowerCase(),choice=document.getElementById('ncAreaSelect').value;
  if(choice==='regional-delegates'){
   status.textContent='क्षेत्रीय प्रतिनिधि — वडा अनुसार नामावली';
-  target.innerHTML='<section class="ncAreaRegion"><h4>क्षेत्रीय प्रतिनिधि</h4><div id="regionalPublicBlock" class="regionalPublicBlock"><h5>🏛️ क्षेत्रीय प्रतिनिधि</h5><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="regionalPublicSelect" onchange="regionalPublicDraw()"><option>लोड हुँदैछ...</option></select><input id="regionalPublicSearch" type="search" placeholder="नाम खोज्नुहोस्" oninput="regionalPublicDraw()"></div><div id="regionalPublicList" class="regionalPublicNames">नामावली लोड हुँदैछ...</div></div></section>';
+  target.innerHTML='<section class="ncAreaRegion"><div class="ncRegionalViewHead"><h4>क्षेत्रीय प्रतिनिधि</h4><button type="button" onclick="ncRegionalBack()">← सबै समूहमा फर्कनुहोस्</button></div><div id="regionalPublicBlock" class="regionalPublicBlock"><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="regionalPublicSelect" onchange="regionalPublicDraw()"><option>लोड हुँदैछ...</option></select><input id="regionalPublicSearch" type="search" placeholder="नाम खोज्नुहोस्" oninput="regionalPublicDraw()"></div><div id="regionalPublicList" class="regionalPublicNames">नामावली लोड हुँदैछ...</div></div></section>';
   regionalPublicPopulate();return;
  }
  if(!ncAreaData.length){target.innerHTML='';return;}let total=0,shown=0,html='';
@@ -3712,6 +3714,13 @@ function ncToggleExpandedPopup(popupId, button){
   button.setAttribute('aria-label',expanded?'सामान्य आकारमा फर्काउनुहोस्':'फुल स्क्रिनमा हेर्नुहोस्');
 }
 </script>
+<style id="ncRegionalViewStyle">
+.ncRegionalQuickLink{border:1px solid #b9d5f4;background:#e8f3ff;color:#124c83;border-radius:9px;padding:9px 12px;font-weight:700;cursor:pointer;font-size:12px;max-width:280px;line-height:1.35;text-align:center}
+.ncRegionalQuickLink:hover{background:#d6eaff}
+.ncRegionalViewHead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ncRegionalViewHead button{border:1px solid #c5d7eb;border-radius:8px;padding:8px 11px;background:white;color:#164d80;cursor:pointer}
+@media(max-width:760px){.ncAreaHead{flex-wrap:wrap}.ncAreaHead>.ncExpandActions{flex-wrap:wrap;justify-content:flex-end}.ncRegionalQuickLink{max-width:100%;order:2}}
+</style>
 <style id="regionalPublicStyle">
 .regionalPublicBlock{padding:14px;border-top:1px solid #dce7f2;background:#f9fcff}
 .regionalPublicBlock h5{margin:0 0 10px;color:#17436d;font-size:16px}
@@ -3735,7 +3744,7 @@ async function regionalPublicLoad(){
 function regionalPublicDraw(){
  const sel=document.getElementById('regionalPublicSelect'),list=document.getElementById('regionalPublicList');if(!sel||!list||!regionalPublicCache)return;
  const sheet=regionalPublicCache.sheets.find(s=>s.sheet===sel.value);
- const q=(document.getElementById('regionalPublicSearch')?.value||'').trim().toLowerCase();
+ const q=[document.getElementById('ncAreaSearch')?.value||'',document.getElementById('regionalPublicSearch')?.value||''].join(' ').trim().toLowerCase();
  const names=(sheet?.names||[]).filter(n=>n.toLowerCase().includes(q));
  list.innerHTML=names.length?names.map((n,i)=>'<div>'+(i+1)+'. '+regionalPublicEsc(n)+'</div>').join(''):'<p>नामावली भेटिएन।</p>';
 }
@@ -3749,34 +3758,6 @@ async function regionalPublicPopulate(){
   regionalPublicDraw();
  }catch(e){const el=document.getElementById('regionalPublicList');if(el)el.textContent='नामावली लोड भएन: '+e.message;}
 }
-async function regionalPublicMount(){
- const root=document.getElementById('ncAreaResults');if(!root||!document.getElementById('ncAreaOverlay')?.classList.contains('on'))return;
- const first=root.querySelector('.ncAreaRegion');if(!first||document.getElementById('ncAreaSelect')?.value==='regional-delegates')return;
- const groups=Array.from(first.querySelectorAll('.ncAreaGroup'));
- const delegate=groups.find(g=>/महाधिवेशन प्रतिनिधि/.test(g.querySelector('h5')?.textContent||''));
- const target=delegate||groups[groups.length-1]||first;
- if(!first.querySelector('#regionalPublicBlock')){
-  const box=document.createElement('div');box.id='regionalPublicBlock';box.className='regionalPublicBlock';
-  box.innerHTML='<h5>🏛️ क्षेत्रीय प्रतिनिधि</h5><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="regionalPublicSelect" onchange="regionalPublicDraw()"><option>लोड हुँदैछ...</option></select><input id="regionalPublicSearch" type="search" placeholder="नाम खोज्नुहोस्" oninput="regionalPublicDraw()"></div><div id="regionalPublicList" class="regionalPublicNames">नामावली लोड हुँदैछ...</div>';
-  target.insertAdjacentElement('afterend',box);
- }
- try{
-  const d=await regionalPublicLoad();
-  const sel=document.getElementById('regionalPublicSelect');if(!sel)return;
-  const prior=sel.value;
-  sel.innerHTML=d.sheets.map(s=>'<option value="'+regionalPublicEsc(s.sheet)+'">'+regionalPublicEsc(s.sheet)+'</option>').join('');
-  if(d.sheets.some(s=>s.sheet===prior))sel.value=prior;
-  regionalPublicDraw();
- }catch(e){const el=document.getElementById('regionalPublicList');if(el)el.textContent='नामावली लोड भएन: '+e.message;}
-}
-(function(){
- const root=document.getElementById('ncAreaResults');if(!root)return;
- let queued=false;
- new MutationObserver(()=>{
-  if(queued)return;queued=true;
-  Promise.resolve().then(()=>{queued=false;if(root.querySelector('.ncAreaRegion')&&!root.querySelector('#regionalPublicBlock'))regionalPublicMount();});
- }).observe(root,{childList:true,subtree:false});
-})();
 </script>
 </body>
   </html>
