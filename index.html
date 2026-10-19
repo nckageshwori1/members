@@ -2482,62 +2482,7 @@ function buildMemberDocumentHtml(pdfPhotoDataUrl) {
 
 
 
-<style id="regionalPublicStyle">
-.regionalPublicBlock{padding:14px;border-top:1px solid #dce7f2;background:#f9fcff}
-.regionalPublicBlock h5{margin:0 0 10px;color:#17436d;font-size:16px}
-.regionalPublicBlock select,.regionalPublicBlock input{padding:10px;border:1px solid #c9d8e8;border-radius:9px;max-width:100%;background:white}
-.regionalPublicNames{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px;margin-top:12px}
-.regionalPublicNames div{background:#fff;border:1px solid #e0e9f3;border-radius:8px;padding:9px;color:#153d62}
-</style>
-<script id="regionalPublicAddon">
-/* Additive read-only public listing. Existing official area feed is untouched. */
-let regionalPublicCache=null,regionalPublicPromise=null;
-const regionalPublicEsc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function regionalPublicLoad(){
- if(regionalPublicCache)return regionalPublicCache;
- if(!regionalPublicPromise)regionalPublicPromise=(async()=>{
-  const r=await fetch('https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec',{
-   method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'regionalPublic'})});
-  const d=await r.json();if(!d.ok)throw Error(d.message||'नामावली उपलब्ध छैन');regionalPublicCache=d;return d;
- })().finally(()=>regionalPublicPromise=null);
- return regionalPublicPromise;
-}
-function regionalPublicDraw(){
- const sel=document.getElementById('regionalPublicSelect'),list=document.getElementById('regionalPublicList');if(!sel||!list||!regionalPublicCache)return;
- const sheet=regionalPublicCache.sheets.find(s=>s.sheet===sel.value);
- const q=(document.getElementById('regionalPublicSearch')?.value||'').trim().toLowerCase();
- const names=(sheet?.names||[]).filter(n=>n.toLowerCase().includes(q));
- list.innerHTML=names.length?names.map((n,i)=>'<div>'+(i+1)+'. '+regionalPublicEsc(n)+'</div>').join(''):'<p>नामावली भेटिएन।</p>';
-}
-async function regionalPublicMount(){
- const root=document.getElementById('ncAreaResults');if(!root||!document.getElementById('ncAreaOverlay')?.classList.contains('on'))return;
- const first=root.querySelector('.ncAreaRegion');if(!first)return;
- const groups=Array.from(first.querySelectorAll('.ncAreaGroup'));
- const delegate=groups.find(g=>/महाधिवेशन प्रतिनिधि/.test(g.querySelector('h5')?.textContent||''));
- const target=delegate||groups[groups.length-1]||first;
- if(!first.querySelector('#regionalPublicBlock')){
-  const box=document.createElement('div');box.id='regionalPublicBlock';box.className='regionalPublicBlock';
-  box.innerHTML='<h5>🏛️ क्षेत्रीय प्रतिनिधि</h5><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="regionalPublicSelect" onchange="regionalPublicDraw()"><option>लोड हुँदैछ...</option></select><input id="regionalPublicSearch" type="search" placeholder="नाम खोज्नुहोस्" oninput="regionalPublicDraw()"></div><div id="regionalPublicList" class="regionalPublicNames">नामावली लोड हुँदैछ...</div>';
-  target.insertAdjacentElement('afterend',box);
- }
- try{
-  const d=await regionalPublicLoad();
-  const sel=document.getElementById('regionalPublicSelect');if(!sel)return;
-  const prior=sel.value;
-  sel.innerHTML=d.sheets.map(s=>'<option value="'+regionalPublicEsc(s.sheet)+'">'+regionalPublicEsc(s.sheet)+'</option>').join('');
-  if(d.sheets.some(s=>s.sheet===prior))sel.value=prior;
-  regionalPublicDraw();
- }catch(e){const el=document.getElementById('regionalPublicList');if(el)el.textContent='नामावली लोड भएन: '+e.message;}
-}
-(function(){
- const root=document.getElementById('ncAreaResults');if(!root)return;
- let queued=false;
- new MutationObserver(()=>{
-  if(queued)return;queued=true;
-  Promise.resolve().then(()=>{queued=false;if(root.querySelector('.ncAreaRegion')&&!root.querySelector('#regionalPublicBlock'))regionalPublicMount();});
- }).observe(root,{childList:true,subtree:false});
-})();
-</script>
+
 </body>
 </html>`;
 }
@@ -3761,6 +3706,62 @@ function ncToggleExpandedPopup(popupId, button){
   button.setAttribute('aria-pressed',String(expanded));
   button.setAttribute('aria-label',expanded?'सामान्य आकारमा फर्काउनुहोस्':'फुल स्क्रिनमा हेर्नुहोस्');
 }
+</script>
+<style id="regionalPublicStyle">
+.regionalPublicBlock{padding:14px;border-top:1px solid #dce7f2;background:#f9fcff}
+.regionalPublicBlock h5{margin:0 0 10px;color:#17436d;font-size:16px}
+.regionalPublicBlock select,.regionalPublicBlock input{padding:10px;border:1px solid #c9d8e8;border-radius:9px;max-width:100%;background:white}
+.regionalPublicNames{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px;margin-top:12px}
+.regionalPublicNames div{background:#fff;border:1px solid #e0e9f3;border-radius:8px;padding:9px;color:#153d62}
+</style>
+<script id="regionalPublicAddon">
+/* Additive read-only public listing. Existing official area feed is untouched. */
+let regionalPublicCache=null,regionalPublicPromise=null;
+const regionalPublicEsc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function regionalPublicLoad(){
+ if(regionalPublicCache)return regionalPublicCache;
+ if(!regionalPublicPromise)regionalPublicPromise=(async()=>{
+  const r=await fetch('https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec',{
+   method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'regionalPublic'})});
+  const d=await r.json();if(!d.ok)throw Error(d.message||'नामावली उपलब्ध छैन');regionalPublicCache=d;return d;
+ })().finally(()=>regionalPublicPromise=null);
+ return regionalPublicPromise;
+}
+function regionalPublicDraw(){
+ const sel=document.getElementById('regionalPublicSelect'),list=document.getElementById('regionalPublicList');if(!sel||!list||!regionalPublicCache)return;
+ const sheet=regionalPublicCache.sheets.find(s=>s.sheet===sel.value);
+ const q=(document.getElementById('regionalPublicSearch')?.value||'').trim().toLowerCase();
+ const names=(sheet?.names||[]).filter(n=>n.toLowerCase().includes(q));
+ list.innerHTML=names.length?names.map((n,i)=>'<div>'+(i+1)+'. '+regionalPublicEsc(n)+'</div>').join(''):'<p>नामावली भेटिएन।</p>';
+}
+async function regionalPublicMount(){
+ const root=document.getElementById('ncAreaResults');if(!root||!document.getElementById('ncAreaOverlay')?.classList.contains('on'))return;
+ const first=root.querySelector('.ncAreaRegion');if(!first)return;
+ const groups=Array.from(first.querySelectorAll('.ncAreaGroup'));
+ const delegate=groups.find(g=>/महाधिवेशन प्रतिनिधि/.test(g.querySelector('h5')?.textContent||''));
+ const target=delegate||groups[groups.length-1]||first;
+ if(!first.querySelector('#regionalPublicBlock')){
+  const box=document.createElement('div');box.id='regionalPublicBlock';box.className='regionalPublicBlock';
+  box.innerHTML='<h5>🏛️ क्षेत्रीय प्रतिनिधि</h5><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="regionalPublicSelect" onchange="regionalPublicDraw()"><option>लोड हुँदैछ...</option></select><input id="regionalPublicSearch" type="search" placeholder="नाम खोज्नुहोस्" oninput="regionalPublicDraw()"></div><div id="regionalPublicList" class="regionalPublicNames">नामावली लोड हुँदैछ...</div>';
+  target.insertAdjacentElement('afterend',box);
+ }
+ try{
+  const d=await regionalPublicLoad();
+  const sel=document.getElementById('regionalPublicSelect');if(!sel)return;
+  const prior=sel.value;
+  sel.innerHTML=d.sheets.map(s=>'<option value="'+regionalPublicEsc(s.sheet)+'">'+regionalPublicEsc(s.sheet)+'</option>').join('');
+  if(d.sheets.some(s=>s.sheet===prior))sel.value=prior;
+  regionalPublicDraw();
+ }catch(e){const el=document.getElementById('regionalPublicList');if(el)el.textContent='नामावली लोड भएन: '+e.message;}
+}
+(function(){
+ const root=document.getElementById('ncAreaResults');if(!root)return;
+ let queued=false;
+ new MutationObserver(()=>{
+  if(queued)return;queued=true;
+  Promise.resolve().then(()=>{queued=false;if(root.querySelector('.ncAreaRegion')&&!root.querySelector('#regionalPublicBlock'))regionalPublicMount();});
+ }).observe(root,{childList:true,subtree:false});
+})();
 </script>
 </body>
   </html>
