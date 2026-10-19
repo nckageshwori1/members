@@ -557,6 +557,7 @@ main {
             <button class="btn tab" data-tab="member" onclick="showTab('member',this)">👤 सदस्य Profile</button>
             <button class="btn tab" data-tab="representative" onclick="showTab('representative',this)">🏛️ निर्वाचित प्रतिनिधि व्यवस्थापन</button>
             <button class="btn tab" data-tab="protocol" onclick="showTab('protocol',this)">🏛️ वडा कार्यसमिति / मनोनयन</button>
+            <button class="btn tab" data-tab="regional" onclick="showTab('regional',this)">🏛️ क्षेत्रीय प्रतिनिधि व्यवस्थापन</button>
             <button class="btn tab" data-tab="representation" onclick="showTab('representation',this)">🌐 यस वडाबाट प्रतिनिधित्व</button>
             <button class="btn tab" data-tab="notice" onclick="showTab('notice',this)">📢 सूचना</button>
             <button class="btn tab" data-tab="greeting" onclick="showTab('greeting',this)">🖼️ फोटो तथा शुभकामना</button>
@@ -564,6 +565,18 @@ main {
             <button class="btn tab" data-tab="gallery" onclick="showTab('gallery',this)">🖼️ Photo Gallery</button>
           </div>
           <div class="admin-main-panes">
+          <section id="pane-regional" class="card pane">
+<h3>🏛️ क्षेत्रीय प्रतिनिधि व्यवस्थापन</h3>
+<p>वडा / Google Sheet Tab अनुसार नाम, सम्पर्क नम्बर र स्थिति हेर्न, थप्न, सम्पादन र हटाउन सकिन्छ।</p>
+<div class="form-grid" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0">
+<label>वडा / Sheet <select id="regionalSheet" onchange="regionalLoad()"><option value="">Sheet छान्नुहोस्</option></select></label>
+<button class="btn secondary" onclick="regionalLoad()">↻ Reload</button>
+<button class="btn primary" onclick="regionalEdit(0)" type="button">+ नयाँ प्रतिनिधि</button>
+</div>
+<div id="regionalMessage" role="status"></div>
+<div id="regionalEditor" style="display:none;border:1px solid #ccd8e5;border-radius:12px;padding:14px;margin:12px 0"></div>
+<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse" id="regionalTable"></table></div>
+</section>
           <section id="pane-data" class="card pane on">
             <h3>सदस्य Data तथा Summary</h3>
             <div class="hint">Dashboard को कुनै संख्या क्लिक गर्दा सम्बन्धित सदस्यहरूको सूची देखिन्छ । सदस्यको row क्लिक गर्दा Edit Profile खुल्छ ।</div>
@@ -1009,6 +1022,7 @@ function showTab(n,b) {
   if(n==='gallery') loadGalleryInfo();
   if(n==='protocol') loadProtocol();
   if(n==='representation') loadRepresentation();
+  if(n==='regional') regionalInit();
   if(n==='representative') renderRepresentativeManagement();
   if(n==='data') renderAllData()
 }
@@ -2071,6 +2085,72 @@ async function saveGreetingSpeed() {
   }
 }
 
+</script>
+<script id="regionalAdminAddon">
+/* ADDITIVE module: only the new regional pane. */
+let regionalData=null;
+const regionalEsc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const regionalMsg=t=>document.getElementById('regionalMessage').textContent=t||'';
+async function regionalInit(){
+ try{
+  const d=await api('regionalAdminList',{token});
+  if(!d.ok)throw Error(d.message);
+  const sel=document.getElementById('regionalSheet'),old=sel.value;
+  sel.innerHTML='<option value="">Sheet छान्नुहोस्</option>'+d.tabs.map(s=>'<option value="'+regionalEsc(s)+'">'+regionalEsc(s)+'</option>').join('');
+  if(d.tabs.includes(old))sel.value=old;
+  if(sel.value)await regionalLoad();else regionalMsg('वडा / Sheet छान्नुहोस्।');
+ }catch(e){regionalMsg('त्रुटि: '+e.message);}
+}
+async function regionalLoad(){
+ const sheet=document.getElementById('regionalSheet').value;
+ document.getElementById('regionalEditor').style.display='none';
+ if(!sheet){regionalData=null;document.getElementById('regionalTable').innerHTML='';return;}
+ regionalMsg('डाटा लोड हुँदैछ...');
+ try{
+  const d=await api('regionalAdminList',{token,sheet});if(!d.ok)throw Error(d.message);
+  regionalData=d;
+  const headers=d.headers.map((h,i)=>h||('Column '+(i+1)));
+  const th='<tr>'+headers.map(h=>'<th style="text-align:left;padding:9px;border-bottom:1px solid #ddd">'+regionalEsc(h)+'</th>').join('')+'<th>कार्य</th></tr>';
+  const trs=d.rows.map(r=>'<tr>'+headers.map((h,i)=>'<td style="padding:9px;border-bottom:1px solid #eee">'+regionalEsc(r.values[i]||'')+'</td>').join('')+'<td style="white-space:nowrap"><button class="btn secondary" onclick="regionalEdit('+r.row+')">Edit</button> <button class="btn secondary" onclick="regionalRemove('+r.row+')">Delete</button></td></tr>').join('');
+  document.getElementById('regionalTable').innerHTML=th+trs;
+  regionalMsg(d.rows.length+' प्रतिनिधिको विवरण');
+ }catch(e){regionalMsg('त्रुटि: '+e.message);}
+}
+function regionalEdit(row){
+ const sheet=document.getElementById('regionalSheet').value;
+ if(!sheet||!regionalData){regionalMsg('पहिले वडा / Sheet छान्नुहोस्।');return;}
+ const old=regionalData.rows.find(r=>r.row===row);
+ const width=Math.max(regionalData.headers.length,4);
+ const fields=Array.from({length:width},(_,i)=>{
+  const label=regionalData.headers[i]||('Column '+(i+1));
+  const value=old?(old.values[i]||''):'';
+  return '<label style="display:block;margin:9px 0">'+regionalEsc(label)+'<input class="regionalField" data-col="'+i+'" style="width:100%;padding:9px" value="'+regionalEsc(value)+'"></label>';
+ }).join('');
+ const editor=document.getElementById('regionalEditor');
+ editor.innerHTML='<h4>'+(row?'प्रतिनिधिको विवरण सम्पादन':'नयाँ प्रतिनिधि थप्नुहोस्')+'</h4>'+fields+'<button class="btn primary" onclick="regionalSave('+row+')">सुरक्षित गर्नुहोस्</button> <button class="btn secondary" onclick="document.getElementById(\'regionalEditor\').style.display=\'none\'">रद्द</button>';
+ editor.style.display='block';editor.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+async function regionalSave(row){
+ const sheet=document.getElementById('regionalSheet').value;
+ const old=regionalData.rows.find(r=>r.row===row);
+ const values=Array.from(document.querySelectorAll('#regionalEditor .regionalField')).map(x=>x.value);
+ regionalMsg('सुरक्षित हुँदैछ...');
+ try{
+  const d=await api('regionalSave',{token,record:{sheet,row,values,expectedName:old?old.name:''}});
+  if(!d.ok)throw Error(d.message);
+  await regionalLoad();regionalMsg(d.message);
+ }catch(e){regionalMsg('त्रुटि: '+e.message);}
+}
+async function regionalRemove(row){
+ const sheet=document.getElementById('regionalSheet').value;
+ const old=regionalData.rows.find(r=>r.row===row);if(!old)return;
+ if(!confirm('«'+old.name+'» को विवरण स्थायी रूपमा हटाउने?'))return;
+ try{
+  const d=await api('regionalDelete',{token,sheet,row,expectedName:old.name});
+  if(!d.ok)throw Error(d.message);
+  await regionalLoad();regionalMsg(d.message);
+ }catch(e){regionalMsg('त्रुटि: '+e.message);}
+}
 </script>
 </body>
     </html>
