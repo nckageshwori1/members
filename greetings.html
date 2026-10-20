@@ -765,13 +765,6 @@
         .smart-text-actions .button { flex: 1; min-width: 115px; font-size: 12px; }
         .face-fit-message { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.5; }
         /* Additive universal text layer controls. */
-        .universal-layers{margin:10px 0;padding:10px;border:1px solid #c9e1d7;border-radius:10px;background:#f6fbf9}
-        .universal-layers strong{display:block;margin-bottom:8px}
-        .universal-layers .layer-buttons{display:flex;gap:6px;flex-wrap:wrap}
-        .universal-layers button{flex:1;min-width:90px;min-height:40px;border:1px solid #bbd4c9;border-radius:8px;background:#fff;color:#174d39;font-weight:700}
-        .universal-layers button[aria-pressed="true"]{background:#087d4b;color:white}
-        .universal-layers button:disabled{opacity:.45;cursor:not-allowed}
-        .universal-layers p{font-size:12px;color:#526c7d;margin:8px 0 0}
         /* Targeted update: unobtrusive operation feedback */
         #greetingActionToast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:99999; background:#12365b; color:#fff; padding:10px 17px; border-radius:11px; box-shadow:0 5px 22px #0003; font-size:14px; max-width:90vw; text-align:center; pointer-events:none; opacity:0; transition:opacity .18s; }
         #greetingActionToast.visible { opacity:1; }
@@ -938,21 +931,6 @@
                         <label for="organization">संस्था / कार्यालय (ऐच्छिक)</label>
                         <input id="organization" type="text" maxlength="120"
                                placeholder="संस्था वा कार्यालयको नाम">
-                    </div>
-
-                    <!-- Universal layer selector: works with any poster without fixed text placement. -->
-                    <div class="universal-layers" id="universalLayers">
-                        <strong>✥ टेक्स्ट खोज्नुहोस् र सार्नुहोस्</strong>
-                        <div class="layer-buttons">
-                            <button type="button" data-find-text="name" disabled>नाम देखाउनुहोस्</button>
-                            <button type="button" data-find-text="designation" disabled>पद देखाउनुहोस्</button>
-                            <button type="button" data-find-text="organization" disabled>संस्था देखाउनुहोस्</button>
-                        </div>
-                        <div class="layer-buttons" style="margin-top:7px">
-                            <button type="button" id="universalSmaller" disabled>− अक्षर सानो</button>
-                            <button type="button" id="universalLarger" disabled>+ अक्षर ठूलो</button>
-                        </div>
-                        <p>लेख्नेबित्तिकै टेक्स्ट चयन हुन्छ। नीलो कुनाले स्थान चिनाउँछ। माउस वा औँलाले सार्नुहोस्।</p>
                     </div>
                     <div class="editor-actions">
                         <button id="remove" class="button" type="button">फोटो हटाउनुहोस्</button>
@@ -1660,8 +1638,7 @@
                 $('name').value = '';
                 $('designation').value = '';
                 $('organization').value = '';
-                universalRefreshLayers();
-                setMessage('');
+                    setMessage('');
 
                 await loadAllEditorFonts();
 
@@ -2049,45 +2026,50 @@
             return null;
         }
 
+        /* Universal selected text outline, independent of template colors. */
+        function textSelectionRect(key) {
+            const bounds = textBounds(key);
+            if (!bounds) return null;
+            const padding = Math.max(13, canvas.width * 0.012);
+            return {
+                left: bounds.x - bounds.width / 2 - padding,
+                right: bounds.x + bounds.width / 2 + padding,
+                top: bounds.y - bounds.height / 2 - padding,
+                bottom: bounds.y + bounds.height / 2 + padding
+            };
+        }
+
+        function selectionHandleAt(point) {
+            if (!textObjects[selectedObject]) return null;
+            const rect = textSelectionRect(selectedObject);
+            if (!rect) return null;
+            const radius = Math.max(16, canvas.width * 0.019);
+            const handles = [
+                {x:rect.left,y:rect.top}, {x:rect.right,y:rect.top},
+                {x:rect.left,y:rect.bottom}, {x:rect.right,y:rect.bottom}
+            ];
+            return handles.find(h => Math.hypot(h.x-point.x,h.y-point.y) <= radius) || null;
+        }
+
         function paintSelection() {
-            if (selectedObject === 'photo') return;
-
-            const bounds = textBounds(selectedObject);
-            if (!bounds) return;
-
-            // Corner-only guides: never cover the real text, color or stroke.
-            // These guides are excluded from the exported PNG by drawEditor(false).
-            const padding = Math.max(15, canvas.width * 0.014);
-            const left = bounds.x - bounds.width / 2 - padding;
-            const right = bounds.x + bounds.width / 2 + padding;
-            const top = bounds.y - bounds.height / 2 - padding;
-            const bottom = bounds.y + bounds.height / 2 + padding;
-            const arm = Math.max(11, Math.min(24, canvas.width * 0.018));
-
+            if (!textObjects[selectedObject]) return;
+            const rect = textSelectionRect(selectedObject);
+            if (!rect) return;
+            const radius = Math.max(7, canvas.width * 0.008);
             ctx.save();
-            ctx.lineWidth = Math.max(2, canvas.width * 0.0025);
-            ctx.strokeStyle = '#00b9e8';
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
-            ctx.shadowBlur = Math.max(2, canvas.width * 0.003);
-            ctx.beginPath();
-
-            // L-shaped corner marks outside the text area.
-            ctx.moveTo(left, top + arm);
-            ctx.lineTo(left, top);
-            ctx.lineTo(left + arm, top);
-
-            ctx.moveTo(right - arm, top);
-            ctx.lineTo(right, top);
-            ctx.lineTo(right, top + arm);
-
-            ctx.moveTo(left, bottom - arm);
-            ctx.lineTo(left, bottom);
-            ctx.lineTo(left + arm, bottom);
-
-            ctx.moveTo(right - arm, bottom);
-            ctx.lineTo(right, bottom);
-            ctx.lineTo(right, bottom - arm);
-            ctx.stroke();
+            // Contrasting double line and white handles stay visible on any design.
+            ctx.lineWidth = Math.max(4, canvas.width * 0.004);
+            ctx.strokeStyle = '#ffffff';
+            ctx.strokeRect(rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top);
+            ctx.lineWidth = Math.max(2, canvas.width * 0.002);
+            ctx.strokeStyle = '#e65c24';
+            ctx.strokeRect(rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top);
+            for (const [x,y] of [[rect.left,rect.top],[rect.right,rect.top],
+                                 [rect.left,rect.bottom],[rect.right,rect.bottom]]) {
+                ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);
+                ctx.fillStyle='#ffffff';ctx.fill();
+                ctx.strokeStyle='#334155';ctx.lineWidth=Math.max(2,canvas.width*.002);ctx.stroke();
+            }
             ctx.restore();
         }
 
@@ -2099,7 +2081,6 @@
             mobileToolbarDismissed = false;
             updateToolbar();
             updateMobileControls();
-            universalRefreshLayers();
             drawEditor();
         }
 
@@ -2286,7 +2267,8 @@
 
         canvas.addEventListener('pointerdown', (event) => {
             const point = pointerToCanvas(event);
-            const hitText = hitTestText(point);
+            const resizeHandle = selectionHandleAt(point);
+            const hitText = resizeHandle ? selectedObject : hitTestText(point);
 
             if (mobileEditor.matches) {
                 mobileTapStart = {
@@ -2311,13 +2293,15 @@
             if (activePointers.size === 1) {
                 if (!mobileEditor.matches) {
                     if (hitText) selectObject(hitText);
+                    else if (textObjects[selectedObject]) selectObject(null);
                     else if (userImage) selectObject('photo');
                     else selectObject(null);
                 }
                 gesture = {
-                    kind: 'drag',
+                    kind: resizeHandle ? 'text-resize' : 'drag',
                     target: selectedObject,
-                    previous: point
+                    previous: point,
+                    center: resizeHandle ? {x:textObjects[selectedObject].x*canvas.width,y:textObjects[selectedObject].y*canvas.height} : null
                 };
             } else if (activePointers.size === 2) {
                 const pair = getGesturePair();
@@ -2358,6 +2342,15 @@
                 return;
             }
 
+            if (activePointers.size === 1 && gesture.kind === 'text-resize') {
+                const previousDistance = Math.hypot(gesture.previous.x-gesture.center.x,gesture.previous.y-gesture.center.y);
+                const nextDistance = Math.hypot(point.x-gesture.center.x,point.y-gesture.center.y);
+                if (previousDistance > 5) applyScale(gesture.target, nextDistance/previousDistance);
+                gesture.previous = point;
+                drawEditor();
+                return;
+            }
+
             if (activePointers.size === 1 && gesture.kind === 'drag') {
                 moveObject(gesture.target,
                     point.x - gesture.previous.x,
@@ -2391,6 +2384,7 @@
             if (wasTap) {
                 const hitText = hitTestText(pointerToCanvas(event));
                 if (hitText) selectObject(hitText);
+                else if (textObjects[selectedObject]) selectObject(null);
                 else if (!selectedObject && userImage) selectObject('photo');
             }
             if (mobileEditor.matches) mobileTapStart = null;
@@ -2522,8 +2516,7 @@
                 } else {
                     selectObject(key);
                 }
-                universalRefreshLayers();
-            });
+                });
         });
 
         $('fontFamily').addEventListener('change', async (event) => {
@@ -2753,7 +2746,6 @@
             updateToolbar();
             drawEditor();
             greetingUpdateHistoryButtons();
-            universalRefreshLayers();
         }
 
         function greetingUndo() {
@@ -2781,36 +2773,6 @@
             toast.classList.add('visible');
             greetingToastTimer = setTimeout(() => toast.classList.remove('visible'), duration);
         }
-
-        /* Additive text locator; reuses the existing canvas engine and history. */
-        function universalRefreshLayers() {
-            document.querySelectorAll('[data-find-text]').forEach(button => {
-                const key = button.getAttribute('data-find-text');
-                const available = Boolean($(key).value.trim());
-                button.disabled = !available;
-                button.setAttribute('aria-pressed', String(available && selectedObject === key));
-            });
-            const available = Boolean(textObjects[selectedObject] && $(selectedObject).value.trim());
-            $('universalSmaller').disabled = !available;
-            $('universalLarger').disabled = !available;
-        }
-        document.querySelectorAll('[data-find-text]').forEach(button => {
-            button.addEventListener('click', () => {
-                const key = button.getAttribute('data-find-text');
-                if (!$(key).value.trim()) return;
-                selectObject(key);
-                canvas.scrollIntoView({behavior:'smooth',block:'center'});
-            });
-        });
-        [['universalSmaller', 1/1.12], ['universalLarger', 1.12]].forEach(([id,factor]) => {
-            $(id).addEventListener('click', () => {
-                if (!textObjects[selectedObject] || !$(selectedObject).value.trim()) return;
-                applyScale(selectedObject, factor);
-                drawEditor();
-                greetingScheduleHistory(30);
-            });
-        });
-        universalRefreshLayers();
 
         $('greetingUndo').addEventListener('click', greetingUndo);
         $('greetingRedo').addEventListener('click', greetingRedo);
