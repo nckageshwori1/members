@@ -764,6 +764,14 @@
         .smart-text-actions { display: flex; flex-wrap: wrap; gap: 7px; margin: 8px 0; }
         .smart-text-actions .button { flex: 1; min-width: 115px; font-size: 12px; }
         .face-fit-message { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+        /* Additive universal text layer controls. */
+        .universal-layers{margin:10px 0;padding:10px;border:1px solid #c9e1d7;border-radius:10px;background:#f6fbf9}
+        .universal-layers strong{display:block;margin-bottom:8px}
+        .universal-layers .layer-buttons{display:flex;gap:6px;flex-wrap:wrap}
+        .universal-layers button{flex:1;min-width:90px;min-height:40px;border:1px solid #bbd4c9;border-radius:8px;background:#fff;color:#174d39;font-weight:700}
+        .universal-layers button[aria-pressed="true"]{background:#087d4b;color:white}
+        .universal-layers button:disabled{opacity:.45;cursor:not-allowed}
+        .universal-layers p{font-size:12px;color:#526c7d;margin:8px 0 0}
         /* Targeted update: unobtrusive operation feedback */
         #greetingActionToast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:99999; background:#12365b; color:#fff; padding:10px 17px; border-radius:11px; box-shadow:0 5px 22px #0003; font-size:14px; max-width:90vw; text-align:center; pointer-events:none; opacity:0; transition:opacity .18s; }
         #greetingActionToast.visible { opacity:1; }
@@ -932,6 +940,20 @@
                                placeholder="संस्था वा कार्यालयको नाम">
                     </div>
 
+                    <!-- Universal layer selector: works with any poster without fixed text placement. -->
+                    <div class="universal-layers" id="universalLayers">
+                        <strong>✥ टेक्स्ट खोज्नुहोस् र सार्नुहोस्</strong>
+                        <div class="layer-buttons">
+                            <button type="button" data-find-text="name" disabled>नाम देखाउनुहोस्</button>
+                            <button type="button" data-find-text="designation" disabled>पद देखाउनुहोस्</button>
+                            <button type="button" data-find-text="organization" disabled>संस्था देखाउनुहोस्</button>
+                        </div>
+                        <div class="layer-buttons" style="margin-top:7px">
+                            <button type="button" id="universalSmaller" disabled>− अक्षर सानो</button>
+                            <button type="button" id="universalLarger" disabled>+ अक्षर ठूलो</button>
+                        </div>
+                        <p>लेख्नेबित्तिकै टेक्स्ट चयन हुन्छ। नीलो कुनाले स्थान चिनाउँछ। माउस वा औँलाले सार्नुहोस्।</p>
+                    </div>
                     <div class="editor-actions">
                         <button id="remove" class="button" type="button">फोटो हटाउनुहोस्</button>
                         <button id="download" class="button button-primary" type="button">⬇ PNG डाउनलोड</button>
@@ -1638,6 +1660,7 @@
                 $('name').value = '';
                 $('designation').value = '';
                 $('organization').value = '';
+                universalRefreshLayers();
                 setMessage('');
 
                 await loadAllEditorFonts();
@@ -2076,6 +2099,7 @@
             mobileToolbarDismissed = false;
             updateToolbar();
             updateMobileControls();
+            universalRefreshLayers();
             drawEditor();
         }
 
@@ -2492,11 +2516,13 @@
 
         ['name', 'designation', 'organization'].forEach((key) => {
             $(key).addEventListener('input', () => {
-                if (selectedObject === key && !$(key).value.trim()) {
-                    selectObject(null);
+                if (!$(key).value.trim()) {
+                    if (selectedObject === key) selectObject(null);
+                    else drawEditor();
                 } else {
-                    drawEditor();
+                    selectObject(key);
                 }
+                universalRefreshLayers();
             });
         });
 
@@ -2727,6 +2753,7 @@
             updateToolbar();
             drawEditor();
             greetingUpdateHistoryButtons();
+            universalRefreshLayers();
         }
 
         function greetingUndo() {
@@ -2754,6 +2781,36 @@
             toast.classList.add('visible');
             greetingToastTimer = setTimeout(() => toast.classList.remove('visible'), duration);
         }
+
+        /* Additive text locator; reuses the existing canvas engine and history. */
+        function universalRefreshLayers() {
+            document.querySelectorAll('[data-find-text]').forEach(button => {
+                const key = button.getAttribute('data-find-text');
+                const available = Boolean($(key).value.trim());
+                button.disabled = !available;
+                button.setAttribute('aria-pressed', String(available && selectedObject === key));
+            });
+            const available = Boolean(textObjects[selectedObject] && $(selectedObject).value.trim());
+            $('universalSmaller').disabled = !available;
+            $('universalLarger').disabled = !available;
+        }
+        document.querySelectorAll('[data-find-text]').forEach(button => {
+            button.addEventListener('click', () => {
+                const key = button.getAttribute('data-find-text');
+                if (!$(key).value.trim()) return;
+                selectObject(key);
+                canvas.scrollIntoView({behavior:'smooth',block:'center'});
+            });
+        });
+        [['universalSmaller', 1/1.12], ['universalLarger', 1.12]].forEach(([id,factor]) => {
+            $(id).addEventListener('click', () => {
+                if (!textObjects[selectedObject] || !$(selectedObject).value.trim()) return;
+                applyScale(selectedObject, factor);
+                drawEditor();
+                greetingScheduleHistory(30);
+            });
+        });
+        universalRefreshLayers();
 
         $('greetingUndo').addEventListener('click', greetingUndo);
         $('greetingRedo').addEventListener('click', greetingRedo);
