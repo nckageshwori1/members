@@ -1112,6 +1112,16 @@ main {
 @media(max-width:760px){#publicNotices .noticeItem.noticeRich{grid-template-columns:minmax(0,1fr);padding:13px;gap:12px;border-radius:17px}#publicNotices .noticeVisual{border-radius:13px}#publicNotices .noticeImage{min-height:0;max-height:260px;height:auto;width:100%}#publicNotices .noticeTitleRow{display:flex;flex-wrap:wrap;gap:8px}#publicNotices .noticeStatus.eventStatus{width:auto;min-width:0;max-width:100%;margin:0;padding:8px 10px}#publicNotices .noticeDetails h4{font-size:19px}#publicNotices .noticeProgramInfo{font-size:13px}#publicNotices .eventCountdown{padding:11px;gap:9px}#publicNotices .eventCountdownLabel{flex-basis:100%;font-size:13px}#publicNotices .eventCountdownUnits{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}#publicNotices .eventCountUnit{min-width:0;padding:7px 2px}#publicNotices .eventCountUnit strong{font-size:19px}#publicNotices .eventOutcome{font-size:12px}}
 @media(prefers-reduced-motion:reduce){#publicNotices .noticeItem.noticeRich{transition:none}#publicNotices .noticeItem.noticeRich:hover{transform:none}}
 
+
+/* Event permanent-link actions: isolated to public notices */
+#publicNotices [data-open-event]{cursor:pointer}
+#publicNotices [data-open-event]:focus-visible{outline:3px solid #f5b545;outline-offset:3px}
+#publicNotices .eventShareActions{display:flex;gap:9px;flex-wrap:wrap;grid-column:1/-1;padding-top:7px;border-top:1px solid #e8edf4}
+#publicNotices .eventShareActions a,#publicNotices .eventShareActions button{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:11px;padding:10px 14px;border:1px solid #c9daeb;background:#f2f7ff;color:#0d315d;font:800 13px inherit;text-decoration:none;cursor:pointer;min-height:40px}
+#publicNotices .eventShareActions .eventOpenLink{background:#0d315d;color:#fff;border-color:#0d315d}
+#publicNotices .eventShareActions .eventShareBtn{background:#e9f8ee;color:#06733b;border-color:#bfe6cd}
+#publicNotices .eventShareActions a:focus-visible,#publicNotices .eventShareActions button:focus-visible{outline:3px solid #f5b545;outline-offset:2px}
+@media(max-width:600px){#publicNotices .eventShareActions>*{flex:1 1 110px;padding:11px 7px!important;font-size:12px!important}}
 </style>
   
 <style id="representationReferenceDesign">
@@ -3271,10 +3281,13 @@ function escapeHtml(v) {
         return;
       }
       const ns = r.notices || [];
+      window.__publicNoticeShareRows = ns;
       document.getElementById('publicNotices').innerHTML = ns.length ? ns.map(n => {
         const status = noticeStatus(n);
         const statusLabel = status.cls==='done'?'✓ कार्यक्रम सम्पन्न':status.cls==='live'?'● कार्यक्रम सञ्चालनमा':status.cls==='soon'?'◷ आजको कार्यक्रम':'▣ आगामी कार्यक्रम';
-        return `<div class="noticeItem noticeRich">
+        const eventId=String(n.ID||'').trim();
+        const eventUrl=eventId ? `event.html?id=${encodeURIComponent(eventId)}` : '';
+        return `<div class="noticeItem noticeRich" ${eventUrl ? `data-open-event="${escapeAttr(eventId)}" tabindex="0" role="link" aria-label="${escapeAttr(n['शीर्षक']||'सूचना')} को पूरा विवरण"` : ''}>
           ${n.ImageURL ? `<div class="noticeVisual"><img class="noticeImage" src="${escapeAttr(n.ImageURL)}" alt="सूचना Image" loading="lazy"></div>` : ''}
           <div class="noticeDetails">
             ${status.text ? `<div class="eventEyebrow ${status.cls}">${statusLabel}</div>` : ''}
@@ -3291,6 +3304,7 @@ function escapeHtml(v) {
             ${n['विवरण'] ? `<div class="noticeBodyText">${escapeHtml(n['विवरण'])}</div>` : ''}
           </div>
           ${status.text ? `<div data-event-notice="${escapeAttr(encodeURIComponent(JSON.stringify({'मिति':n['मिति'],'सुरु समय':n['सुरु समय'],'समाप्ति समय':n['समाप्ति समय'],'दिनभरि':n['दिनभरि']})))}">${eventCountdownPresentation(n)}</div>` : ''}
+          ${eventUrl ? `<div class="eventShareActions"><a class="eventOpenLink" href="${escapeAttr(eventUrl)}" aria-label="${escapeAttr(n['शीर्षक']||'सूचना')} को विवरण खोल्नुहोस्">↗ पूरा विवरण</a><button type="button" class="eventShareBtn" data-share-event="${escapeAttr(eventId)}">↗ शेयर गर्नुहोस्</button><button type="button" data-copy-event="${escapeAttr(eventId)}">🔗 लिंक कपी</button></div>` : ''}
         </div>`;
       }).join('') : '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
       renderGreetingCard(r.settings || {});
@@ -3335,6 +3349,28 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   loadPublicRepresentatives();
   loadPublicRepresentation();
   loadDashboard();
+
+/* Permanent event links — only public notices; uses existing publicHome API. */
+(function(){
+  const baseUrl=()=>new URL('event.html',location.href);
+  function getRow(id){return (window.__publicNoticeShareRows||[]).find(x=>String(x.ID||'')===String(id));}
+  function eventLink(id){const u=baseUrl();u.searchParams.set('id',id);return u.href;}
+  function shareText(n,id){return [n['शीर्षक']||'कार्यक्रम सूचना',n['मिति']?'📅 मिति: '+n['मिति']:'',n['समय']?'🕒 समय: '+n['समय']:'',n['स्थान']?'📍 स्थान: '+n['स्थान']:'',n['विवरण']||'','🔗 पूरा विवरण: '+eventLink(id)].filter(Boolean).join('\n');}
+  async function shareEvent(n,id){
+    const url=eventLink(id),text=shareText(n,id);
+    if(navigator.share){try{await navigator.share({title:n['शीर्षक']||'सूचना',text,url});return;}catch(e){if(e.name==='AbortError')return;}}
+    try{await navigator.clipboard.writeText(text);alert('फोटो बाहेक कार्यक्रमको विवरण र लिंक कपी भयो। अब WhatsApp/Viber मा Paste गर्नुहोस्।');}
+    catch(e){prompt('कार्यक्रमको विवरण र लिंक कपी गर्नुहोस्:',text);}
+  }
+  document.addEventListener('keydown',function(e){const card=e.target.closest('[data-open-event]');if(card&&(e.key==='Enter'||e.key===' ')&&!e.target.closest('button,a')){e.preventDefault();location.href=eventLink(card.dataset.openEvent);}});
+  document.addEventListener('click',async function(e){
+    const s=e.target.closest('[data-share-event]'),c=e.target.closest('[data-copy-event]');
+    if(!s&&!c){const card=e.target.closest('[data-open-event]');if(card&&!e.target.closest('a,button'))location.href=eventLink(card.dataset.openEvent);return;}
+    const el=s||c,id=el.getAttribute(s?'data-share-event':'data-copy-event'),n=getRow(id);if(!n)return;
+    if(s){await shareEvent(n,id);return;}
+    try{await navigator.clipboard.writeText(eventLink(id));el.textContent='✓ लिंक कपी भयो';setTimeout(()=>el.textContent='🔗 लिंक कपी',1800);}catch(err){prompt('लिंक कपी गर्नुहोस्:',eventLink(id));}
+  });
+})();
 </script>
     <!-- Birthday cards share the existing greeting slider; no extra page section. -->
 <style>
