@@ -2890,14 +2890,17 @@ function escapeHtml(v) {
   function noticeStatus(n){
     const eventDate=noticeEventDate(n&&n['मिति']);
     if(!eventDate)return{text:'',cls:'',html:''};
-    const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    const now=new Date();
+    const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kathmandu',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(now);
+    const np=Object.fromEntries(parts.map(p=>[p.type,p.value]));
+    const today=new Date(Number(np.year),Number(np.month)-1,Number(np.day));
     const day=new Date(eventDate.getFullYear(),eventDate.getMonth(),eventDate.getDate());
     const diff=Math.round((day-today)/86400000);
     if(diff>0)return{text:`${diff} दिन बाँकी`,cls:'upcoming',html:`<span class="statusTop">📅 आगामी कार्यक्रम</span><span class="statusMain">${nepaliNum(diff)} दिन बाँकी</span>`};
     if(diff<0)return{text:'कार्यक्रम सम्पन्न',cls:'done',html:'<span class="statusTop">✓ सम्पन्न</span><span class="statusMain">कार्यक्रम सम्पन्न</span>'};
     if(String(n['दिनभरि']||'').toLowerCase()==='true')return{text:'आज कार्यक्रम',cls:'soon',html:'<span class="statusTop">📅 आज</span><span class="statusMain">दिनभरि कार्यक्रम</span>'};
     const start=parseClockMinutes(n['सुरु समय']),end=parseClockMinutes(n['समाप्ति समय']);
-    const cur=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+    const cur=Number(np.hour)*60+Number(np.minute)+Number(np.second)/60;
     if(start===null&&end===null)return{text:'आज कार्यक्रम',cls:'soon',html:'<span class="statusTop">📅 आज</span><span class="statusMain">आज कार्यक्रम</span>'};
     if(start!==null&&cur<start){const x=remainingText(start-cur);
         return{text:`सुरु हुन ${x} बाँकी`,cls:'soon',html:`<span class="statusTop">🕘 आज कार्यक्रम</span><span class="statusMain">सुरु हुन ${x} बाँकी</span>`};}
