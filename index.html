@@ -1071,6 +1071,47 @@ main {
       white-space: pre-wrap;
     }
 
+
+/* ============================================================
+   NOTICE EVENT CARDS — PREMIUM RESPONSIVE DESIGN (TARGETED)
+   This block only styles the public notice cards.
+   ============================================================ */
+#publicNotices.noticeList{gap:16px}
+#publicNotices .noticeItem.noticeRich{position:relative;grid-template-columns:minmax(240px,36%) minmax(0,1fr);gap:22px;padding:20px;background:linear-gradient(135deg,#ffffff 0%,#fffdf9 100%);border:1px solid #dae6f3;border-radius:22px;box-shadow:0 12px 32px rgba(16,60,104,.075);overflow:hidden;transition:box-shadow .2s,transform .2s}
+#publicNotices .noticeItem.noticeRich:hover{box-shadow:0 17px 40px rgba(16,60,104,.12);transform:translateY(-2px)}
+#publicNotices .noticeVisual{min-height:0;align-self:stretch;background:#f5f8fc;border-radius:17px;overflow:hidden}
+#publicNotices .noticeImage{height:100%;max-height:400px;min-height:220px;object-fit:contain;margin:0;border-radius:0}
+#publicNotices .noticeDetails{min-width:0;display:flex;flex-direction:column;gap:8px}
+#publicNotices .noticeTitleRow{align-items:flex-start;gap:12px}
+#publicNotices .noticeDetails h4{font-size:clamp(19px,2vw,25px);line-height:1.4;letter-spacing:-.3px;margin:0;color:#0d315d}
+#publicNotices .programLabel{color:#e0002a;background:#fff0f3;border:1px solid #ffd9e0;border-radius:999px;padding:6px 12px;align-self:flex-start;font-size:12px;margin:0}
+#publicNotices .noticeProgramInfo{gap:10px;margin:2px 0 4px;font-size:15px}
+#publicNotices .noticeProgramInfo>div{display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}
+#publicNotices .noticeBodyText{border-top:1px solid #e6edf5;padding-top:12px;margin-top:2px;color:#334c68}
+#publicNotices .noticeStatus.eventStatus{min-width:145px;max-width:190px;white-space:normal;border-radius:15px;box-shadow:0 7px 16px rgba(0,0,0,.06);flex-shrink:0;text-align:center}
+#publicNotices .eventStatus.upcoming{background:linear-gradient(135deg,#fff5e4,#ffedd4);color:#a35300}
+#publicNotices .eventStatus.soon{background:linear-gradient(135deg,#fff0d8,#ffe2b7);color:#995000}
+#publicNotices .eventStatus.live{background:linear-gradient(135deg,#fff0f1,#ffe2e6);color:#b11226}
+#publicNotices .eventStatus.done{background:linear-gradient(135deg,#e7faee,#d8f6e5);color:#087c40}
+#publicNotices .eventEyebrow{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:900;letter-spacing:.1px}
+#publicNotices .eventEyebrow.upcoming{background:linear-gradient(110deg,#e60033,#f20a24);color:white}
+#publicNotices .eventEyebrow.soon{background:#f57913;color:white}
+#publicNotices .eventEyebrow.live{background:#d91f2b;color:white}
+#publicNotices .eventEyebrow.done{background:linear-gradient(110deg,#008c4d,#07a557);color:white}
+#publicNotices .eventCountdown{grid-column:1/-1;background:linear-gradient(110deg,#fff4e6,#ffe9d4);border:1px solid #ffdfc1;border-radius:16px;padding:13px 15px;display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+#publicNotices .eventCountdownLabel{font-size:14px;font-weight:900;color:#8b4100;flex:1 1 145px}
+#publicNotices .eventCountdownUnits{display:flex;gap:8px;flex-wrap:wrap}
+#publicNotices .eventCountUnit{min-width:65px;text-align:center;background:#fff;border:1px solid #ffddd1;border-radius:12px;padding:8px 10px;box-shadow:0 4px 12px #a64c0910}
+#publicNotices .eventCountUnit strong{display:block;font-size:22px;line-height:1.2;color:#cf1d2d;font-variant-numeric:tabular-nums}
+#publicNotices .eventCountUnit span{font-size:11px;color:#9d4d34;font-weight:800}
+#publicNotices .eventOutcome{grid-column:1/-1;border-radius:14px;padding:12px 15px;display:flex;gap:12px;align-items:center;font-size:14px;font-weight:800}
+#publicNotices .eventOutcome.done{background:#e9f9ef;border:1px solid #c9ebd7;color:#08763e}
+#publicNotices .eventOutcome.live{background:#fff0f1;border:1px solid #ffd5db;color:#b11226}
+#publicNotices .eventOutcome.soon{background:#fff3e0;border:1px solid #ffe0b0;color:#a45900}
+#publicNotices .eventOutcomeIcon{font-size:24px;line-height:1}
+@media(max-width:760px){#publicNotices .noticeItem.noticeRich{grid-template-columns:minmax(0,1fr);padding:13px;gap:12px;border-radius:17px}#publicNotices .noticeVisual{border-radius:13px}#publicNotices .noticeImage{min-height:0;max-height:260px;height:auto;width:100%}#publicNotices .noticeTitleRow{display:flex;flex-wrap:wrap;gap:8px}#publicNotices .noticeStatus.eventStatus{width:auto;min-width:0;max-width:100%;margin:0;padding:8px 10px}#publicNotices .noticeDetails h4{font-size:19px}#publicNotices .noticeProgramInfo{font-size:13px}#publicNotices .eventCountdown{padding:11px;gap:9px}#publicNotices .eventCountdownLabel{flex-basis:100%;font-size:13px}#publicNotices .eventCountdownUnits{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}#publicNotices .eventCountUnit{min-width:0;padding:7px 2px}#publicNotices .eventCountUnit strong{font-size:19px}#publicNotices .eventOutcome{font-size:12px}}
+@media(prefers-reduced-motion:reduce){#publicNotices .noticeItem.noticeRich{transition:none}#publicNotices .noticeItem.noticeRich:hover{transform:none}}
+
 </style>
   
 <style id="representationReferenceDesign">
@@ -2909,6 +2950,41 @@ function escapeHtml(v) {
     return{text:'कार्यक्रम सञ्चालनमा',cls:'live',html:`<span class="statusTop"><span class="liveDot"></span> LIVE</span><span class="statusMain">कार्यक्रम सञ्चालनमा${x?' • '+x+' बाँकी':''}</span>`};
   }
 
+  /* Notice presentation only: Nepal-time live countdown; no backend changes. */
+  function eventCountdownPresentation(n){
+    const eventDate=noticeEventDate(n&&n['मिति']);
+    if(!eventDate)return '';
+    const nowParts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kathmandu',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
+    const p=Object.fromEntries(nowParts.map(v=>[v.type,v.value]));
+    const nowUTC=Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute,+p.second);
+    const dateUTC=Date.UTC(eventDate.getFullYear(),eventDate.getMonth(),eventDate.getDate());
+    const allDay=String(n['दिनभरि']||'').toLowerCase()==='true';
+    const start=parseClockMinutes(n['सुरु समय']);
+    const end=parseClockMinutes(n['समाप्ति समय']);
+    const startUTC=dateUTC+(start===null?0:start)*60000;
+    // A time range crossing midnight is supported without modifying stored data.
+    const endUTC=dateUTC+(end===null?1440:end+(start!==null&&end<=start?1440:0))*60000;
+    const isDone=nowUTC>=endUTC;
+    const isLive=nowUTC>=startUTC&&!isDone;
+    const remaining=Math.max(0,Math.ceil((startUTC-nowUTC)/1000));
+    const day=Math.floor(remaining/86400),hour=Math.floor(remaining%86400/3600),minute=Math.floor(remaining%3600/60),second=remaining%60;
+    if(isDone)return '<div class="eventOutcome done"><span class="eventOutcomeIcon">✔</span><span>कार्यक्रम सम्पन्न <small style="display:block;font-weight:500">निर्धारित समयअनुसार कार्यक्रम समाप्त भएको छ।</small></span></div>';
+    if(isLive)return '<div class="eventOutcome live"><span class="eventOutcomeIcon">●</span><span>कार्यक्रम सञ्चालनमा छ'+(end!==null?' · समाप्त हुन '+escapeHtml(remainingText((endUTC-nowUTC)/60000))+' बाँकी':'')+'</span></div>';
+    if(allDay&&dateUTC>nowUTC&&day>0){/* display standard countdown */}
+    const units=[['दिन',day],['घण्टा',hour],['मिनेट',minute],['सेकेन्ड',second]];
+    return '<div class="eventCountdown" aria-label="कार्यक्रम सुरु हुन बाँकी समय"><span class="eventCountdownLabel">⏳ कार्यक्रम सुरु हुन बाँकी समय</span><div class="eventCountdownUnits">'+units.map(([label,value])=>'<div class="eventCountUnit"><strong>'+nepaliNum(value)+'</strong><span>'+label+'</span></div>').join('')+'</div></div>';
+  }
+  function updateNoticeCountdowns(){
+    document.querySelectorAll('#publicNotices [data-event-notice]').forEach(el=>{
+      try{
+        const n=JSON.parse(decodeURIComponent(el.dataset.eventNotice));
+        const next=eventCountdownPresentation(n);
+        if(el.innerHTML!==next)el.innerHTML=next;
+      }catch(e){/* ignore invalid notice data; leave other cards unaffected */}
+    });
+  }
+  setInterval(updateNoticeCountdowns,1000);
+
   /* ============================================================
      GREETING CARD — ADMIN SETTINGS WITH GITHUB IMAGE FALLBACK
      ============================================================ */
@@ -3197,9 +3273,11 @@ function escapeHtml(v) {
       const ns = r.notices || [];
       document.getElementById('publicNotices').innerHTML = ns.length ? ns.map(n => {
         const status = noticeStatus(n);
+        const statusLabel = status.cls==='done'?'✓ कार्यक्रम सम्पन्न':status.cls==='live'?'● कार्यक्रम सञ्चालनमा':status.cls==='soon'?'◷ आजको कार्यक्रम':'▣ आगामी कार्यक्रम';
         return `<div class="noticeItem noticeRich">
           ${n.ImageURL ? `<div class="noticeVisual"><img class="noticeImage" src="${escapeAttr(n.ImageURL)}" alt="सूचना Image" loading="lazy"></div>` : ''}
           <div class="noticeDetails">
+            ${status.text ? `<div class="eventEyebrow ${status.cls}">${statusLabel}</div>` : ''}
             <div class="noticeTitleRow">
               <h4>${escapeHtml(n['शीर्षक'] || 'सूचना')}</h4>
               ${status.text ? `<div class="noticeStatus eventStatus ${status.cls}" aria-label="${escapeAttr(status.text)}">${status.html}</div>` : ''}
@@ -3212,6 +3290,7 @@ function escapeHtml(v) {
             </div>
             ${n['विवरण'] ? `<div class="noticeBodyText">${escapeHtml(n['विवरण'])}</div>` : ''}
           </div>
+          ${status.text ? `<div data-event-notice="${escapeAttr(encodeURIComponent(JSON.stringify({'मिति':n['मिति'],'सुरु समय':n['सुरु समय'],'समाप्ति समय':n['समाप्ति समय'],'दिनभरि':n['दिनभरि']})))}">${eventCountdownPresentation(n)}</div>` : ''}
         </div>`;
       }).join('') : '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
       renderGreetingCard(r.settings || {});
