@@ -1122,6 +1122,9 @@ main {
 #publicNotices .eventShareActions .eventShareBtn{background:#e9f8ee;color:#06733b;border-color:#bfe6cd}
 #publicNotices .eventShareActions a:focus-visible,#publicNotices .eventShareActions button:focus-visible{outline:3px solid #f5b545;outline-offset:2px}
 @media(max-width:600px){#publicNotices .eventShareActions>*{flex:1 1 110px;padding:11px 7px!important;font-size:12px!important}}
+
+/* Calendar button — event cards only */
+#publicNotices .noticeCalendarAction{display:inline-flex;align-items:center;justify-content:center;border-radius:11px;padding:10px 14px;border:1px solid #e6cfac;background:#fff3e5;color:#875016;font-weight:800;font-size:13px;text-decoration:none;min-height:40px}
 </style>
   
 <style id="representationReferenceDesign">
@@ -3272,6 +3275,38 @@ function escapeHtml(v) {
       renderGreetingCard(wardGreetingSettings);
     }
   }
+  function eventCalendarUrl(notice) {
+    const status = noticeStatus(notice);
+    if (!['upcoming', 'soon', 'live'].includes(status.cls)) return '';
+
+    const day = noticeEventDate(notice['मिति']);
+    if (!day) return '';
+
+    const allDay = String(notice['दिनभरि'] || '').toLowerCase() === 'true';
+    const start = parseClockMinutes(notice['सुरु समय']);
+    const end = parseClockMinutes(notice['समाप्ति समय']);
+    if (!allDay && (start === null || end === null)) return '';
+
+    const dateTime = (minutes) => {
+      const value = new Date(day.getFullYear(), day.getMonth(), day.getDate());
+      value.setMinutes(minutes);
+      return value.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+    };
+
+    const from = dateTime(allDay ? 0 : start);
+    const to = dateTime(allDay ? 1440 : end + (end <= start ? 1440 : 0));
+    const details = String(notice['विवरण'] || '');
+    const params = new URLSearchParams({
+      action: 'TEMPLATE',
+      text: String(notice['शीर्षक'] || 'कार्यक्रम'),
+      dates: from + '/' + to,
+      details,
+      location: String(notice['स्थान'] || '')
+    });
+
+    return 'https://calendar.google.com/calendar/render?' + params.toString();
+  }
+
   async function loadPublicHome() {
     try {
       const r = await api('publicHome');
@@ -3304,7 +3339,7 @@ function escapeHtml(v) {
             ${n['विवरण'] ? `<div class="noticeBodyText">${escapeHtml(n['विवरण'])}</div>` : ''}
           </div>
           ${status.text ? `<div data-event-notice="${escapeAttr(encodeURIComponent(JSON.stringify({'मिति':n['मिति'],'सुरु समय':n['सुरु समय'],'समाप्ति समय':n['समाप्ति समय'],'दिनभरि':n['दिनभरि']})))}">${eventCountdownPresentation(n)}</div>` : ''}
-          ${eventUrl ? `<div class="eventShareActions"><a class="eventOpenLink" href="${escapeAttr(eventUrl)}" aria-label="${escapeAttr(n['शीर्षक']||'सूचना')} को विवरण खोल्नुहोस्">↗ पूरा विवरण</a>${status.cls==='done'?'':`<button type="button" class="eventShareBtn" data-share-event="${escapeAttr(eventId)}">↗ शेयर गर्नुहोस्</button><button type="button" data-copy-event="${escapeAttr(eventId)}">🔗 लिंक कपी</button>`}</div>` : ''}
+          ${eventUrl ? `<div class="eventShareActions"><a class="eventOpenLink" href="${escapeAttr(eventUrl)}" aria-label="${escapeAttr(n['शीर्षक']||'सूचना')} को विवरण खोल्नुहोस्">↗ पूरा विवरण</a>${status.cls==='done'?'':`<button type="button" class="eventShareBtn" data-share-event="${escapeAttr(eventId)}">↗ शेयर गर्नुहोस्</button><button type="button" data-copy-event="${escapeAttr(eventId)}">🔗 लिंक कपी</button>`}${eventCalendarUrl(n) ? `<a class="noticeCalendarAction" href="${escapeAttr(eventCalendarUrl(n))}" target="_blank" rel="noopener noreferrer">📅 क्यालेन्डरमा राख्नुहोस्</a>` : ''}</div>` : ''}
         </div>`;
       }).join('') : '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
       renderGreetingCard(r.settings || {});
