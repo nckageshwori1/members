@@ -788,6 +788,18 @@ main {
                 <input id="noticeTime" type="text" placeholder="बिहान ७:०० बजे">
               </div>
               <div class="field">
+                <label>सुरु समय (२४ घण्टे)</label>
+                <input id="noticeStartTime" type="time" aria-label="कार्यक्रम सुरु समय">
+              </div>
+              <div class="field">
+                <label>समाप्ति समय (२४ घण्टे)</label>
+                <input id="noticeEndTime" type="time" aria-label="कार्यक्रम समाप्ति समय">
+              </div>
+              <div class="field wide">
+                <label style="display:flex;align-items:center;gap:9px"><input id="noticeAllDay" type="checkbox" style="width:auto" onchange="noticeToggleAllDay()"> दिनभरि कार्यक्रम</label>
+                <small>समय तोकिएको कार्यक्रममा सुरु र समाप्ति समय दुवै भर्नुहोस्। दिनभरि भए समय आवश्यक छैन।</small>
+              </div>
+              <div class="field">
                 <label>स्थान</label>
                 <input id="noticeVenue" type="text" placeholder="वडा कार्यालय">
               </div>
@@ -1405,6 +1417,21 @@ async function loadNotices() {
     noticeList.innerHTML=(r.notices||[]).slice().reverse().map(n=>`<div style="padding:14px;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:#fff">${n.ImageURL?`<img src="${attr(n.ImageURL)}" style="width:120px;max-height:90px;object-fit:cover;border-radius:10px;float:right;margin-left:12px">`:''}<b>${esc(n['शीर्षक']||'सूचना')}</b><div style="font-size:13px;color:var(--muted);margin:5px 0">${esc(n['मिति']||'')}${n['समय']?' • '+esc(n['समय']):''}${n['स्थान']?' • '+esc(n['स्थान']):''}</div><div>${esc(n['विवरण']||'')}</div><div style="clear:both"></div><div class="actions" style="margin-top:8px"><button class="btn secondary" onclick='editNotice(${JSON.stringify(n)})'>सम्पादन</button><button class="btn danger" onclick="deleteNotice('${attr(n.ID)}')">हटाउनुहोस्</button></div></div>`).join('')||'<div class="empty">सूचना छैन ।</div>'
   } catch(e) {}
 }
+function noticeToggleAllDay(){
+  const allDay=document.getElementById('noticeAllDay').checked;
+  ['noticeStartTime','noticeEndTime'].forEach(id=>{
+    document.getElementById(id).disabled=allDay;
+  });
+}
+function noticeTimeInputValue(value){
+  const text=String(value||'').replace(/[०-९]/g,d=>String('०१२३४५६७८९'.indexOf(d))).trim();
+  const match=text.match(/(\d{1,2}):(\d{2})/);
+  if(!match)return '';
+  let h=Number(match[1]);const m=Number(match[2]);
+  if(/बेलुका|साँझ|रात|pm/i.test(text)&&h<12)h+=12;
+  if(/बिहान|am/i.test(text)&&h===12)h=0;
+  return h<=23&&m<=59?String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'):'';
+}
 function editNotice(n){
   editingNoticeId=String(n.ID||'');
   editingNoticeImageURL=String(n.ImageURL||'');
@@ -1412,6 +1439,10 @@ function editNotice(n){
   noticeTitle.value=n['शीर्षक']||'';
   noticeDate.value=n['मिति']||'';
   noticeTime.value=n['समय']||'';
+  noticeStartTime.value=noticeTimeInputValue(n['सुरु समय']);
+  noticeEndTime.value=noticeTimeInputValue(n['समाप्ति समय']);
+  noticeAllDay.checked=String(n['दिनभरि']||'').toLowerCase()==='true';
+  noticeToggleAllDay();
   noticeVenue.value=n['स्थान']||'';
   noticeBody.value=n['विवरण']||'';
   if(editingNoticeImageURL){noticeImagePreview.src=editingNoticeImageURL;
@@ -1424,6 +1455,7 @@ function editNotice(n){
 function resetNoticeForm(){
   editingNoticeId='';editingNoticeImageURL='';editingNoticeImageFileID='';
       noticeTitle.value='';noticeDate.value='';noticeTime.value='';
+      noticeStartTime.value='';noticeEndTime.value='';noticeAllDay.checked=false;noticeToggleAllDay();
       noticeVenue.value='';noticeBody.value='';removeNoticeImageSelection();
       noticeSaveBtn.textContent='सूचना प्रकाशित गर्नुहोस्';
 }
@@ -1439,6 +1471,12 @@ function removeNoticeImageSelection(){noticeImageData='';
     noticeImageName='';noticeImageInput.value='';noticeImagePreview.removeAttribute('src');
     noticeImageBox.style.display='none';}
 async function saveNotice() {
+  if(!noticeAllDay.checked && ((noticeStartTime.value&&!noticeEndTime.value)||(!noticeStartTime.value&&noticeEndTime.value))){
+    alert('सुरु समय र समाप्ति समय दुवै भर्नुहोस्, वा दिनभरि कार्यक्रम छान्नुहोस्।');return;
+  }
+  if(!noticeAllDay.checked && noticeStartTime.value && noticeEndTime.value && noticeEndTime.value<=noticeStartTime.value){
+    alert('समाप्ति समय सुरु समयभन्दा पछाडि हुनुपर्छ।');return;
+  }
   const b=noticeSaveBtn; b.disabled=true; b.textContent='सुरक्षित हुँदैछ...';
   noticeActionMsg.style.display='block'; noticeActionMsg.textContent='सूचना सुरक्षित हुँदैछ...';
   try{
@@ -1449,7 +1487,7 @@ async function saveNotice() {
       if(!up.ok)throw new Error(up.message);
       imageUrl=up.url||''; imageFileId=up.fileId||'';
     }
-    const r=await api('adminSaveNotice',{token,notice:{id:editingNoticeId,title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value.trim(),time:noticeTime.value.trim(),venue:noticeVenue.value.trim(),active:true,imageUrl,imageFileId}});
+    const r=await api('adminSaveNotice',{token,notice:{id:editingNoticeId,title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value.trim(),time:noticeTime.value.trim(),startTime:noticeAllDay.checked?'':noticeStartTime.value,endTime:noticeAllDay.checked?'':noticeEndTime.value,allDay:noticeAllDay.checked,venue:noticeVenue.value.trim(),active:true,imageUrl,imageFileId}});
     if(!r.ok)throw new Error(r.message);
     noticeActionMsg.textContent=r.message;
     resetNoticeForm(); await loadNotices();
