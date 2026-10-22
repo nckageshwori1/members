@@ -3359,7 +3359,7 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   function shareText(n,id){return [n['शीर्षक']||'कार्यक्रम सूचना',n['मिति']?'📅 मिति: '+n['मिति']:'',n['समय']?'🕒 समय: '+n['समय']:'',n['स्थान']?'📍 स्थान: '+n['स्थान']:'',n['विवरण']||'','🔗 पूरा विवरण: '+eventShareLink(id)].filter(Boolean).join('\n');}
   async function shareEvent(n,id){
     const url=eventShareLink(id),text=shareText(n,id);
-    if(navigator.share){try{await navigator.share({title:n['शीर्षक']||'सूचना',text,url});return;}catch(e){if(e.name==='AbortError')return;}}
+    if(navigator.share){try{await navigator.share({title:n['शीर्षक']||'सूचना',text});return;}catch(e){if(e.name==='AbortError')return;}}
     try{await navigator.clipboard.writeText(text);alert('फोटो बाहेक कार्यक्रमको विवरण र लिंक कपी भयो। अब WhatsApp/Viber मा Paste गर्नुहोस्।');}
     catch(e){prompt('कार्यक्रमको विवरण र लिंक कपी गर्नुहोस्:',text);}
   }
