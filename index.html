@@ -3355,13 +3355,26 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   const baseUrl=()=>new URL('event.html',location.href);
   function getRow(id){return (window.__publicNoticeShareRows||[]).find(x=>String(x.ID||'')===String(id));}
   function eventLink(id){const u=baseUrl();u.searchParams.set('id',id);return u.href;}
-  function eventShareLink(id){return new URL('events/'+encodeURIComponent(id)+'/index.html',location.href).href;}
+  function eventShareLink(id){return new URL('events/'+encodeURIComponent(id)+'/',location.href).href;}
   function shareText(n,id){return [n['शीर्षक']||'कार्यक्रम सूचना',n['मिति']?'📅 मिति: '+n['मिति']:'',n['समय']?'🕒 समय: '+n['समय']:'',n['स्थान']?'📍 स्थान: '+n['स्थान']:'',n['विवरण']||'','🔗 पूरा विवरण: '+eventShareLink(id)].filter(Boolean).join('\n');}
-  async function shareEvent(n,id){
-    const url=eventShareLink(id),text=shareText(n,id);
-    if(navigator.share){try{await navigator.share({title:n['शीर्षक']||'सूचना',text});return;}catch(e){if(e.name==='AbortError')return;}}
-    try{await navigator.clipboard.writeText(text);alert('फोटो बाहेक कार्यक्रमको विवरण र लिंक कपी भयो। अब WhatsApp/Viber मा Paste गर्नुहोस्।');}
-    catch(e){prompt('कार्यक्रमको विवरण र लिंक कपी गर्नुहोस्:',text);}
+  async function shareEvent(n, id) {
+    // Only the canonical event URL is shared. WhatsApp can fetch its OG poster.
+    const url = eventShareLink(id);
+    if (navigator.share) {
+      try {
+        await navigator.share({ url });
+        return;
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      alert('फोटो Preview सहितको कार्यक्रम लिंक कपी भयो। WhatsApp मा Paste गर्नुहोस्।');
+    } catch (error) {
+      prompt('कार्यक्रमको स्थायी लिंक कपी गर्नुहोस्:', url);
+    }
   }
   document.addEventListener('keydown',function(e){const card=e.target.closest('[data-open-event]');if(card&&(e.key==='Enter'||e.key===' ')&&!e.target.closest('button,a')){e.preventDefault();location.href=eventLink(card.dataset.openEvent);}});
   document.addEventListener('click',async function(e){
