@@ -3304,7 +3304,7 @@ function escapeHtml(v) {
             ${n['विवरण'] ? `<div class="noticeBodyText">${escapeHtml(n['विवरण'])}</div>` : ''}
           </div>
           ${status.text ? `<div data-event-notice="${escapeAttr(encodeURIComponent(JSON.stringify({'मिति':n['मिति'],'सुरु समय':n['सुरु समय'],'समाप्ति समय':n['समाप्ति समय'],'दिनभरि':n['दिनभरि']})))}">${eventCountdownPresentation(n)}</div>` : ''}
-          ${eventUrl ? `<div class="eventShareActions"><a class="eventOpenLink" href="${escapeAttr(eventUrl)}" aria-label="${escapeAttr(n['शीर्षक']||'सूचना')} को विवरण खोल्नुहोस्">↗ पूरा विवरण</a><button type="button" class="eventShareBtn" data-share-event="${escapeAttr(eventId)}">↗ शेयर गर्नुहोस्</button><button type="button" data-copy-event="${escapeAttr(eventId)}">🔗 लिंक कपी</button></div>` : ''}
+          ${eventUrl ? `<div class="eventShareActions"><a class="eventOpenLink" href="${escapeAttr(eventUrl)}" aria-label="${escapeAttr(n['शीर्षक']||'सूचना')} को विवरण खोल्नुहोस्">↗ पूरा विवरण</a>${status.cls==='done'?'':`<button type="button" class="eventShareBtn" data-share-event="${escapeAttr(eventId)}">↗ शेयर गर्नुहोस्</button><button type="button" data-copy-event="${escapeAttr(eventId)}">🔗 लिंक कपी</button>`}</div>` : ''}
         </div>`;
       }).join('') : '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
       renderGreetingCard(r.settings || {});
@@ -3355,9 +3355,10 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   const baseUrl=()=>new URL('event.html',location.href);
   function getRow(id){return (window.__publicNoticeShareRows||[]).find(x=>String(x.ID||'')===String(id));}
   function eventLink(id){const u=baseUrl();u.searchParams.set('id',id);return u.href;}
-  function shareText(n,id){return [n['शीर्षक']||'कार्यक्रम सूचना',n['मिति']?'📅 मिति: '+n['मिति']:'',n['समय']?'🕒 समय: '+n['समय']:'',n['स्थान']?'📍 स्थान: '+n['स्थान']:'',n['विवरण']||'','🔗 पूरा विवरण: '+eventLink(id)].filter(Boolean).join('\n');}
+  function eventShareLink(id){return new URL('events/'+encodeURIComponent(id)+'/index.html',location.href).href;}
+  function shareText(n,id){return [n['शीर्षक']||'कार्यक्रम सूचना',n['मिति']?'📅 मिति: '+n['मिति']:'',n['समय']?'🕒 समय: '+n['समय']:'',n['स्थान']?'📍 स्थान: '+n['स्थान']:'',n['विवरण']||'','🔗 पूरा विवरण: '+eventShareLink(id)].filter(Boolean).join('\n');}
   async function shareEvent(n,id){
-    const url=eventLink(id),text=shareText(n,id);
+    const url=eventShareLink(id),text=shareText(n,id);
     if(navigator.share){try{await navigator.share({title:n['शीर्षक']||'सूचना',text,url});return;}catch(e){if(e.name==='AbortError')return;}}
     try{await navigator.clipboard.writeText(text);alert('फोटो बाहेक कार्यक्रमको विवरण र लिंक कपी भयो। अब WhatsApp/Viber मा Paste गर्नुहोस्।');}
     catch(e){prompt('कार्यक्रमको विवरण र लिंक कपी गर्नुहोस्:',text);}
@@ -3366,9 +3367,9 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
   document.addEventListener('click',async function(e){
     const s=e.target.closest('[data-share-event]'),c=e.target.closest('[data-copy-event]');
     if(!s&&!c){const card=e.target.closest('[data-open-event]');if(card&&!e.target.closest('a,button'))location.href=eventLink(card.dataset.openEvent);return;}
-    const el=s||c,id=el.getAttribute(s?'data-share-event':'data-copy-event'),n=getRow(id);if(!n)return;
+    const el=s||c,id=el.getAttribute(s?'data-share-event':'data-copy-event'),n=getRow(id);if(!n)return;if(noticeStatus(n).cls==='done'){alert('यो कार्यक्रम सम्पन्न भइसकेको छ। शेयर सुविधा बन्द छ।');return;}
     if(s){await shareEvent(n,id);return;}
-    try{await navigator.clipboard.writeText(eventLink(id));el.textContent='✓ लिंक कपी भयो';setTimeout(()=>el.textContent='🔗 लिंक कपी',1800);}catch(err){prompt('लिंक कपी गर्नुहोस्:',eventLink(id));}
+    try{await navigator.clipboard.writeText(eventShareLink(id));el.textContent='✓ लिंक कपी भयो';setTimeout(()=>el.textContent='🔗 लिंक कपी',1800);}catch(err){prompt('लिंक कपी गर्नुहोस्:',eventShareLink(id));}
   });
 })();
 </script>
