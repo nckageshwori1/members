@@ -1620,6 +1620,7 @@ body.wardMenuVisible .wardMenuPanel{transform:translateX(0);visibility:visible}
 @media(max-width:650px){#ncCentralPopup.ncExpandedPopup .ncCentralMemberGrid,#ncAreaOverlay.ncExpandedPopup .ncAreaCards{grid-template-columns:repeat(2,minmax(0,1fr))}.ncExpandToggle{font-size:12px;padding:8px 9px}.ncExpandActions{gap:6px}}
 @media(max-width:480px){#ncCentralPopup.ncExpandedPopup .ncCentralMemberGrid,#ncAreaOverlay.ncExpandedPopup .ncAreaCards{grid-template-columns:1fr}.ncExpandToggle{font-size:12px}}
 </style>
+<script defer src="calendar-options.js"></script>
 </head>
   <body>
 
@@ -3287,14 +3288,16 @@ function escapeHtml(v) {
     const end = parseClockMinutes(notice['समाप्ति समय']);
     if (!allDay && (start === null || end === null)) return '';
 
-    const dateTime = (minutes) => {
-      const value = new Date(day.getFullYear(), day.getMonth(), day.getDate());
-      value.setMinutes(minutes);
-      return value.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
-    };
+    // Calendar times are always Nepal local time, regardless of the visitor's device timezone.
+    const dateTime = (minutes) => new Date(
+      Date.UTC(day.getFullYear(), day.getMonth(), day.getDate(), 0, minutes) - 345 * 60000
+    ).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+    const dateOnly = (days) => new Date(
+      Date.UTC(day.getFullYear(), day.getMonth(), day.getDate() + days)
+    ).toISOString().slice(0, 10).replace(/-/g, '');
 
-    const from = dateTime(allDay ? 0 : start);
-    const to = dateTime(allDay ? 1440 : end + (end <= start ? 1440 : 0));
+    const from = allDay ? dateOnly(0) : dateTime(start);
+    const to = allDay ? dateOnly(1) : dateTime(end + (end <= start ? 1440 : 0));
     const details = String(notice['विवरण'] || '');
     const params = new URLSearchParams({
       action: 'TEMPLATE',
@@ -3339,7 +3342,7 @@ function escapeHtml(v) {
             ${n['विवरण'] ? `<div class="noticeBodyText">${escapeHtml(n['विवरण'])}</div>` : ''}
           </div>
           ${status.text ? `<div data-event-notice="${escapeAttr(encodeURIComponent(JSON.stringify({'मिति':n['मिति'],'सुरु समय':n['सुरु समय'],'समाप्ति समय':n['समाप्ति समय'],'दिनभरि':n['दिनभरि']})))}">${eventCountdownPresentation(n)}</div>` : ''}
-          ${eventUrl ? `<div class="eventShareActions"><a class="eventOpenLink" href="${escapeAttr(eventUrl)}" aria-label="${escapeAttr(n['शीर्षक']||'सूचना')} को विवरण खोल्नुहोस्">↗ पूरा विवरण</a>${status.cls==='done'?'':`<button type="button" class="eventShareBtn" data-share-event="${escapeAttr(eventId)}">↗ शेयर गर्नुहोस्</button><button type="button" data-copy-event="${escapeAttr(eventId)}">🔗 लिंक कपी</button>`}${eventCalendarUrl(n) ? `<a class="noticeCalendarAction" href="${escapeAttr(eventCalendarUrl(n))}" target="_blank" rel="noopener noreferrer">📅 क्यालेन्डरमा राख्नुहोस्</a>` : ''}</div>` : ''}
+          ${eventUrl ? `<div class="eventShareActions"><a class="eventOpenLink" href="${escapeAttr(eventUrl)}" aria-label="${escapeAttr(n['शीर्षक']||'सूचना')} को विवरण खोल्नुहोस्">↗ पूरा विवरण</a>${status.cls==='done'?'':`<button type="button" class="eventShareBtn" data-share-event="${escapeAttr(eventId)}">↗ शेयर गर्नुहोस्</button><button type="button" data-copy-event="${escapeAttr(eventId)}">🔗 लिंक कपी</button>`}${eventCalendarUrl(n) ? `<a class="noticeCalendarAction" href="${escapeAttr(eventCalendarUrl(n))}" data-calendar-choice="1">📅 क्यालेन्डरमा राख्नुहोस्</a>` : ''}</div>` : ''}
         </div>`;
       }).join('') : '<div class="noticeItem">हाल कुनै सूचना छैन ।</div>';
       renderGreetingCard(r.settings || {});
@@ -3411,6 +3414,12 @@ function renderContacts(s){renderOfficeInfo(s);const items=[];
       prompt('कार्यक्रमको स्थायी लिंक कपी गर्नुहोस्:', url);
     }
   }
+  document.addEventListener('click', function(e){
+    const link = e.target.closest('a[data-calendar-choice]');
+    if (!link) return;
+    e.preventDefault();
+    window.NCEventCalendar.open(link.href);
+  });
   document.addEventListener('keydown',function(e){const card=e.target.closest('[data-open-event]');if(card&&(e.key==='Enter'||e.key===' ')&&!e.target.closest('button,a')){e.preventDefault();location.href=eventLink(card.dataset.openEvent);}});
   document.addEventListener('click',async function(e){
     const s=e.target.closest('[data-share-event]'),c=e.target.closest('[data-copy-event]');
