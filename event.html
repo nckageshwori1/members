@@ -27,8 +27,8 @@ function nepNow(){const p=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{ti
 function state(n){const date=parseDate(n['मिति']);if(date===null)return{kind:'none',label:'कार्यक्रम सूचना'};const start=clock(n['सुरु समय']),end=clock(n['समाप्ति समय']),allDay=String(n['दिनभरि']).toLowerCase()==='true';const from=date+(start??0)*60000;const to=date+(end===null?1440:end+(start!==null&&end<=start?1440:0))*60000;const now=nepNow();if(now>=to)return{kind:'done',label:'✓ कार्यक्रम सम्पन्न'};if(now>=from)return{kind:'live',label:'● कार्यक्रम सञ्चालनमा'};return{kind:'upcoming',label:'▣ आगामी कार्यक्रम',seconds:Math.max(0,Math.ceil((from-now)/1000))};}
 function timer(n){const s=state(n);const calendarBtn=document.getElementById('calendarBtn');if (calendarBtn) {
   // A finished event must never offer an Add to Calendar action.
-  calendarBtn.hidden = s.kind === 'done';
-  calendarBtn.style.display = s.kind === 'done' ? 'none' : '';
+  calendarBtn.hidden = !['upcoming', 'live'].includes(s.kind);
+  calendarBtn.style.display = ['upcoming', 'live'].includes(s.kind) ? '' : 'none';
 }const shareActions=document.getElementById('shareActions'),shareHint=document.getElementById('shareHint');if(shareActions)shareActions.hidden=(s.kind==='done');if(shareHint)shareHint.hidden=(s.kind==='done');const tag=document.getElementById('stateBadge'),box=document.getElementById('timerBox');if(!tag||!box)return;tag.className='eyebrow '+s.kind;tag.textContent=s.label;if(s.kind==='upcoming'){let x=s.seconds;const vals=[Math.floor(x/86400),Math.floor(x%86400/3600),Math.floor(x%3600/60),x%60];box.className='timer';box.innerHTML='<strong>⏳ कार्यक्रम सुरु हुन बाँकी समय</strong><div class="units">'+vals.map((v,i)=>'<div class="unit"><b>'+nep(v)+'</b><small>'+['दिन','घण्टा','मिनेट','सेकेन्ड'][i]+'</small></div>').join('')+'</div>';}
 else if(s.kind==='live'){box.className='state live';box.textContent='● कार्यक्रम अहिले सञ्चालनमा छ';}else if(s.kind==='done'){box.className='state';box.textContent='✓ कार्यक्रम निर्धारित समयअनुसार सम्पन्न भएको छ';}else{box.className='hint';box.textContent='कार्यक्रमको मिति हेर्नुहोस् ।';}}
 function message(n){return [n['शीर्षक']||'कार्यक्रम सूचना',n['मिति']?'📅 मिति: '+n['मिति']:'',n['समय']?'🕒 समय: '+n['समय']:'',n['स्थान']?'📍 स्थान: '+n['स्थान']:'',n['विवरण']||'','🔗 पूरा विवरण र फोटो: '+shareUrl(String(n.ID||eventId))].filter(Boolean).join('\n');}
@@ -64,7 +64,7 @@ async function share() {
   }
 }
 function addCalendar(n){
- if(state(n).kind==='done'){alert('सम्पन्न कार्यक्रम क्यालेन्डरमा थप्न मिल्दैन।');return;}
+ if(!['upcoming', 'live'].includes(state(n).kind)){return;}
  const day=parseDate(n['मिति']);if(day===null){alert('नेपाली मिति प्रमाणित रूपमा रूपान्तरण हुन सकेन।');return;}
  const start=clock(n['सुरु समय']),end=clock(n['समाप्ति समय']);
  const allDay=String(n['दिनभरि']).toLowerCase()==='true';
