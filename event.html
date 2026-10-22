@@ -10,7 +10,7 @@
 const API_URL='https://script.google.com/macros/s/AKfycbzq4EDX6gfB20LN0F071kj2ysbCUX-PETlIlzF7y0dbwIW7WBO23m7vy6xTlB189g4wuQ/exec';
 const eventId=new URLSearchParams(location.search).get('id');
 const SHARE_BASE=new URL('./events/',location.href);
-function shareUrl(id){return new URL(encodeURIComponent(id)+'/index.html',SHARE_BASE).href;}
+function shareUrl(id){return new URL(encodeURIComponent(id)+'/',SHARE_BASE).href;}
 function safeMapUrl(s){try{const u=new URL(String(s||''));return u.protocol==='https:' && (/^(www\.)?google\.[a-z.]+$/.test(u.hostname)||u.hostname==='maps.app.goo.gl'||u.hostname==='goo.gl')?u.href:'';}catch(e){return '';}}
 let eventTimer=null;
 let currentEvent=null;
@@ -26,13 +26,36 @@ function timer(n){const s=state(n);const calendarBtn=document.getElementById('ca
 else if(s.kind==='live'){box.className='state live';box.textContent='● कार्यक्रम अहिले सञ्चालनमा छ';}else if(s.kind==='done'){box.className='state';box.textContent='✓ कार्यक्रम निर्धारित समयअनुसार सम्पन्न भएको छ';}else{box.className='hint';box.textContent='कार्यक्रमको मिति हेर्नुहोस् ।';}}
 function message(n){return [n['शीर्षक']||'कार्यक्रम सूचना',n['मिति']?'📅 मिति: '+n['मिति']:'',n['समय']?'🕒 समय: '+n['समय']:'',n['स्थान']?'📍 स्थान: '+n['स्थान']:'',n['विवरण']||'','🔗 पूरा विवरण र फोटो: '+shareUrl(String(n.ID||eventId))].filter(Boolean).join('\n');}
 async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){prompt('यो विवरण कपी गर्नुहोस्:',t);return false}}
-async function share(){const n=currentEvent;if(!n||state(n).kind==='done')return;const btn=document.getElementById('shareBtn');btn.disabled=true;btn.textContent='शेयर तयार हुँदैछ...';try{
- const title=n['शीर्षक']||'कार्यक्रम सूचना',text=message(n);
- // Share the original poster as an actual file when browser + image server permit it.
- if(n.ImageURL&&navigator.share&&navigator.canShare&&window.File){try{const resp=await fetch(n.ImageURL,{mode:'cors'});if(resp.ok){const blob=await resp.blob();if(blob.type.startsWith('image/')&&blob.size<12*1024*1024){const ext=blob.type.includes('png')?'png':blob.type.includes('webp')?'webp':'jpg';const file=new File([blob],'event-poster.'+ext,{type:blob.type});if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title,text});return;}}}}catch(e){if(e.name==='AbortError')return;}}
- if(navigator.share){try{await navigator.share({title,text});return}catch(e){if(e.name==='AbortError')return;}}
- await copyText(text);alert('कार्यक्रमको विवरण र लिंक कपी गरिएको छ। फोटो चाहिँ कार्यक्रमको लिंक खोलेर हेर्न सकिन्छ।');
- }finally{btn.disabled=false;btn.textContent='↗ विवरण र फोटो शेयर';}}
+async function share() {
+  const event = currentEvent;
+  if (!event || state(event).kind === 'done') return;
+
+  const button = document.getElementById('shareBtn');
+  const originalLabel = button.textContent;
+  const url = shareUrl(String(event.ID || eventId));
+  button.disabled = true;
+  button.textContent = 'शेयर तयार हुँदैछ...';
+
+  try {
+    // Share only the canonical URL so WhatsApp can render its poster preview.
+    // Do not also include the URL in text or attach a photo file.
+    if (navigator.share) {
+      try {
+        await navigator.share({ url });
+        return;
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+      }
+    }
+
+    if (await copyText(url)) {
+      alert('फोटो Preview सहितको कार्यक्रम लिंक कपी भयो। WhatsApp मा Paste गर्नुहोस्।');
+    }
+  } finally {
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+}
 function addCalendar(n){
  if(state(n).kind==='done'){alert('सम्पन्न कार्यक्रम क्यालेन्डरमा थप्न मिल्दैन।');return;}
  const day=parseDate(n['मिति']);if(day===null){alert('नेपाली मिति प्रमाणित रूपमा रूपान्तरण हुन सकेन।');return;}
@@ -47,7 +70,7 @@ function addCalendar(n){
  window.open(url,'_blank','noopener,noreferrer');
 }
 function render(n){currentEvent=n;document.title=(n['शीर्षक']||'कार्यक्रम विवरण')+' | नेपाली कांग्रेस वडा नं. १';const mapUrl=safeMapUrl(n['MapURL']||n['Map URL']||n['नक्सा लिंक']);const pic=n.ImageURL?'<img class="poster" id="poster" src="'+esc(n.ImageURL)+'" alt="कार्यक्रमको मूल पोस्टर">':'<div class="poster loading">यस कार्यक्रममा फोटो छैन।</div>';
- el.innerHTML='<div class="hero"><div>'+pic+'</div><div><span id="stateBadge" class="eyebrow">कार्यक्रम सूचना</span><h1>'+esc(n['शीर्षक']||'सूचना')+'</h1><div class="info">'+(n['मिति']?'<div class="line"><b>📅 मिति:</b><span>'+esc(n['मिति'])+'</span></div>':'')+(n['समय']?'<div class="line"><b>🕒 समय:</b><span>'+esc(n['समय'])+'</span></div>':'')+(n['स्थान']?'<div class="line"><b>📍 स्थान:</b><span>'+esc(n['स्थान'])+'</span></div>':'')+'</div>'+(n['विवरण']?'<div class="description">'+esc(n['विवरण'])+'</div>':'')+'<div id="timerBox"></div><div class="actions" id="shareActions"><button id="shareBtn" class="btn share" type="button">↗ विवरण र फोटो शेयर</button><button id="copyBtn" class="btn main" type="button">🔗 लिंक कपी</button><button id="copyMessageBtn" class="btn" type="button">📋 पूरा मेसेज कपी</button></div><p class="hint" id="shareHint">शेयर गर्दा फोन/ब्राउजरले अनुमति दिए फोटो फाइल र तयार मेसेज पठाइन्छ। अन्य अवस्थामा फोटो हेर्न मिल्ने स्थायी लिंकसहितको विवरण पठाइन्छ।</p><div class="actions" id="extraActions"><button id="calendarBtn" class="btn calendar" type="button">📅 क्यालेन्डरमा राख्नुहोस्</button>'+(mapUrl?'<a class="btn map" href="'+esc(mapUrl)+'" target="_blank" rel="noopener noreferrer">📍 Google Maps मा हेर्नुहोस्</a>':'')+'</div></div></div>';
+ el.innerHTML='<div class="hero"><div>'+pic+'</div><div><span id="stateBadge" class="eyebrow">कार्यक्रम सूचना</span><h1>'+esc(n['शीर्षक']||'सूचना')+'</h1><div class="info">'+(n['मिति']?'<div class="line"><b>📅 मिति:</b><span>'+esc(n['मिति'])+'</span></div>':'')+(n['समय']?'<div class="line"><b>🕒 समय:</b><span>'+esc(n['समय'])+'</span></div>':'')+(n['स्थान']?'<div class="line"><b>📍 स्थान:</b><span>'+esc(n['स्थान'])+'</span></div>':'')+'</div>'+(n['विवरण']?'<div class="description">'+esc(n['विवरण'])+'</div>':'')+'<div id="timerBox"></div><div class="actions" id="shareActions"><button id="shareBtn" class="btn share" type="button">↗ फोटो Preview सहित शेयर</button><button id="copyBtn" class="btn main" type="button">🔗 लिंक कपी</button><button id="copyMessageBtn" class="btn" type="button">📋 पूरा मेसेज कपी</button></div><p class="hint" id="shareHint">शेयर गर्दा फोटो Preview देखाउन कार्यक्रमको एउटै स्थायी लिंक पठाइन्छ। पूरा विवरण टेक्स्टमा चाहिँ «पूरा मेसेज कपी» प्रयोग गर्नुहोस्।</p><div class="actions" id="extraActions"><button id="calendarBtn" class="btn calendar" type="button">📅 क्यालेन्डरमा राख्नुहोस्</button>'+(mapUrl?'<a class="btn map" href="'+esc(mapUrl)+'" target="_blank" rel="noopener noreferrer">📍 Google Maps मा हेर्नुहोस्</a>':'')+'</div></div></div>';
  document.getElementById('shareBtn').addEventListener('click',share);document.getElementById('calendarBtn').addEventListener('click',()=>addCalendar(n));document.getElementById('copyBtn').addEventListener('click',async()=>{if(state(n).kind==='done')return;if(await copyText(shareUrl(String(n.ID||eventId))))alert('कार्यक्रमको स्थायी लिंक कपी भयो।')});document.getElementById('copyMessageBtn').addEventListener('click',async()=>{if(state(n).kind==='done')return;if(await copyText(message(n)))alert('कार्यक्रमको पूरा मेसेज कपी भयो।')});timer(n);if(eventTimer)clearInterval(eventTimer);eventTimer=setInterval(()=>timer(n),1000);}
 async function load(){if(!eventId){el.innerHTML='<div class="error">कार्यक्रमको लिंकमा ID छैन। कृपया गृहपृष्ठबाट कार्यक्रम छान्नुहोस्।</div>';return}try{const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'publicHome'})});if(!resp.ok)throw Error('Server '+resp.status);const data=await resp.json();if(!data.ok)throw Error(data.message||'API error');const n=(data.notices||[]).find(x=>String(x.ID||'').trim()===eventId);if(!n){el.innerHTML='<div class="error">यो सूचना उपलब्ध छैन वा प्रकाशनबाट हटाइएको छ।</div>';return}render(n);}catch(e){el.innerHTML='<div class="error">कार्यक्रमको विवरण लोड हुन सकेन। इन्टरनेट जाँचेर फेरि प्रयास गर्नुहोस्।<div style="margin-top:12px"><button class="btn main" onclick="location.reload()">↻ पुनः प्रयास</button></div></div>';}}
 load();
