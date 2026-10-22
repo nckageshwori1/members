@@ -68,13 +68,59 @@ def download_poster(url, destination):
         return None
 
 
-def render_page(title, description, page_url, detail_url, image_url):
+def image_dimensions(path):
+    """Return (width, height) for PNG/JPEG/WebP without third-party packages."""
+    import struct
+    try:
+        data = path.read_bytes()
+        if data.startswith(b"\x89PNG\r\n\x1a\n"):
+            return struct.unpack(">II", data[16:24])
+        if data.startswith(b"\xff\xd8"):
+            offset = 2
+            while offset + 9 < len(data):
+                if data[offset] != 0xff:
+                    offset += 1
+                    continue
+                marker = data[offset + 1]
+                offset += 2
+                if marker in (0xd8, 0xd9) or 0xd0 <= marker <= 0xd7:
+                    continue
+                length = int.from_bytes(data[offset:offset + 2], 'big')
+                if marker in (0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb):
+                    return (int.from_bytes(data[offset + 5:offset + 7], 'big'),
+                            int.from_bytes(data[offset + 3:offset + 5], 'big'))
+                if length < 2:
+                    break
+                offset += length
+        if data[:4] == b'RIFF' and data[8:12] == b'WEBP':
+            if data[12:16] == b'VP8X':
+                return (1 + int.from_bytes(data[24:27], 'little'),
+                        1 + int.from_bytes(data[27:30], 'little'))
+            if data[12:16] == b'VP8 ' and len(data) > 30:
+                return (int.from_bytes(data[26:28], 'little') & 0x3fff,
+                        int.from_bytes(data[28:30], 'little') & 0x3fff)
+    except (OSError, ValueError, IndexError):
+        pass
+    return (None, None)
+
+
+def render_page(title, description, page_url, detail_url, image_url, image_width=None, image_height=None):
     image_tags = ""
     if image_url:
         image_tags = f"""
     <meta property="og:image" content="{escape(image_url)}">
     <meta property="og:image:secure_url" content="{escape(image_url)}">
     <meta name="twitter:image" content="{escape(image_url)}">"""
+
+    if image_url:
+        ext = image_url.rsplit('.', 1)[-1].lower()
+        mime = {'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'webp': 'image/webp'}.get(ext)
+        if mime:
+            image_tags += f'\n    <meta property="og:image:type" content="{mime}">'
+        if image_width and image_height:
+            image_tags += f'\n    <meta property="og:image:width" content="{image_width}">'
+            image_tags += f'\n    <meta property="og:image:height" content="{image_height}">'
+        image_tags += f'\n    <meta property="og:image:alt" content="{escape(title)} को कार्यक्रम पोस्टर">'
 
     # No immediate meta refresh: some social crawlers follow it before reading OG tags.
     # Normal visitors are redirected by JavaScript, with a no-JS fallback link.
@@ -89,6 +135,7 @@ def render_page(title, description, page_url, detail_url, image_url):
     <!-- Social media preview metadata -->
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="नेपाली कांग्रेस वडा नं. १">
+    <meta name="robots" content="index, follow, max-image-preview:large">
     <meta property="og:title" content="{escape(title)}">
     <meta property="og:description" content="{escape(description)}">
     <meta property="og:url" content="{escape(page_url)}">{image_tags}
@@ -149,8 +196,13 @@ def main():
         else:
             print(f"WARNING: No public poster for event {event_id}; preview may be text-only")
 
+        # Read the dimensions from the downloaded poster without extra dependencies.
+        image_width, image_height = None, None
+        if poster:
+            image_width, image_height = image_dimensions(destination / poster)
+
         (destination / "index.html").write_text(
-            render_page(title, description, page_url, detail_url, image_url),
+            render_page(title, description, page_url, detail_url, image_url, image_width, image_height),
             encoding="utf-8",
         )
         count += 1
