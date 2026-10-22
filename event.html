@@ -27,10 +27,10 @@ else if(s.kind==='live'){box.className='state live';box.textContent='● का�
 function message(n){return [n['शीर्षक']||'कार्यक्रम सूचना',n['मिति']?'📅 मिति: '+n['मिति']:'',n['समय']?'🕒 समय: '+n['समय']:'',n['स्थान']?'📍 स्थान: '+n['स्थान']:'',n['विवरण']||'','🔗 पूरा विवरण र फोटो: '+shareUrl(String(n.ID||eventId))].filter(Boolean).join('\n');}
 async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){prompt('यो विवरण कपी गर्नुहोस्:',t);return false}}
 async function share(){const n=currentEvent;if(!n||state(n).kind==='done')return;const btn=document.getElementById('shareBtn');btn.disabled=true;btn.textContent='शेयर तयार हुँदैछ...';try{
- const title=n['शीर्षक']||'कार्यक्रम सूचना',text=message(n),url=shareUrl(String(n.ID||eventId));
+ const title=n['शीर्षक']||'कार्यक्रम सूचना',text=message(n);
  // Share the original poster as an actual file when browser + image server permit it.
  if(n.ImageURL&&navigator.share&&navigator.canShare&&window.File){try{const resp=await fetch(n.ImageURL,{mode:'cors'});if(resp.ok){const blob=await resp.blob();if(blob.type.startsWith('image/')&&blob.size<12*1024*1024){const ext=blob.type.includes('png')?'png':blob.type.includes('webp')?'webp':'jpg';const file=new File([blob],'event-poster.'+ext,{type:blob.type});if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title,text});return;}}}}catch(e){if(e.name==='AbortError')return;}}
- if(navigator.share){try{await navigator.share({title,text,url});return}catch(e){if(e.name==='AbortError')return;}}
+ if(navigator.share){try{await navigator.share({title,text});return}catch(e){if(e.name==='AbortError')return;}}
  await copyText(text);alert('कार्यक्रमको विवरण र लिंक कपी गरिएको छ। फोटो चाहिँ कार्यक्रमको लिंक खोलेर हेर्न सकिन्छ।');
  }finally{btn.disabled=false;btn.textContent='↗ विवरण र फोटो शेयर';}}
 function addCalendar(n){
