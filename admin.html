@@ -803,6 +803,7 @@ main {
                 <label>स्थान</label>
                 <input id="noticeVenue" type="text" placeholder="वडा कार्यालय">
               </div>
+              <div class="field wide"><label>Google Maps Link (वैकल्पिक)</label><input id="noticeMapURL" type="url" placeholder="https://maps.app.goo.gl/..."></div>
               <div class="field wide">
                 <label>कार्यक्रमको विवरण</label>
                 <textarea id="noticeBody">
@@ -1439,6 +1440,7 @@ function editNotice(n){
   noticeTitle.value=n['शीर्षक']||'';
   noticeDate.value=n['मिति']||'';
   noticeTime.value=n['समय']||'';
+  noticeMapURL.value=n['MapURL']||'';
   noticeStartTime.value=noticeTimeInputValue(n['सुरु समय']);
   noticeEndTime.value=noticeTimeInputValue(n['समाप्ति समय']);
   noticeAllDay.checked=String(n['दिनभरि']||'').toLowerCase()==='true';
@@ -1454,7 +1456,7 @@ function editNotice(n){
 }
 function resetNoticeForm(){
   editingNoticeId='';editingNoticeImageURL='';editingNoticeImageFileID='';
-      noticeTitle.value='';noticeDate.value='';noticeTime.value='';
+      noticeTitle.value='';noticeDate.value='';noticeTime.value='';noticeMapURL.value='';
       noticeStartTime.value='';noticeEndTime.value='';noticeAllDay.checked=false;noticeToggleAllDay();
       noticeVenue.value='';noticeBody.value='';removeNoticeImageSelection();
       noticeSaveBtn.textContent='सूचना प्रकाशित गर्नुहोस्';
@@ -1471,6 +1473,12 @@ function removeNoticeImageSelection(){noticeImageData='';
     noticeImageName='';noticeImageInput.value='';noticeImagePreview.removeAttribute('src');
     noticeImageBox.style.display='none';}
 async function saveNotice() {
+  const map=noticeMapURL.value.trim();
+  if(map){try{const u=new URL(map);if(u.protocol!=='https:'||!(/^(www\.)?google\.[a-z.]+$/.test(u.hostname)||['maps.app.goo.gl','goo.gl'].includes(u.hostname)))throw Error('map');}catch(e){alert('मान्य Google Maps HTTPS लिंक राख्नुहोस्।');noticeMapURL.focus();return;}}
+  if(!noticeTitle.value.trim()){alert('सूचनाको शीर्षक आवश्यक छ।');noticeTitle.focus();return;}
+  const dateText=noticeDate.value.trim().replace(/[०-९]/g,d=>'०१२३४५६७८९'.indexOf(d));
+  if(!/^\d{4}[\/-]\d{1,2}[\/-]\d{1,2}$/.test(dateText)){alert('नेपाली मिति YYYY/MM/DD ढाँचामा राख्नुहोस्।');noticeDate.focus();return;}
+
   if(!noticeAllDay.checked && ((noticeStartTime.value&&!noticeEndTime.value)||(!noticeStartTime.value&&noticeEndTime.value))){
     alert('सुरु समय र समाप्ति समय दुवै भर्नुहोस्, वा दिनभरि कार्यक्रम छान्नुहोस्।');return;
   }
@@ -1487,7 +1495,7 @@ async function saveNotice() {
       if(!up.ok)throw new Error(up.message);
       imageUrl=up.url||''; imageFileId=up.fileId||'';
     }
-    const r=await api('adminSaveNotice',{token,notice:{id:editingNoticeId,title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value.trim(),time:noticeTime.value.trim(),startTime:noticeAllDay.checked?'':noticeStartTime.value,endTime:noticeAllDay.checked?'':noticeEndTime.value,allDay:noticeAllDay.checked,venue:noticeVenue.value.trim(),active:true,imageUrl,imageFileId}});
+    const r=await api('adminSaveNotice',{token,notice:{id:editingNoticeId,title:noticeTitle.value.trim(),body:noticeBody.value.trim(),date:noticeDate.value.trim(),time:noticeTime.value.trim(),startTime:noticeAllDay.checked?'':noticeStartTime.value,endTime:noticeAllDay.checked?'':noticeEndTime.value,allDay:noticeAllDay.checked,venue:noticeVenue.value.trim(),mapUrl:noticeMapURL.value.trim(),active:true,imageUrl,imageFileId}});
     if(!r.ok)throw new Error(r.message);
     noticeActionMsg.textContent=r.message;
     resetNoticeForm(); await loadNotices();
