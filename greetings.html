@@ -861,7 +861,7 @@
 
                     <div class="mobile-preview-download">
                         <button type="button" id="mobileDownload" class="button button-primary">⬇ PNG डाउनलोड गर्नुहोस्</button>
-                        <p class="mobile-download-hint">फोटो राखेर वा नराखी नाम लेखेर डिजाइन डाउनलोड गर्न सक्नुहुन्छ।</p>
+                        <p class="mobile-download-hint">फोटो, नाम वा अन्य विवरण नराखी पनि डिजाइन डाउनलोड गर्न सक्नुहुन्छ।</p>
                     </div>
 
                     <!-- नाम/पद Select हुँदा मात्र Font Toolbar देखिन्छ। -->
@@ -2640,11 +2640,6 @@
             const organization = $('organization').value.trim();
 
             if (!templateImage || !selectedFolder || !selectedTemplate) {
-                return;
-            }
-
-            if (!name) {
-                setMessage('कृपया नाम लेख्नुहोस्।');
                 return;
             }
 
