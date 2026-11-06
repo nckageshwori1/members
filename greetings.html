@@ -965,6 +965,22 @@
         </div>
     </div>
 
+    <!-- Only shown when all personal details are blank at download time. -->
+    <div id="emptyDetailsConfirm" class="template-loading-overlay hidden" role="dialog"
+         aria-modal="true" aria-labelledby="emptyDetailsTitle" aria-describedby="emptyDetailsText">
+        <div class="template-loading-dialog" style="width:min(410px,100%);text-align:left;">
+            <strong id="emptyDetailsTitle">डाउनलोड पुष्टि</strong>
+            <p id="emptyDetailsText" style="font-size:15px;line-height:1.7;margin-top:12px;">
+                तपाईंले फोटो, नाम तथा संस्था/कार्यालयको नाम राख्नुभएको छैन ।
+                के तपाईं कुनै व्यक्तिगत विवरण नराखी यही शुभकामना डिजाइन डाउनलोड गर्न चाहनुहुन्छ ?
+            </p>
+            <div style="display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;margin-top:20px;">
+                <button id="emptyDetailsCancel" type="button" class="button">पछि विवरण राख्छु</button>
+                <button id="emptyDetailsProceed" type="button" class="button button-primary">हो, डाउनलोड गर्नुहोस्</button>
+            </div>
+        </div>
+    </div>
+
     <div id="greetingActionToast" role="status" aria-live="polite"></div>
     <script>
         'use strict';
@@ -2632,6 +2648,40 @@
             });
         }
 
+        // Confirm a blank design without blocking users who deliberately want it.
+        function confirmEmptyDetails() {
+            return new Promise((resolve) => {
+                const dialog = $('emptyDetailsConfirm');
+                const proceed = $('emptyDetailsProceed');
+                const cancel = $('emptyDetailsCancel');
+                const previousFocus = document.activeElement;
+
+                function finish(approved) {
+                    dialog.classList.add('hidden');
+                    proceed.removeEventListener('click', onProceed);
+                    cancel.removeEventListener('click', onCancel);
+                    document.removeEventListener('keydown', onKeydown);
+                    if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
+                    resolve(approved);
+                }
+                function onProceed() { finish(true); }
+                function onCancel() { finish(false); }
+                function onKeydown(event) {
+                    if (event.key === 'Escape') { event.preventDefault(); finish(false); }
+                    if (event.key === 'Tab') {
+                        const target = document.activeElement;
+                        if (event.shiftKey && target === cancel) { event.preventDefault(); proceed.focus(); }
+                        else if (!event.shiftKey && target === proceed) { event.preventDefault(); cancel.focus(); }
+                    }
+                }
+                proceed.addEventListener('click', onProceed);
+                cancel.addEventListener('click', onCancel);
+                document.addEventListener('keydown', onKeydown);
+                dialog.classList.remove('hidden');
+                cancel.focus();
+            });
+        }
+
         $('mobileDownload').addEventListener('click', () => $('download').click());
 
         $('download').addEventListener('click', async () => {
@@ -2641,6 +2691,11 @@
 
             if (!templateImage || !selectedFolder || !selectedTemplate) {
                 return;
+            }
+
+            if (!userImage && !name && !designation && !organization) {
+                const approved = await confirmEmptyDetails();
+                if (!approved) return;
             }
 
             const button = $('download');
