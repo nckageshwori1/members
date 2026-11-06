@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0b8150">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>शुभकामना डिजाइन केन्द्र</title>
 
     <!-- नेपाली वेब फन्ट: प्रयोगकर्ताको फोनमा इन्स्टल हुनु आवश्यक छैन। -->
@@ -168,29 +167,17 @@
         }
 
         .gallery-count {
-            display: inline-flex;
-            flex: 0 0 auto;
-            align-items: center;
-            padding: 4px 9px;
-            border: 1px solid #b9e7d0;
-            border-radius: 9px;
-            background: linear-gradient(135deg, #e5f8ee, #c9efd9);
-            color: #087047;
-            font-size: 12px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #173650;
+            font-size: 13px;
             font-weight: 800;
-            white-space: nowrap;
-            box-shadow: 0 2px 7px rgba(8, 112, 71, 0.09);
-        }
-
-        .gallery-title-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 7px;
-        }
-
-        .gallery-title-row strong {
-            min-width: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
         }
 
         .gallery-card-empty {
@@ -207,13 +194,6 @@
             background: #ffffff;
             text-align: left;
             box-shadow: var(--shadow);
-        }
-
-        .gallery-preview-loading {
-            font-size: 13px;
-            font-weight: 600;
-            text-align: center;
-            padding: 12px;
         }
 
         .gallery-cover {
@@ -400,146 +380,6 @@
             font-weight: 700;
         }
 
-
-                 /* Text styling controls: independent per selected text object. */
-         .floating-toolbar .style-toggle {
-             display: inline-flex;
-             align-items: center;
-             gap: 6px;
-             padding: 6px 9px;
-             border: 1px solid #d7e6e0;
-             border-radius: 8px;
-             background: #fff;
-         }
-         .floating-toolbar .style-toggle input {
-             accent-color: var(--brand);
-             width: 17px;
-             height: 17px;
-         }
-         .stroke-size-control {
-             display: flex;
-             align-items: center;
-             gap: 6px;
-         }
-         .stroke-size-control button {
-             width: 34px;
-             height: 34px;
-             border: 1px solid #bcd4cb;
-             border-radius: 8px;
-             background: #fff;
-             font-weight: 800;
-         }
-         .stroke-size-control input { width: 95px; accent-color: var(--brand); }
-         .stroke-size-control output { min-width: 24px; text-align: right; font-size: 13px; }
-         @media (max-width: 750px) {
-             .floating-toolbar { justify-content: flex-start; }
-         }
-
-/* Version: Mobile Smart Floating Controls 2026-10-16 */
-        /* ============================================================
-           MOBILE SMART FLOATING CONTROLS
-           Positioned inside the preview, near the selected object.
-           Desktop layout and editing behaviour remain unchanged.
-           ============================================================ */
-        .mobile-edit-controls {
-            display: none;
-        }
-
-        @media (pointer: coarse), (max-width: 750px) {
-            #canvas {
-                touch-action: pan-y;
-                cursor: pointer;
-            }
-
-            .mobile-edit-controls:not(.hidden) {
-                position: fixed;
-                z-index: 1000;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-                width: min(330px, calc(100vw - 20px));
-                max-width: calc(100vw - 20px);
-                padding: 8px;
-                margin: 0;
-                border: 1px solid rgba(115, 149, 178, 0.65);
-                border-radius: 14px;
-                background: rgba(255, 255, 255, 0.96);
-                box-shadow: 0 6px 24px rgba(13, 39, 65, 0.22);
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
-                left: 50%;
-                top: auto;
-                bottom: max(12px, env(safe-area-inset-bottom));
-                transform: translateX(-50%);
-                user-select: none;
-                -webkit-user-select: none;
-                touch-action: manipulation;
-            }
-
-            .mobile-edit-controls button {
-                min-width: 38px;
-                min-height: 36px;
-                border: 1px solid #aac5de;
-                border-radius: 9px;
-                background: #f2f8ff;
-                color: #123b60;
-                font-size: 19px;
-                font-weight: 700;
-                touch-action: manipulation;
-            }
-
-            .mobile-edit-controls button:active {
-                background: #d8eafa;
-            }
-
-            .mobile-control-row {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-            }
-
-            .mobile-control-label {
-                font-size: 12px;
-                font-weight: 700;
-                color: #163c61;
-                line-height: 1.2;
-            }
-
-            .mobile-direction-pad {
-                display: grid;
-                grid-template-columns: repeat(5, 38px);
-                grid-template-rows: 34px;
-                gap: 2px;
-                align-items: center;
-                justify-items: center;
-            }
-
-            .mobile-direction-pad > span:empty {
-                display: none;
-            }
-
-            .mobile-direction-pad button[data-mobile-move="left"] { grid-column: 1; grid-row: 1; }
-            .mobile-direction-pad button[data-mobile-move="up"] { grid-column: 2; grid-row: 1; }
-            .mobile-direction-pad button[data-mobile-move="down"] { grid-column: 3; grid-row: 1; }
-            .mobile-direction-pad button[data-mobile-move="right"] { grid-column: 4; grid-row: 1; }
-            .mobile-pad-center { grid-column: 5; grid-row: 1; }
-
-            .mobile-direction-pad button {
-                min-width: 34px;
-                min-height: 32px;
-                width: 36px;
-                height: 32px;
-                font-size: 17px;
-            }
-
-            .mobile-pad-center {
-                font-size: 18px;
-                color: #4381ad;
-            }
-        }
-
         @media (max-width: 750px) {
             .gallery {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -604,176 +444,6 @@
                 font-size: 13px;
             }
         }
-
-        /* ============================================================
-           MOBILE PRECISION TOOLBAR — DRAG, DISMISS, REMOTE D-PAD
-           Desktop styles are intentionally untouched.
-           ============================================================ */
-        .mobile-preview-download { display: none; }
-
-        @media (pointer: coarse), (max-width: 750px) {
-            .mobile-edit-controls:not(.hidden) {
-                width: 218px;
-                max-width: calc(100vw - 16px);
-                left: 50%;
-                bottom: max(14px, env(safe-area-inset-bottom));
-                top: auto;
-                transform: translateX(-50%);
-                padding: 8px 10px 10px;
-                gap: 6px;
-            }
-
-            .mobile-toolbar-header {
-                width: 100%;
-                display: flex;
-                align-items: center;
-                gap: 5px;
-            }
-
-            .mobile-toolbar-handle {
-                flex: 1;
-                min-height: 35px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 5px;
-                cursor: grab;
-                touch-action: none;
-                color: #345f84;
-                font-size: 20px;
-                border-radius: 8px;
-                background: #edf5fc;
-                user-select: none;
-            }
-
-            .mobile-toolbar-handle:active { cursor: grabbing; }
-
-            .mobile-edit-controls .mobile-toolbar-close {
-                width: 36px;
-                min-width: 36px;
-                height: 35px;
-                font-size: 24px;
-                line-height: 1;
-                background: #fff1f1;
-                color: #a12a38;
-            }
-
-            .mobile-direction-pad {
-                display: grid;
-                grid-template-columns: repeat(3, 40px);
-                grid-template-rows: repeat(3, 36px);
-                gap: 3px;
-                justify-content: center;
-                align-items: center;
-                justify-items: center;
-                border-radius: 50%;
-                padding: 4px;
-                background: #eaf2fb;
-            }
-
-            .mobile-direction-pad button[data-mobile-move="up"] { grid-column: 2; grid-row: 1; }
-            .mobile-direction-pad button[data-mobile-move="left"] { grid-column: 1; grid-row: 2; }
-            .mobile-direction-pad button[data-mobile-move="right"] { grid-column: 3; grid-row: 2; }
-            .mobile-direction-pad button[data-mobile-move="down"] { grid-column: 2; grid-row: 3; }
-            .mobile-direction-pad .mobile-pad-center {
-                grid-column: 2;
-                grid-row: 2;
-                display: grid;
-                place-items: center;
-                width: 36px;
-                height: 34px;
-                background: white;
-                border-radius: 50%;
-            }
-            .mobile-direction-pad button {
-                min-width: 38px;
-                min-height: 34px;
-                width: 38px;
-                height: 34px;
-            }
-            .mobile-preview-download {
-                display: block;
-                padding: 12px 0 2px;
-                text-align: center;
-            }
-            .mobile-preview-download .button {
-                width: 100%;
-                min-height: 48px;
-            }
-            .mobile-download-hint {
-                color: #64748b;
-                font-size: 12px;
-                margin: 8px 0 0;
-            }
-            .details-card #download { display: none; }
-        }
-
-
-        /* Template opening dialog: isolated from the existing editor and gallery. */
-        .template-loading-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 5000;
-            display: grid;
-            place-items: center;
-            padding: 20px;
-            background: rgba(14, 30, 48, 0.48);
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
-        }
-
-        .template-loading-dialog {
-            width: min(320px, 100%);
-            padding: 27px 22px;
-            border-radius: 18px;
-            background: #ffffff;
-            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.22);
-            text-align: center;
-        }
-
-        .template-loading-spinner {
-            width: 46px;
-            height: 46px;
-            margin: 0 auto 15px;
-            border: 4px solid #dcece4;
-            border-top-color: var(--brand);
-            border-radius: 50%;
-            animation: greeting-loading-spin 0.85s linear infinite;
-        }
-
-        .template-loading-dialog strong {
-            display: block;
-            font-size: 18px;
-            color: var(--ink);
-        }
-
-        .template-loading-dialog p {
-            margin: 6px 0 0;
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        @keyframes greeting-loading-spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .template-loading-spinner { animation-duration: 2s; }
-        }
-
-        .smart-text-actions { display: flex; flex-wrap: wrap; gap: 7px; margin: 8px 0; }
-        .smart-text-actions .button { flex: 1; min-width: 115px; font-size: 12px; }
-        .face-fit-message { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.5; }
-        /* Additive universal text layer controls. */
-        /* Targeted update: unobtrusive operation feedback */
-        #greetingActionToast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:99999; background:#12365b; color:#fff; padding:10px 17px; border-radius:11px; box-shadow:0 5px 22px #0003; font-size:14px; max-width:90vw; text-align:center; pointer-events:none; opacity:0; transition:opacity .18s; }
-        #greetingActionToast.visible { opacity:1; }
-        .greeting-action-working { opacity:.72; cursor:progress !important; }
-        .greeting-action-flash { animation:greetingActionFlash .3s ease-out; }
-        @keyframes greetingActionFlash { 50% { filter:brightness(.87); } }
-        #greetingHistoryActions { display:flex; gap:8px; margin:8px 0; }
-        #greetingHistoryActions button { flex:1; }
-        #greetingHistoryActions button:disabled { opacity:.45; cursor:not-allowed; }
     </style>
 </head>
 
@@ -825,53 +495,18 @@
                     <div class="canvas-shell">
                         <div class="canvas-wrap">
                             <canvas id="canvas" width="1200" height="1200" aria-label="सम्पादनयोग्य शुभकामना डिजाइन"></canvas>
-                    <!-- मोबाइलमा मात्र: चयन भएको वस्तुको सूक्ष्म नियन्त्रण -->
-                    <div id="mobileEditControls" class="mobile-edit-controls hidden"
-                         aria-label="मोबाइल सम्पादन नियन्त्रण">
-                        <div class="mobile-toolbar-header">
-                            <span id="mobileToolbarHandle" class="mobile-toolbar-handle" aria-label="टुलबक्स सार्नुहोस्">⠿ <span id="mobileSelectedLabel" class="mobile-control-label" aria-live="polite"></span></span>
-                            <button type="button" id="mobileToolbarClose" class="mobile-toolbar-close" aria-label="टुलबक्स बन्द गर्नुहोस्">×</button>
-                        </div>
-                        <div class="mobile-control-row">
-                            <button type="button" id="mobileSelectPhoto" style="font-size:13px;width:auto;padding:0 12px;">फोटो छान्नुहोस्</button>
-                        </div>
-                        <div class="mobile-control-row">
-                            <span class="mobile-control-label">आकार</span>
-                            <button type="button" data-mobile-scale="down" aria-label="आकार घटाउनुहोस्">−</button>
-                            <button type="button" data-mobile-scale="up" aria-label="आकार बढाउनुहोस्">+</button>
-                        </div>
-                        <div class="mobile-control-label">स्थान सार्नुहोस्</div>
-                        <div class="mobile-direction-pad" aria-label="चार दिशामा सार्ने रिमोट">
-                            <button type="button" data-mobile-move="up" aria-label="माथि सार्नुहोस्">↑</button>
-                            <button type="button" data-mobile-move="left" aria-label="बायाँ सार्नुहोस्">←</button>
-                            <span class="mobile-pad-center" aria-hidden="true">✥</span>
-                            <button type="button" data-mobile-move="right" aria-label="दायाँ सार्नुहोस्">→</button>
-                            <button type="button" data-mobile-move="down" aria-label="तल सार्नुहोस्">↓</button>
-                        </div>
-                    </div>
-
-
                         </div>
                     </div>
 
                     <p class="help-text">
-                        मोबाइलमा फोटो, नाम, पद वा संस्था छानेर नजिकैको नियन्त्रण प्रयोग गर्नुहोस्।
-                        कम्प्युटरमा Mouse Wheel पनि प्रयोग गर्न सकिन्छ।
+                        फोटो, नाम वा पदमा छुनुहोस् र सार्नुहोस्।
+                        दुई औँलाले Zoom गर्नुहोस्। कम्प्युटरमा Mouse Wheel पनि प्रयोग गर्न सकिन्छ।
                     </p>
-
-                    <div class="mobile-preview-download">
-                        <button type="button" id="mobileDownload" class="button button-primary">⬇ PNG डाउनलोड गर्नुहोस्</button>
-                        <p class="mobile-download-hint">फोटो र नाम राखेर डिजाइन मिलाउनुहोस्, त्यसपछि डाउनलोड गर्नुहोस्।</p>
-                    </div>
 
                     <!-- नाम/पद Select हुँदा मात्र Font Toolbar देखिन्छ। -->
                     <div id="textToolbar" class="floating-toolbar hidden">
                         <div id="selectionCaption" class="selection-caption"></div>
 
-                        <div class="smart-text-actions">
-                            <button type="button" id="smartTextFit" class="button">↔ Smart Text Fit</button>
-                            <button type="button" id="resetText" class="button">↺ Text Reset</button>
-                        </div>
                         <label for="fontFamily">नेपाली फन्ट</label>
                         <select id="fontFamily">
                             <option value="Mukta">Mukta</option>
@@ -882,23 +517,6 @@
 
                         <label for="fontColor">रङ</label>
                         <input id="fontColor" type="color" value="#ffffff" aria-label="अक्षरको रङ">
-
-                        <!-- Selected text only: optional professional styling -->
-                        <label class="style-toggle" for="fontBold">
-                            <input id="fontBold" type="checkbox" checked> <strong>B</strong> बोल्ड
-                        </label>
-                        <label class="style-toggle" for="strokeEnabled">
-                            <input id="strokeEnabled" type="checkbox"> अक्षरको बाहिरी रेखा
-                        </label>
-                        <label for="strokeWidth">रेखा मोटाइ</label>
-                        <div class="stroke-size-control">
-                            <button id="strokeMinus" type="button" aria-label="रेखा घटाउनुहोस्">−</button>
-                            <input id="strokeWidth" type="range" min="0" max="12" step="0.5" value="0">
-                            <button id="strokePlus" type="button" aria-label="रेखा बढाउनुहोस्">+</button>
-                            <output id="strokeWidthValue">0</output>
-                        </div>
-                        <label for="strokeColor">रेखाको रङ</label>
-                        <input id="strokeColor" type="color" value="#000000" aria-label="बाहिरी रेखाको रङ">
                     </div>
                 </div>
 
@@ -906,15 +524,8 @@
                     <h3>आफ्नो विवरण</h3>
 
                     <div class="form-field">
-                        <label for="photo">फोटो</label>
+                        <label for="photo">फोटो (ऐच्छिक)</label>
                         <input id="photo" type="file" accept="image/*">
-                        <div id="greetingHistoryActions">
-                            <button type="button" id="greetingUndo" class="button" disabled>↶ Undo</button>
-                            <button type="button" id="greetingRedo" class="button" disabled>↷ Redo</button>
-                        </div>
-                        <button id="resetPhotoFit" class="button hidden" type="button" style="margin-top:6px;">↺ फोटो Auto Fit / Reset</button>
-                        <button id="smartFaceFit" class="button hidden" type="button" style="margin-top:6px;">☺ Smart Face Fit</button>
-                        <small id="faceFitMessage" class="face-fit-message" role="status" aria-live="polite"></small>
                     </div>
 
                     <div class="form-field">
@@ -927,11 +538,6 @@
                         <input id="designation" type="text" maxlength="100" placeholder="पद लेख्नुहोस्">
                     </div>
 
-                    <div class="form-field">
-                        <label for="organization">संस्था / कार्यालय (ऐच्छिक)</label>
-                        <input id="organization" type="text" maxlength="120"
-                               placeholder="संस्था वा कार्यालयको नाम">
-                    </div>
                     <div class="editor-actions">
                         <button id="remove" class="button" type="button">फोटो हटाउनुहोस्</button>
                         <button id="download" class="button button-primary" type="button">⬇ PNG डाउनलोड</button>
@@ -950,22 +556,6 @@
         (<a href="tel:+9779851113811">9851113811</a>)
     </footer>
 
-
-    <!-- Visible only while the selected template is opening. -->
-    <div id="templateLoadingOverlay"
-         class="template-loading-overlay hidden"
-         role="dialog"
-         aria-modal="true"
-         aria-labelledby="templateLoadingTitle"
-         aria-describedby="templateLoadingDescription">
-        <div class="template-loading-dialog">
-            <div class="template-loading-spinner" aria-hidden="true"></div>
-            <strong id="templateLoadingTitle">डिजाइन खुल्दैछ...</strong>
-            <p id="templateLoadingDescription">कृपया केही क्षण पर्खनुहोस्।</p>
-        </div>
-    </div>
-
-    <div id="greetingActionToast" role="status" aria-live="polite"></div>
     <script>
         'use strict';
 
@@ -997,33 +587,14 @@
                 y: 0.88,
                 size: 0.041,
                 font: 'Yatra One',
-                color: '#ffffff',
-                bold: true,
-                strokeEnabled: false,
-                strokeWidth: 0,
-                strokeColor: '#000000'
+                color: '#ffffff'
             },
             designation: {
                 x: 0.5,
-                y: 0.93,
+                y: 0.95,
                 size: 0.027,
                 font: 'Mukta',
-                color: '#ffffff',
-                bold: true,
-                strokeEnabled: false,
-                strokeWidth: 0,
-                strokeColor: '#000000'
-            },
-            organization: {
-                x: 0.5,
-                y: 0.975,
-                size: 0.022,
-                font: 'Mukta',
-                color: '#ffffff',
-                bold: true,
-                strokeEnabled: false,
-                strokeWidth: 0,
-                strokeColor: '#000000'
+                color: '#ffffff'
             }
         };
 
@@ -1037,7 +608,6 @@
         let photoX = 0;
         let photoY = 0;
         let photoZoom = 1;
-        let photoFitRegion = null;
         let selectedObject = null;
         let gesture = null;
         let openingTemplate = false;
@@ -1067,104 +637,13 @@
             );
         }
 
-        /* ============================================================
-           MOBILE RECOVERY: ONLY GREETING PAGE STATE, NEVER BROWSER DATA
-           ============================================================ */
-
-        const GREETING_BUILD_VERSION = '20261016-original-gallery-no-rightclick-5';
-        const RECOVERY_SESSION_KEY = 'greeting_page_recovery_v5';
-        let lastAutoRetryAt = 0;
-        let loadingFestivals = false;
-        let latestLoadFailure = null;
-
-        function newRequestNonce() {
-            // Avoid a repeated timestamp when requests start in one millisecond.
-            const randomPart = Math.random().toString(36).slice(2);
-            return Date.now().toString(36) + '-' + randomPart;
-        }
-
-        function rememberLoadFailure(error, action) {
-            latestLoadFailure = {
-                action,
-                reason: String(error?.message || error),
-                timestamp: new Date().toISOString(),
-                version: GREETING_BUILD_VERSION
-            };
-            console.warn('Greeting loading diagnostic:', latestLoadFailure);
-        }
-
-        function reloadOnlyThisPageFresh() {
-            // Changes only this page URL. Never clears passwords, history,
-            // cookies, bookmarks, or storage of other websites.
-            const next = new URL(window.location.href);
-            next.searchParams.set('greeting_version', GREETING_BUILD_VERSION);
-            next.searchParams.set('fresh', newRequestNonce());
-            window.location.replace(next.toString());
-        }
-
-        function clearFailedGreetingRequests() {
-            folderTemplateCache.clear();
-            imageCache.clear();
-            latestLoadFailure = null;
-        }
-
-        function requestRecovery(action, error) {
-            rememberLoadFailure(error, action);
-
-            // Recover once per build within a short window, not forever.
-            // Session storage may be blocked by browser privacy settings.
-            let previous = 0;
-
-            try {
-                previous = Number(sessionStorage.getItem(RECOVERY_SESSION_KEY) || 0);
-            } catch (storageError) {
-                console.warn('Session storage unavailable:', storageError);
-            }
-
-            const now = Date.now();
-
-            if (now - previous < 120000) {
-                return false;
-            }
-
-            try {
-                sessionStorage.setItem(RECOVERY_SESSION_KEY, String(now));
-            } catch (storageError) {
-                // Never prevent the gallery from working due to storage access.
-            }
-
-            // Never force a reload loop on mobile; retry the request in-place.
-            return false;
-        }
-
-        function retryFailedView() {
-            if (document.visibilityState === 'hidden') {
-                return;
-            }
-
-            const now = Date.now();
-
-            if (now - lastAutoRetryAt < 15000) {
-                return;
-            }
-
-            lastAutoRetryAt = now;
-            clearFailedGreetingRequests();
-
-            if (stage === 'templates' && selectedFolder) {
-                openFestival(selectedFolder);
-            } else if (stage === 'festivals') {
-                loadFestivals();
-            }
-        }
-
         function waitBeforeRetry(milliseconds) {
             return new Promise((resolve) => setTimeout(resolve, milliseconds));
         }
 
         async function requestWithRetry(action, params = {}) {
             // अस्थायी नेटवर्क वा मोबाइल ब्राउजरको त्रुटिमा सीमित Retry।
-            const attempts = action === 'image' ? 2 : 2;
+            const attempts = action === 'image' ? 2 : 3;
             let lastError;
 
             for (let attempt = 0; attempt < attempts; attempt += 1) {
@@ -1197,7 +676,7 @@
                     'greetingCb' + Math.random().toString(36).slice(2);
 
                 const script = document.createElement('script');
-                const timeoutMs = action === 'image' ? 90000 : 45000;
+                const timeoutMs = action === 'image' ? 90000 : 18000;
 
                 let completed = false;
 
@@ -1229,8 +708,7 @@
                 url.searchParams.set('greetingApi', '1');
                 url.searchParams.set('action', action);
                 url.searchParams.set('callback', callbackName);
-                url.searchParams.set('_request', newRequestNonce());
-                url.searchParams.set('_version', GREETING_BUILD_VERSION);
+                url.searchParams.set('_request', Date.now().toString());
 
                 Object.entries(params).forEach(([key, value]) => {
                     url.searchParams.set(key, value);
@@ -1328,34 +806,18 @@
             return folderTemplateCache.get(folderId);
         }
 
-        /* ============================================================
-           FAST ORIGINAL DRIVE THUMBNAILS (NO PREVIEW PROCESSING)
-           ============================================================ */
-
         function loadCover(card, placeholder, imageId, title) {
             if (!imageId) {
                 return;
             }
 
-            // IMPORTANT: A detached image with loading="lazy" may never
-            // start downloading. Use eager loading for the card cover.
             const image = document.createElement('img');
             image.className = 'gallery-cover';
             image.alt = title;
-            image.loading = 'eager';
+            image.loading = 'lazy';
             image.decoding = 'async';
-            image.draggable = false;
-            image.addEventListener('contextmenu', (event) => event.preventDefault());
-            image.addEventListener('dragstart', (event) => event.preventDefault());
 
-            const encodedId = encodeURIComponent(imageId);
-            const sources = [
-                'https://drive.google.com/thumbnail?id=' + encodedId + '&sz=w1000',
-                'https://lh3.googleusercontent.com/d/' + encodedId + '=w1000'
-            ];
-
-            let sourceIndex = 0;
-            let fallbackUsed = false;
+            let fallbackStarted = false;
 
             image.onload = () => {
                 if (card.isConnected && placeholder.isConnected) {
@@ -1364,22 +826,30 @@
             };
 
             image.onerror = async () => {
-                if (!card.isConnected) {
+                if (fallbackStarted || !card.isConnected) {
                     return;
                 }
 
-                if (sourceIndex < sources.length - 1) {
-                    sourceIndex += 1;
-                    image.src = sources[sourceIndex];
-                    return;
-                }
+                fallbackStarted = true;
 
-                // Cover thumbnail could not load; retain the placeholder.
-                // Do not fetch multi-megabyte originals for gallery cards.
-                console.warn('Greeting cover thumbnail unavailable:', title);
+                try {
+                    // Drive Thumbnail रोकिएमा पहिलेकै Greeting API प्रयोग गर्ने।
+                    // नयाँ Backend Function वा Deployment आवश्यक छैन।
+                    const source = await getTemplateImageData(imageId);
+
+                    if (card.isConnected) {
+                        image.src = source;
+                    }
+                } catch (error) {
+                    // Preview नआए पनि डिजाइन छनोटको Function सुरक्षित रहन्छ।
+                    console.warn('Greeting cover unavailable:', title);
+                }
             };
 
-            image.src = sources[0];
+            image.src =
+                'https://drive.google.com/thumbnail?id=' +
+                encodeURIComponent(imageId) +
+                '&sz=w1200';
         }
 
         function makeGalleryCard(title, subtitle, imageId, onClick, options = {}) {
@@ -1400,18 +870,14 @@
             const description = document.createElement('small');
             description.textContent = subtitle;
 
-            const titleRow = document.createElement('div');
-            titleRow.className = 'gallery-title-row';
-            titleRow.appendChild(heading);
-
-            detail.append(titleRow, description);
+            detail.append(heading, description);
             card.append(placeholder, detail);
 
             if (options.badge) {
                 const badge = document.createElement('span');
                 badge.className = 'gallery-count';
                 badge.textContent = options.badge;
-                titleRow.appendChild(badge);
+                card.appendChild(badge);
             }
 
             if (options.empty) {
@@ -1467,7 +933,7 @@
                 const badge = document.createElement('span');
                 badge.className = 'gallery-count';
                 badge.textContent = entries.length + ' डिजाइन';
-                card.querySelector('.gallery-title-row').appendChild(badge);
+                card.appendChild(badge);
 
                 // Folder को coverId नभए पहिलो Template नै Cover बनाउने।
                 if (!item.coverId) {
@@ -1487,11 +953,6 @@
         }
 
         async function loadFestivals() {
-            if (loadingFestivals) {
-                return;
-            }
-
-            loadingFestivals = true;
             setStatus('डिजाइन लोड हुँदैछन्...');
 
             try {
@@ -1511,10 +972,7 @@
                 setStatus(folders.length ? '' : 'कुनै चाडपर्व Folder भेटिएन।');
             } catch (error) {
                 console.warn('Greeting gallery request failed:', error);
-                rememberLoadFailure(error, 'folders');
                 showLoadError();
-            } finally {
-                loadingFestivals = false;
             }
         }
 
@@ -1567,8 +1025,7 @@
         async function loadAllEditorFonts() {
             await Promise.all([
                 loadFont(textObjects.name.font),
-                loadFont(textObjects.designation.font),
-                loadFont(textObjects.organization.font)
+                loadFont(textObjects.designation.font)
             ]);
         }
 
@@ -1579,11 +1036,7 @@
 
             openingTemplate = true;
             selectedTemplate = item;
-
-            // Keep the gallery in place; show a blocking spinner until ready.
-            setStatus('');
-            $('templateLoadingOverlay').classList.remove('hidden');
-            document.body.setAttribute('aria-busy', 'true');
+            setStatus('डिजाइन खोलिँदैछ...');
 
             try {
                 const dataUrl = await getTemplateImageData(item.id);
@@ -1603,42 +1056,25 @@
                 photoX = 0;
                 photoY = 0;
                 photoZoom = 1;
-                photoFitRegion = detectPhotoWindow(image);
-                $('resetPhotoFit').classList.add('hidden');
-                $('smartFaceFit').classList.add('hidden');
-                faceFitBounds = null;
-                faceFitMode = false;
-                faceFitRequest += 1;
-                setFaceFitMessage('');
                 selectedObject = null;
                 gesture = null;
 
                 textObjects.name.x = 0.5;
-                textObjects.name.y = 0.80;
+                textObjects.name.y = 0.88;
                 textObjects.name.size = 0.041;
                 textObjects.name.font = 'Yatra One';
                 textObjects.name.color = '#ffffff';
-                resetTextStyle('name');
 
                 textObjects.designation.x = 0.5;
-                textObjects.designation.y = 0.87;
+                textObjects.designation.y = 0.95;
                 textObjects.designation.size = 0.027;
                 textObjects.designation.font = 'Mukta';
                 textObjects.designation.color = '#ffffff';
-                resetTextStyle('designation');
-
-                textObjects.organization.x = 0.5;
-                textObjects.organization.y = 0.94;
-                textObjects.organization.size = 0.022;
-                textObjects.organization.font = 'Mukta';
-                textObjects.organization.color = '#ffffff';
-                resetTextStyle('organization');
 
                 $('photo').value = '';
                 $('name').value = '';
                 $('designation').value = '';
-                $('organization').value = '';
-                    setMessage('');
+                setMessage('');
 
                 await loadAllEditorFonts();
 
@@ -1653,17 +1089,8 @@
                 console.warn('Greeting template request failed:', error);
                 showLoadError();
             } finally {
-                $('templateLoadingOverlay').classList.add('hidden');
-                document.body.removeAttribute('aria-busy');
                 openingTemplate = false;
             }
-        }
-
-        function resetTextStyle(key) {
-            Object.assign(textObjects[key], {
-                bold: true, strokeEnabled: false,
-                strokeWidth: 0, strokeColor: '#000000'
-            });
         }
 
         function getTextFont(key) {
@@ -1672,268 +1099,37 @@
 
             return {
                 size: fontSize,
-                css: (item.bold ? '700 ' : '400 ') + fontSize + 'px "' + item.font + '", ' + FONT_FALLBACK
+                css: '700 ' + fontSize + 'px "' + item.font + '", ' + FONT_FALLBACK
             };
-        }
-
-        /* Smart Text Fit: preserve manual font size as the maximum size.
-           Only shrink when necessary; optional two-line layout for long fields. */
-        function smartTextLayout(key) {
-            const value = $(key).value.trim();
-            if (!value) return null;
-            const item = textObjects[key];
-            const maxWidth = canvas.width * 0.88;
-            const font = getTextFont(key);
-            const fontCss = (size) => (item.bold ? '700 ' : '400 ') +
-                size + 'px "' + item.font + '", ' + FONT_FALLBACK;
-            const measure = (line, size) => {
-                ctx.font = fontCss(size);
-                return ctx.measureText(line).width;
-            };
-            ctx.save();
-            let lines = [value];
-            let size = font.size;
-            if (measure(value, size) > maxWidth && key !== 'name') {
-                const words = value.split(/\s+/);
-                if (words.length > 1) {
-                    let best = null;
-                    for (let i = 1; i < words.length; i++) {
-                        const candidate = [words.slice(0, i).join(' '), words.slice(i).join(' ')];
-                        const widest = Math.max(...candidate.map(line => measure(line, size)));
-                        if (!best || widest < best.width) best = { lines: candidate, width: widest };
-                    }
-                    if (best) lines = best.lines;
-                }
-            }
-            const widest = Math.max(...lines.map(line => measure(line, size)));
-            if (widest > maxWidth) size = Math.max(8, size * maxWidth / widest);
-            const width = Math.max(...lines.map(line => measure(line, size)));
-            ctx.restore();
-            return { lines, size, width, lineHeight: size * 1.22, css: fontCss(size) };
-        }
-
-        function resetSelectedText() {
-            if (!textObjects[selectedObject]) return;
-            const defaults = {
-                name: { x: 0.5, y: 0.80, size: 0.041 },
-                designation: { x: 0.5, y: 0.87, size: 0.027 },
-                organization: { x: 0.5, y: 0.94, size: 0.022 }
-            };
-            Object.assign(textObjects[selectedObject], defaults[selectedObject]);
-            drawEditor();
-            updateToolbar();
         }
 
         function paintText(key) {
-            const layout = smartTextLayout(key);
-            if (!layout) return;
+            const value = $(key).value.trim();
+
+            if (!value) {
+                return;
+            }
+
             const item = textObjects[key];
+            const font = getTextFont(key);
+
             ctx.save();
-            ctx.font = layout.css;
+            ctx.font = font.css;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = item.color;
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            const x = item.x * canvas.width;
-            const y = item.y * canvas.height;
-            const firstY = y - (layout.lines.length - 1) * layout.lineHeight / 2;
-            layout.lines.forEach((line, index) => {
-                const lineY = firstY + index * layout.lineHeight;
-                if (item.strokeEnabled && item.strokeWidth > 0) {
-                    ctx.strokeStyle = item.strokeColor;
-                    ctx.lineWidth = canvas.width * item.strokeWidth / 1200;
-                    ctx.lineJoin = 'round';
-                    ctx.strokeText(line, x, lineY);
-                }
-                ctx.fillText(line, x, lineY);
-            });
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+            ctx.shadowBlur = Math.max(2, canvas.width * 0.004);
+
+            // Canvas ले अक्षरलाई तेर्सो खुम्च्याउने maxWidth प्रयोग गरिएको छैन।
+            ctx.fillText(
+                value,
+                item.x * canvas.width,
+                item.y * canvas.height
+            );
+
             ctx.restore();
         }
-
-        /* Auto Fit: detect a substantial transparent photo window in the template.
-           Opaque/complex templates retain the existing full-canvas cover logic. */
-        function detectPhotoWindow(image) {
-            const size = 96;
-            const probe = document.createElement('canvas');
-            probe.width = size;
-            probe.height = size;
-            const context = probe.getContext('2d', { willReadFrequently: true });
-            context.drawImage(image, 0, 0, size, size);
-            let pixels;
-            try {
-                pixels = context.getImageData(0, 0, size, size).data;
-            } catch (error) {
-                return null;
-            }
-
-            const seen = new Uint8Array(size * size);
-            let best = null;
-            for (let i = 0; i < seen.length; i += 1) {
-                if (seen[i] || pixels[i * 4 + 3] > 24) continue;
-                const queue = [i];
-                seen[i] = 1;
-                let count = 0;
-                let left = size, top = size, right = 0, bottom = 0;
-                for (let q = 0; q < queue.length; q += 1) {
-                    const at = queue[q];
-                    const x = at % size;
-                    const y = Math.floor(at / size);
-                    count += 1;
-                    left = Math.min(left, x);
-                    right = Math.max(right, x);
-                    top = Math.min(top, y);
-                    bottom = Math.max(bottom, y);
-                    const neighbors = [];
-                    if (x > 0) neighbors.push(at - 1);
-                    if (x < size - 1) neighbors.push(at + 1);
-                    if (y > 0) neighbors.push(at - size);
-                    if (y < size - 1) neighbors.push(at + size);
-                    for (const n of neighbors) {
-                        if (!seen[n] && pixels[n * 4 + 3] <= 24) {
-                            seen[n] = 1;
-                            queue.push(n);
-                        }
-                    }
-                }
-                if (!best || count > best.count) {
-                    best = { count, left, right, top, bottom };
-                }
-            }
-            if (!best || best.count < size * size * 0.025 ||
-                best.count > size * size * 0.75) return null;
-            const region = {
-                x: best.left / size * canvas.width,
-                y: best.top / size * canvas.height,
-                width: (best.right - best.left + 1) / size * canvas.width,
-                height: (best.bottom - best.top + 1) / size * canvas.height
-            };
-            if (region.width < canvas.width * 0.10 ||
-                region.height < canvas.height * 0.10) return null;
-            return region;
-        }
-
-        /* Optional on-device face positioning. No photo is uploaded for detection.
-           Browser FaceDetector is experimental: always retain regular Auto Fit. */
-        let faceFitBounds = null;
-        let faceFitRequest = 0;
-        let faceFitMode = false;
-
-        function setFaceFitMessage(message) {
-            $('faceFitMessage').textContent = message;
-        }
-
-        function positionPhotoAroundFaces(bounds) {
-            if (!userImage || !bounds) return false;
-            const region = photoFitRegion || {
-                x: 0, y: 0, width: canvas.width, height: canvas.height
-            };
-            const imageWidth = userImage.naturalWidth;
-            const imageHeight = userImage.naturalHeight;
-            const baseScale = Math.max(canvas.width / imageWidth, canvas.height / imageHeight);
-
-            // Preserve every detected face, with a margin around the group.
-            const margin = 1.35;
-            const focusWidth = Math.min(imageWidth, Math.max(1, bounds.width * margin));
-            const focusHeight = Math.min(imageHeight, Math.max(1, bounds.height * margin));
-            const fitAllFaces = Math.min(region.width / focusWidth, region.height / focusHeight);
-            const minimumCover = Math.max(region.width / imageWidth, region.height / imageHeight);
-            const targetScale = Math.max(minimumCover, fitAllFaces);
-            const renderedWidth = imageWidth * targetScale;
-            const renderedHeight = imageHeight * targetScale;
-            const centerX = bounds.x + bounds.width / 2;
-            const centerY = bounds.y + bounds.height / 2;
-            const desiredX = region.x + region.width / 2 - centerX * targetScale;
-            const desiredY = region.y + region.height / 2 - centerY * targetScale;
-
-            // Keep the photo covering the template's transparent window.
-            const minX = region.x + region.width - renderedWidth;
-            const maxX = region.x;
-            const minY = region.y + region.height - renderedHeight;
-            const maxY = region.y;
-            const finalX = Math.max(minX, Math.min(maxX, desiredX));
-            const finalY = Math.max(minY, Math.min(maxY, desiredY));
-            photoZoom = targetScale / baseScale;
-            photoX = finalX - (canvas.width - renderedWidth) / 2;
-            photoY = finalY - (canvas.height - renderedHeight) / 2;
-            drawEditor();
-            return true;
-        }
-
-        async function detectFacesOnDevice(image) {
-            if (typeof window.FaceDetector !== 'function') return null;
-            const detector = new window.FaceDetector({ fastMode: true, maxDetectedFaces: 12 });
-            const faces = await detector.detect(image);
-            if (!faces.length) return null;
-            const boxes = faces.map(face => face.boundingBox).filter(Boolean);
-            if (!boxes.length) return null;
-            const left = Math.min(...boxes.map(box => box.x));
-            const top = Math.min(...boxes.map(box => box.y));
-            const right = Math.max(...boxes.map(box => box.x + box.width));
-            const bottom = Math.max(...boxes.map(box => box.y + box.height));
-            return { x: left, y: top, width: right - left, height: bottom - top };
-        }
-
-        async function applySmartFaceFit() {
-            if (!userImage) return;
-            const image = userImage;
-            const request = ++faceFitRequest;
-            const button = $('smartFaceFit');
-            button.disabled = true;
-            setFaceFitMessage('अनुहार खोजिँदैछ...');
-            try {
-                const bounds = faceFitBounds || await detectFacesOnDevice(image);
-                if (request !== faceFitRequest || image !== userImage) return;
-                if (!bounds) {
-                    faceFitMode = false;
-                    setFaceFitMessage(typeof window.FaceDetector !== 'function'
-                        ? 'यो ब्राउजरमा Face Detection उपलब्ध छैन। सामान्य Auto Fit प्रयोग गर्नुहोस्।'
-                        : 'अनुहार भेटिएन। सामान्य Auto Fit प्रयोग गर्नुहोस्।');
-                    return;
-                }
-                faceFitBounds = bounds;
-                faceFitMode = true;
-                positionPhotoAroundFaces(bounds);
-                selectObject('photo');
-                setFaceFitMessage('अनुहारअनुसार फोटो मिलाइयो। आवश्यक परे आफैँ सार्न सक्नुहुन्छ।');
-            } catch (error) {
-                if (request === faceFitRequest) {
-                    faceFitMode = false;
-                    setFaceFitMessage('Face Fit उपलब्ध भएन। सामान्य Auto Fit प्रयोग गर्नुहोस्।');
-                }
-            } finally {
-                if (request === faceFitRequest) button.disabled = false;
-            }
-        }
-
-        $('smartFaceFit').addEventListener('click', applySmartFaceFit);
-
-        function resetPhotoAutoFit() {
-            if (!userImage) return;
-            faceFitMode = false;
-            const region = photoFitRegion || {
-                x: 0, y: 0, width: canvas.width, height: canvas.height
-            };
-            const baseScale = Math.max(
-                canvas.width / userImage.naturalWidth,
-                canvas.height / userImage.naturalHeight
-            );
-            const targetScale = Math.max(
-                region.width / userImage.naturalWidth,
-                region.height / userImage.naturalHeight
-            );
-            photoZoom = targetScale / baseScale;
-            photoX = region.x + region.width / 2 - canvas.width / 2;
-            photoY = region.y + region.height / 2 - canvas.height / 2;
-            // The existing photoRect() handles centering and offsets.
-            $('resetPhotoFit').classList.remove('hidden');
-            drawEditor();
-        }
-
-        $('resetPhotoFit').addEventListener('click', () => {
-            resetPhotoAutoFit();
-            selectObject('photo');
-        });
 
         function photoRect() {
             if (!userImage) {
@@ -1981,11 +1177,9 @@
 
             paintText('name');
             paintText('designation');
-            paintText('organization');
 
             if (showSelection && selectedObject) {
                 paintSelection();
-                requestAnimationFrame(positionMobileControls);
             }
         }
 
@@ -1994,19 +1188,31 @@
            ============================================================ */
 
         function textBounds(key) {
-            const layout = smartTextLayout(key);
-            if (!layout) return null;
+            const value = $(key).value.trim();
+
+            if (!value) {
+                return null;
+            }
+
             const item = textObjects[key];
+            const font = getTextFont(key);
+
+            ctx.save();
+            ctx.font = font.css;
+
+            const measuredWidth = ctx.measureText(value).width;
+            ctx.restore();
+
             return {
                 x: item.x * canvas.width,
                 y: item.y * canvas.height,
-                width: layout.width,
-                height: layout.lineHeight * layout.lines.length
+                width: measuredWidth,
+                height: font.size * 1.25
             };
         }
 
         function hitTestText(point) {
-            for (const key of ['organization', 'designation', 'name']) {
+            for (const key of ['designation', 'name']) {
                 const bounds = textBounds(key);
 
                 if (!bounds) {
@@ -2026,165 +1232,46 @@
             return null;
         }
 
-        /* Universal selected text outline, independent of template colors. */
-        function textSelectionRect(key) {
-            const bounds = textBounds(key);
-            if (!bounds) return null;
-            const padding = Math.max(13, canvas.width * 0.012);
-            return {
-                left: bounds.x - bounds.width / 2 - padding,
-                right: bounds.x + bounds.width / 2 + padding,
-                top: bounds.y - bounds.height / 2 - padding,
-                bottom: bounds.y + bounds.height / 2 + padding
-            };
-        }
-
-        function selectionHandleAt(point) {
-            if (!textObjects[selectedObject]) return null;
-            const rect = textSelectionRect(selectedObject);
-            if (!rect) return null;
-            const radius = Math.max(16, canvas.width * 0.019);
-            const handles = [
-                {x:rect.left,y:rect.top}, {x:rect.right,y:rect.top},
-                {x:rect.left,y:rect.bottom}, {x:rect.right,y:rect.bottom}
-            ];
-            return handles.find(h => Math.hypot(h.x-point.x,h.y-point.y) <= radius) || null;
-        }
-
         function paintSelection() {
-            if (!textObjects[selectedObject]) return;
-            const rect = textSelectionRect(selectedObject);
-            if (!rect) return;
-            const radius = Math.max(7, canvas.width * 0.008);
-            ctx.save();
-            // Contrasting double line and white handles stay visible on any design.
-            ctx.lineWidth = Math.max(4, canvas.width * 0.004);
-            ctx.strokeStyle = '#ffffff';
-            ctx.strokeRect(rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top);
-            ctx.lineWidth = Math.max(2, canvas.width * 0.002);
-            ctx.strokeStyle = '#e65c24';
-            ctx.strokeRect(rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top);
-            for (const [x,y] of [[rect.left,rect.top],[rect.right,rect.top],
-                                 [rect.left,rect.bottom],[rect.right,rect.bottom]]) {
-                ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);
-                ctx.fillStyle='#ffffff';ctx.fill();
-                ctx.strokeStyle='#334155';ctx.lineWidth=Math.max(2,canvas.width*.002);ctx.stroke();
+            if (selectedObject === 'photo') {
+                return;
             }
+
+            const bounds = textBounds(selectedObject);
+
+            if (!bounds) {
+                return;
+            }
+
+            const padding = Math.max(10, canvas.width * 0.01);
+
+            ctx.save();
+            ctx.strokeStyle = '#04bff1';
+            ctx.lineWidth = Math.max(2, canvas.width * 0.002);
+            ctx.setLineDash([
+                Math.max(5, canvas.width * 0.008),
+                Math.max(3, canvas.width * 0.005)
+            ]);
+
+            ctx.strokeRect(
+                bounds.x - bounds.width / 2 - padding,
+                bounds.y - bounds.height / 2 - padding,
+                bounds.width + 2 * padding,
+                bounds.height + 2 * padding
+            );
+
             ctx.restore();
         }
 
         function selectObject(key) {
             selectedObject = key;
-            // Mobile: the selected canvas object receives touch gestures.
-            // Without a selection the user can scroll the page normally.
-            canvas.style.touchAction = key ? 'none' : '';
-            mobileToolbarDismissed = false;
             updateToolbar();
-            updateMobileControls();
             drawEditor();
         }
-
-        let mobileToolbarPosition = null;
-        let mobileToolbarDismissed = false;
-
-        function positionMobileControls() {
-            const controls = $('mobileEditControls');
-            if (!mobileToolbarPosition || controls.classList.contains('hidden')) {
-                return;
-            }
-
-            const rect = controls.getBoundingClientRect();
-            const maxX = Math.max(8, window.innerWidth - rect.width - 8);
-            const maxY = Math.max(8, window.innerHeight - rect.height - 8);
-            mobileToolbarPosition.x = Math.max(8, Math.min(maxX, mobileToolbarPosition.x));
-            mobileToolbarPosition.y = Math.max(8, Math.min(maxY, mobileToolbarPosition.y));
-
-            controls.style.left = mobileToolbarPosition.x + 'px';
-            controls.style.top = mobileToolbarPosition.y + 'px';
-            controls.style.bottom = 'auto';
-            controls.style.transform = 'none';
-        }
-
-        function updateMobileControls() {
-            const controls = $('mobileEditControls');
-            controls.classList.toggle('hidden', !selectedObject || mobileToolbarDismissed);
-            const labels = {
-                photo: 'फोटो चयन गरिएको छ',
-                name: 'नाम चयन गरिएको छ',
-                designation: 'पद चयन गरिएको छ',
-                organization: 'संस्था चयन गरिएको छ'
-            };
-            $('mobileSelectedLabel').textContent = labels[selectedObject] || '';
-            requestAnimationFrame(positionMobileControls);
-        }
-
-        function reopenMobileControls() {
-            mobileToolbarDismissed = false;
-            updateMobileControls();
-        }
-
-        // Only the dedicated handle moves the toolbar. Buttons never drag it.
-        (function enableMobileToolbarDrag() {
-            const handle = $('mobileToolbarHandle');
-            const controls = $('mobileEditControls');
-            let drag = null;
-
-            handle.addEventListener('pointerdown', (event) => {
-                if (event.button !== 0 && event.pointerType === 'mouse') return;
-                const rect = controls.getBoundingClientRect();
-                mobileToolbarPosition = { x: rect.left, y: rect.top };
-                drag = {
-                    pointerId: event.pointerId,
-                    startX: event.clientX,
-                    startY: event.clientY,
-                    x: rect.left,
-                    y: rect.top
-                };
-                handle.setPointerCapture(event.pointerId);
-                event.preventDefault();
-            });
-
-            handle.addEventListener('pointermove', (event) => {
-                if (!drag || drag.pointerId !== event.pointerId) return;
-                mobileToolbarPosition = {
-                    x: drag.x + event.clientX - drag.startX,
-                    y: drag.y + event.clientY - drag.startY
-                };
-                positionMobileControls();
-            });
-
-            const stopDrag = (event) => {
-                if (drag && drag.pointerId === event.pointerId) drag = null;
-            };
-            handle.addEventListener('pointerup', stopDrag);
-            handle.addEventListener('pointercancel', stopDrag);
-
-            $('mobileToolbarClose').addEventListener('click', () => {
-                mobileToolbarDismissed = true;
-                updateMobileControls();
-            });
-
-            // A deliberate tap on the preview or a form field reopens controls.
-            canvas.addEventListener('pointerdown', () => {
-                if (mobileToolbarDismissed) reopenMobileControls();
-            });
-            ['name', 'designation', 'organization', 'photo'].forEach((id) => {
-                $(id).addEventListener('focus', () => {
-                    if (mobileToolbarDismissed && selectedObject) reopenMobileControls();
-                });
-            });
-        })();
-
-        $('smartTextFit').addEventListener('click', () => {
-            if (!textObjects[selectedObject]) return;
-            // Smart layout is calculated live on every render.
-            drawEditor();
-        });
-        $('resetText').addEventListener('click', resetSelectedText);
 
         function updateToolbar() {
             const isText = selectedObject === 'name' ||
-                selectedObject === 'designation' || selectedObject === 'organization';
+                selectedObject === 'designation';
 
             $('textToolbar').classList.toggle('hidden', !isText);
 
@@ -2197,17 +1284,10 @@
             $('selectionCaption').textContent =
                 selectedObject === 'name'
                     ? 'नाम चयन गरिएको छ · तान्नुहोस् वा Pinch Zoom गर्नुहोस्'
-                    : selectedObject === 'designation'
-                        ? 'पद चयन गरिएको छ · तान्नुहोस् वा Pinch Zoom गर्नुहोस्'
-                        : 'संस्था चयन गरिएको छ · तान्नुहोस् वा Pinch Zoom गर्नुहोस्';
+                    : 'पद चयन गरिएको छ · तान्नुहोस् वा Pinch Zoom गर्नुहोस्';
 
             $('fontFamily').value = item.font;
             $('fontColor').value = item.color;
-            $('fontBold').checked = item.bold;
-            $('strokeEnabled').checked = item.strokeEnabled;
-            $('strokeWidth').value = item.strokeWidth;
-            $('strokeWidthValue').textContent = String(item.strokeWidth);
-            $('strokeColor').value = item.strokeColor;
         }
 
         /* ============================================================
@@ -2262,49 +1342,31 @@
             }
         }
 
-        const mobileEditor = window.matchMedia('(pointer: coarse), (max-width: 750px)');
-        let mobileTapStart = null;
-
         canvas.addEventListener('pointerdown', (event) => {
+            event.preventDefault();
+
             const point = pointerToCanvas(event);
-            const resizeHandle = selectionHandleAt(point);
-            const hitText = resizeHandle ? selectedObject : hitTestText(point);
-
-            if (mobileEditor.matches) {
-                mobileTapStart = {
-                    id: event.pointerId,
-                    x: event.clientX,
-                    y: event.clientY,
-                    hitText
-                };
-                // Direct manipulation only for the object already selected.
-                // Tapping a different text first changes selection; it cannot
-                // accidentally move the previous object.
-                if (!selectedObject || (hitText && hitText !== selectedObject)) {
-                    return;
-                }
-            }
-
-            if (!mobileEditor.matches || selectedObject) {
-                event.preventDefault();
-            }
             activePointers.set(event.pointerId, point);
 
             if (activePointers.size === 1) {
-                if (!mobileEditor.matches) {
-                    if (hitText) selectObject(hitText);
-                    else if (textObjects[selectedObject]) selectObject(null);
-                    else if (userImage) selectObject('photo');
-                    else selectObject(null);
+                const hitText = hitTestText(point);
+
+                if (hitText) {
+                    selectObject(hitText);
+                } else if (userImage) {
+                    selectObject('photo');
+                } else {
+                    selectObject(null);
                 }
+
                 gesture = {
-                    kind: resizeHandle ? 'text-resize' : 'drag',
+                    kind: 'drag',
                     target: selectedObject,
-                    previous: point,
-                    center: resizeHandle ? {x:textObjects[selectedObject].x*canvas.width,y:textObjects[selectedObject].y*canvas.height} : null
+                    previous: point
                 };
             } else if (activePointers.size === 2) {
                 const pair = getGesturePair();
+
                 gesture = {
                     kind: 'pinch',
                     target: selectedObject,
@@ -2313,48 +1375,54 @@
                 };
             }
 
-            if (activePointers.has(event.pointerId)) {
-                canvas.setPointerCapture(event.pointerId);
-            }
+            canvas.setPointerCapture(event.pointerId);
         });
 
         canvas.addEventListener('pointermove', (event) => {
-            if (!activePointers.has(event.pointerId)) return;
-            if (mobileEditor.matches && !selectedObject) return;
+            if (!activePointers.has(event.pointerId)) {
+                return;
+            }
 
             event.preventDefault();
+
             const point = pointerToCanvas(event);
             activePointers.set(event.pointerId, point);
-            if (!gesture || !gesture.target) return;
+
+            if (!gesture || !gesture.target) {
+                return;
+            }
 
             if (activePointers.size >= 2 && gesture.kind === 'pinch') {
                 const pair = getGesturePair();
-                if (!pair) return;
-                if (gesture.distance > 0) {
-                    applyScale(gesture.target, pair.distance / gesture.distance);
+
+                if (!pair) {
+                    return;
                 }
-                moveObject(gesture.target,
-                    pair.center.x - gesture.center.x,
-                    pair.center.y - gesture.center.y);
+
+                if (gesture.distance > 0) {
+                    applyScale(
+                        gesture.target,
+                        pair.distance / gesture.distance
+                    );
+                }
+
+                const changeX = pair.center.x - gesture.center.x;
+                const changeY = pair.center.y - gesture.center.y;
+
+                moveObject(gesture.target, changeX, changeY);
+
                 gesture.distance = pair.distance;
                 gesture.center = pair.center;
                 drawEditor();
                 return;
             }
 
-            if (activePointers.size === 1 && gesture.kind === 'text-resize') {
-                const previousDistance = Math.hypot(gesture.previous.x-gesture.center.x,gesture.previous.y-gesture.center.y);
-                const nextDistance = Math.hypot(point.x-gesture.center.x,point.y-gesture.center.y);
-                if (previousDistance > 5) applyScale(gesture.target, nextDistance/previousDistance);
-                gesture.previous = point;
-                drawEditor();
-                return;
-            }
-
             if (activePointers.size === 1 && gesture.kind === 'drag') {
-                moveObject(gesture.target,
-                    point.x - gesture.previous.x,
-                    point.y - gesture.previous.y);
+                const changeX = point.x - gesture.previous.x;
+                const changeY = point.y - gesture.previous.y;
+
+                moveObject(gesture.target, changeX, changeY);
+
                 gesture.previous = point;
                 drawEditor();
             }
@@ -2366,28 +1434,24 @@
                 photoY += changeY;
                 return;
             }
+
             if (textObjects[target]) {
                 const item = textObjects[target];
-                item.x = Math.max(0, Math.min(1, item.x + changeX / canvas.width));
-                item.y = Math.max(0, Math.min(1, item.y + changeY / canvas.height));
+
+                item.x = Math.max(
+                    0,
+                    Math.min(1, item.x + changeX / canvas.width)
+                );
+
+                item.y = Math.max(
+                    0,
+                    Math.min(1, item.y + changeY / canvas.height)
+                );
             }
         }
 
         function releasePointer(event) {
-            const wasTap = mobileEditor.matches && mobileTapStart &&
-                mobileTapStart.id === event.pointerId &&
-                event.type === 'pointerup' &&
-                Math.hypot(event.clientX - mobileTapStart.x,
-                    event.clientY - mobileTapStart.y) < 12;
-
             activePointers.delete(event.pointerId);
-            if (wasTap) {
-                const hitText = hitTestText(pointerToCanvas(event));
-                if (hitText) selectObject(hitText);
-                else if (textObjects[selectedObject]) selectObject(null);
-                else if (!selectedObject && userImage) selectObject('photo');
-            }
-            if (mobileEditor.matches) mobileTapStart = null;
 
             if (activePointers.size === 1) {
                 gesture = {
@@ -2418,43 +1482,6 @@
             drawEditor();
         }, { passive: false });
 
-        window.addEventListener('resize', () => {
-            requestAnimationFrame(positionMobileControls);
-        }, { passive: true });
-
-        // Mobile controls operate only on the selected object.
-        // No global zoom, no accidental object switching during scroll.
-        $('mobileSelectPhoto').addEventListener('click', () => {
-            if (userImage) {
-                selectObject('photo');
-            }
-        });
-
-        document.querySelectorAll('[data-mobile-scale]').forEach((button) => {
-            button.addEventListener('click', () => {
-                if (!selectedObject) return;
-                applyScale(selectedObject,
-                    button.dataset.mobileScale === 'up' ? 1.08 : 1 / 1.08);
-                drawEditor();
-            });
-        });
-
-        document.querySelectorAll('[data-mobile-move]').forEach((button) => {
-            button.addEventListener('click', () => {
-                if (!selectedObject) return;
-                const step = Math.max(2, canvas.width * 0.007);
-                const movement = {
-                    up: [0, -step],
-                    down: [0, step],
-                    left: [-step, 0],
-                    right: [step, 0]
-                }[button.dataset.mobileMove];
-                if (!movement) return;
-                moveObject(selectedObject, movement[0], movement[1]);
-                drawEditor();
-            });
-        });
-
         /* ============================================================
            17. PHOTO INPUT AND CONTEXTUAL TEXT SETTINGS
            ============================================================ */
@@ -2475,15 +1502,9 @@
 
             try {
                 userImage = await loadImage(url);
-                faceFitRequest += 1;
-                faceFitBounds = null;
-                faceFitMode = false;
-                $('smartFaceFit').classList.remove('hidden');
-                setFaceFitMessage('');
                 photoX = 0;
                 photoY = 0;
                 photoZoom = 1;
-                resetPhotoAutoFit();
 
                 setMessage('');
                 selectObject('photo');
@@ -2497,26 +1518,19 @@
         $('remove').addEventListener('click', () => {
             userImage = null;
             $('photo').value = '';
-            $('resetPhotoFit').classList.add('hidden');
-            $('smartFaceFit').classList.add('hidden');
-            faceFitRequest += 1;
-            faceFitBounds = null;
-            faceFitMode = false;
-            setFaceFitMessage('');
 
             setMessage('');
             selectObject(null);
         });
 
-        ['name', 'designation', 'organization'].forEach((key) => {
+        ['name', 'designation'].forEach((key) => {
             $(key).addEventListener('input', () => {
-                if (!$(key).value.trim()) {
-                    if (selectedObject === key) selectObject(null);
-                    else drawEditor();
+                if (selectedObject === key && !$(key).value.trim()) {
+                    selectObject(null);
                 } else {
-                    selectObject(key);
+                    drawEditor();
                 }
-                });
+            });
         });
 
         $('fontFamily').addEventListener('change', async (event) => {
@@ -2551,41 +1565,6 @@
             drawEditor();
         });
 
-        // Text-only styling, with separate values for name, designation and organization.
-        function styleSelected(change) {
-            const item = textObjects[selectedObject];
-            if (!item) return;
-            change(item);
-            drawEditor();
-        }
-        $('fontBold').addEventListener('change', e =>
-            styleSelected(item => { item.bold = e.target.checked; }));
-        $('strokeEnabled').addEventListener('change', e =>
-            styleSelected(item => {
-                item.strokeEnabled = e.target.checked;
-                if (item.strokeEnabled && !item.strokeWidth) item.strokeWidth = 2;
-                $('strokeWidth').value = item.strokeWidth;
-                $('strokeWidthValue').textContent = String(item.strokeWidth);
-            }));
-        function setStrokeWidth(value) {
-            styleSelected(item => {
-                item.strokeWidth = Math.max(0, Math.min(12, value));
-                item.strokeEnabled = item.strokeWidth > 0;
-                $('strokeEnabled').checked = item.strokeEnabled;
-                $('strokeWidth').value = item.strokeWidth;
-                $('strokeWidthValue').textContent = String(item.strokeWidth);
-            });
-        }
-        $('strokeWidth').addEventListener('input', e => setStrokeWidth(Number(e.target.value)));
-        $('strokeMinus').addEventListener('click', () => {
-            if (textObjects[selectedObject]) setStrokeWidth(textObjects[selectedObject].strokeWidth - 0.5);
-        });
-        $('strokePlus').addEventListener('click', () => {
-            if (textObjects[selectedObject]) setStrokeWidth(textObjects[selectedObject].strokeWidth + 0.5);
-        });
-        $('strokeColor').addEventListener('input', e =>
-            styleSelected(item => { item.strokeColor = e.target.value; }));
-
         /* ============================================================
            18. LOSSLESS PNG EXPORT AND SHEET USAGE REQUEST
            ============================================================ */
@@ -2611,15 +1590,14 @@
             return blob;
         }
 
-        function recordUsage(name, designation, organization) {
+        function recordUsage(name, designation) {
             const form = new URLSearchParams({
                 greetingApi: '1',
                 action: 'usage',
                 folderId: selectedFolder.id,
                 templateId: selectedTemplate.id,
                 name,
-                designation,
-                organization
+                designation
             });
 
             // Existing backend को POST interface यथावत् राखिएको छ।
@@ -2632,26 +1610,16 @@
             });
         }
 
-        $('mobileDownload').addEventListener('click', () => $('download').click());
-
         $('download').addEventListener('click', async () => {
             const name = $('name').value.trim();
             const designation = $('designation').value.trim();
-            const organization = $('organization').value.trim();
 
             if (!templateImage || !selectedFolder || !selectedTemplate) {
                 return;
             }
 
-            if (!userImage || !name) {
-                setMessage('फोटो र नाम अनिवार्य छन्।');
-                return;
-            }
-
             const button = $('download');
             button.disabled = true;
-            $('mobileDownload').disabled = true;
-            $('mobileDownload').textContent = 'PNG तयार हुँदैछ...';
             button.textContent = 'PNG तयार हुँदैछ...';
             setMessage('');
 
@@ -2670,7 +1638,7 @@
                 setTimeout(() => URL.revokeObjectURL(url), 15000);
 
                 // डाउनलोडको सफल क्लिकपछि मात्र प्रयोग अभिलेख पठाउने।
-                recordUsage(name, designation, organization).catch(() => {
+                recordUsage(name || 'नाम नराखिएको', designation || 'पद नराखिएको').catch(() => {
                     // अभिलेख पठाउन असफल भए पनि PNG डाउनलोड रोकिँदैन।
                 });
             } catch (error) {
@@ -2678,157 +1646,7 @@
                 setMessage('डाउनलोड गर्न सकिएन: ' + error.message);
             } finally {
                 button.disabled = false;
-                $('mobileDownload').disabled = false;
-                $('mobileDownload').textContent = '⬇ PNG डाउनलोड गर्नुहोस्';
                 button.textContent = '⬇ PNG डाउनलोड';
-            }
-        });
-
-        /* ============================================================
-           18A. UNDO / REDO AND BUTTON RESPONSE (additive update)
-           ============================================================ */
-        const greetingUndoStack = [];
-        const greetingRedoStack = [];
-        let greetingHistoryTimer = null;
-        let greetingToastTimer = null;
-        let greetingRestoring = false;
-
-        function greetingSnapshot() {
-            return JSON.stringify({
-                photoX, photoY, photoZoom,
-                texts: Object.fromEntries(Object.entries(textObjects).map(([key, value]) => [key, { ...value }])),
-                values: {
-                    name: $('name').value,
-                    designation: $('designation').value,
-                    organization: $('organization').value
-                }
-            });
-        }
-
-        let greetingLastSnapshot = greetingSnapshot();
-
-        function greetingUpdateHistoryButtons() {
-            $('greetingUndo').disabled = greetingUndoStack.length === 0;
-            $('greetingRedo').disabled = greetingRedoStack.length === 0;
-        }
-
-        function greetingCommitHistory() {
-            if (greetingRestoring) return;
-            const current = greetingSnapshot();
-            if (current === greetingLastSnapshot) return;
-            greetingUndoStack.push(greetingLastSnapshot);
-            if (greetingUndoStack.length > 60) greetingUndoStack.shift();
-            greetingRedoStack.length = 0;
-            greetingLastSnapshot = current;
-            greetingUpdateHistoryButtons();
-        }
-
-        function greetingScheduleHistory(delay = 0) {
-            if (greetingRestoring) return;
-            clearTimeout(greetingHistoryTimer);
-            greetingHistoryTimer = setTimeout(greetingCommitHistory, delay);
-        }
-
-        function greetingRestore(snapshot) {
-            const state = JSON.parse(snapshot);
-            greetingRestoring = true;
-            photoX = state.photoX;
-            photoY = state.photoY;
-            photoZoom = state.photoZoom;
-            for (const [key, value] of Object.entries(state.texts)) {
-                if (textObjects[key]) Object.assign(textObjects[key], value);
-            }
-            for (const [key, value] of Object.entries(state.values)) {
-                if ($(key)) $(key).value = value;
-            }
-            greetingLastSnapshot = snapshot;
-            greetingRestoring = false;
-            updateToolbar();
-            drawEditor();
-            greetingUpdateHistoryButtons();
-        }
-
-        function greetingUndo() {
-            clearTimeout(greetingHistoryTimer);
-            greetingCommitHistory();
-            if (!greetingUndoStack.length) return;
-            greetingRedoStack.push(greetingLastSnapshot);
-            greetingRestore(greetingUndoStack.pop());
-            greetingToast('अघिल्लो परिवर्तन फर्काइयो।');
-        }
-
-        function greetingRedo() {
-            clearTimeout(greetingHistoryTimer);
-            if (!greetingRedoStack.length) return;
-            greetingUndoStack.push(greetingLastSnapshot);
-            greetingRestore(greetingRedoStack.pop());
-            greetingToast('परिवर्तन फेरि लागू गरियो।');
-        }
-
-        function greetingToast(message, duration = 2200) {
-            const toast = $('greetingActionToast');
-            if (!toast) return;
-            clearTimeout(greetingToastTimer);
-            toast.textContent = message;
-            toast.classList.add('visible');
-            greetingToastTimer = setTimeout(() => toast.classList.remove('visible'), duration);
-        }
-
-        $('greetingUndo').addEventListener('click', greetingUndo);
-        $('greetingRedo').addEventListener('click', greetingRedo);
-
-        // Record only completed interactions, not every pointer movement.
-        canvas.addEventListener('pointerup', () => greetingScheduleHistory(30));
-        canvas.addEventListener('pointercancel', () => greetingScheduleHistory(30));
-        canvas.addEventListener('wheel', () => greetingScheduleHistory(300), { passive: true });
-        ['name', 'designation', 'organization'].forEach(id => {
-            $(id).addEventListener('input', () => greetingScheduleHistory(550));
-        });
-        ['fontFamily', 'fontColor', 'fontBold', 'strokeEnabled', 'strokeWidth', 'strokeColor'].forEach(id => {
-            $(id).addEventListener('change', () => greetingScheduleHistory(30));
-        });
-
-        // Capture-phase listener adds feedback without changing existing handlers.
-        document.addEventListener('click', event => {
-            const button = event.target.closest('button');
-            if (!button || button.disabled) return;
-            button.classList.remove('greeting-action-flash');
-            void button.offsetWidth;
-            button.classList.add('greeting-action-flash');
-            setTimeout(() => button.classList.remove('greeting-action-flash'), 350);
-            const id = button.id;
-            const messages = {
-                resetPhotoFit: 'फोटो Auto Fit लागू हुँदैछ...',
-                smartFaceFit: 'अनुहार पहिचान गर्ने प्रयास हुँदैछ...',
-                smartTextFit: 'अक्षर डिजाइनमा मिलाइँदैछ...',
-                resetText: 'अक्षरको स्थान र आकार Reset हुँदैछ...',
-                download: 'PNG तयार हुँदैछ...',
-                mobileDownload: 'PNG तयार हुँदैछ...',
-                remove: 'फोटो हटाइँदैछ...'
-            };
-            if (messages[id]) greetingToast(messages[id]);
-            if (id !== 'greetingUndo' && id !== 'greetingRedo' &&
-                (['resetPhotoFit','smartFaceFit','smartTextFit','resetText','remove'].includes(id) ||
-                button.hasAttribute('data-mobile-move') || button.hasAttribute('data-mobile-scale') ||
-                id === 'strokeMinus' || id === 'strokePlus')) {
-                greetingScheduleHistory(id === 'smartFaceFit' ? 1800 : 80);
-            }
-        }, true);
-
-        $('photo').addEventListener('change', event => {
-            if (event.target.files && event.target.files.length) greetingToast('फोटो लोड हुँदैछ...');
-        }, true);
-
-        // Keyboard shortcuts while not typing into a form field.
-        document.addEventListener('keydown', event => {
-            if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
-            const tag = document.activeElement?.tagName;
-            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag) || document.activeElement?.isContentEditable) return;
-            const key = event.key.toLowerCase();
-            if (key === 'z' && !event.shiftKey) {
-                event.preventDefault(); greetingUndo();
-            } else if (key === 'y' || (key === 'z' && event.shiftKey)) {
-                event.preventDefault(); greetingRedo();
             }
         });
 
@@ -2837,12 +1655,9 @@
            ============================================================ */
 
         $('retryLoad').addEventListener('click', () => {
-            clearFailedGreetingRequests();
-
             if (stage === 'templates' && selectedFolder) {
                 openFestival(selectedFolder);
             } else if (stage === 'edit' && selectedTemplate) {
-                openingTemplate = false;
                 openTemplate(selectedTemplate);
             } else {
                 loadFestivals();
@@ -2851,31 +1666,8 @@
 
         window.addEventListener('online', () => {
             if (!$('retryLoad').classList.contains('hidden')) {
-                retryFailedView();
+                $('retryLoad').click();
             }
-        });
-
-        document.addEventListener('visibilitychange', () => {
-            if (
-                document.visibilityState === 'visible' &&
-                !$('retryLoad').classList.contains('hidden')
-            ) {
-                retryFailedView();
-            }
-        });
-
-        window.addEventListener('pageshow', (event) => {
-            if (stage === 'festivals' && (event.persisted || folders.length === 0)) {
-                clearFailedGreetingRequests();
-                loadFestivals();
-            }
-        });
-
-        document.addEventListener('contextmenu', (event) => event.preventDefault());
-
-        document.querySelectorAll('#festivalGrid, #templateGrid, #canvas').forEach((area) => {
-            area.addEventListener('contextmenu', (event) => event.preventDefault());
-            area.addEventListener('dragstart', (event) => event.preventDefault());
         });
 
         if (apiConfigured()) {
